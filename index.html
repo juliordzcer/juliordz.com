@@ -75,14 +75,58 @@
     font-size: 1.05rem;
     margin-bottom: 0.75rem;
   }
-  ul.pubs {
-    padding-left: 1.25rem;
+  .pub {
+    display: grid;
+    grid-template-columns: 180px 1fr;
+    gap: 1rem;
+    align-items: start;
+    padding: 1rem 0;
+    border-bottom: 1px solid var(--border);
   }
-  ul.pubs li {
-    margin-bottom: 0.5rem;
+  .pub:last-child { border-bottom: none; }
+  .pub-thumb {
+    width: 180px;
+    aspect-ratio: 4 / 3;
+    object-fit: cover;
+    border-radius: 6px;
+    border: 1px solid var(--border);
+    background: #fff;
   }
-  ul.pubs em {
+  .pub-thumb.placeholder {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--border);
     color: var(--muted);
+    font-size: 0.8rem;
+    text-align: center;
+    padding: 0.5rem;
+  }
+  .pub-title {
+    font-weight: 600;
+    line-height: 1.35;
+  }
+  .pub-authors, .pub-venue {
+    font-size: 0.9rem;
+    margin: 0.2rem 0 0;
+  }
+  .pub-authors strong { color: var(--fg); }
+  .pub-authors, .pub-venue { color: var(--muted); }
+  .pub-venue em { color: var(--fg); }
+  .pub-links { margin-top: 0.45rem; }
+  .pub-links a {
+    display: inline-block;
+    font-size: 0.8rem;
+    padding: 0.1rem 0.55rem;
+    margin: 0 0.3rem 0.3rem 0;
+    border: 1px solid var(--border);
+    border-radius: 999px;
+    text-decoration: none;
+  }
+  .pub-links a:hover { border-color: var(--link); }
+  @media (max-width: 560px) {
+    .pub { grid-template-columns: 1fr; }
+    .pub-thumb { width: 100%; }
   }
   a { color: var(--link); }
   .cv-item {
@@ -102,6 +146,9 @@
   .cv-item ul {
     margin: 0.35rem 0 0;
     padding-left: 1.25rem;
+  }
+  .cv-item p {
+    margin: 0.35rem 0 0;
   }
   .cv-item ul li {
     margin-bottom: 0.2rem;
@@ -146,18 +193,20 @@
       <li>Designed and analyzed novel distributed control algorithms to enhance the autonomy and robustness of UAV swarms.</li>
       <li>Developed high-fidelity simulations in MATLAB and Python to validate theoretical control models and algorithm performance.</li>
       <li>Engineered a custom experimental platform with ROS&nbsp;2, Gazebo Ionic, and an ESP32-Drone for hardware-in-the-loop (HIL) validation of control strategies.</li>
+      <li>Conducted real multi-quadrotor flight experiments to validate the bearing-only controllers and estimators in hardware; a journal article with these results is in preparation.</li>
       <li>Funded by SECIHTI (Secretaría de Ciencia, Humanidades, Tecnología e Innovación).</li>
     </ul>
   </div>
 
   <div class="cv-item">
     <div class="cv-role">M.Sc. in Electrical Engineering — Mechatronics and Automatic Control</div>
-    <div class="cv-meta">Instituto Tecnológico de La Laguna &middot; ago. 2021 &ndash; jun. 2023 &middot; Torreón, Coahuila, México</div>
+    <div class="cv-meta">Instituto Tecnológico de La Laguna &middot; ago. 2021 &ndash; ago. 2023 &middot; Torreón, Coahuila, México</div>
     <ul>
       <li>Thesis: Designed formation controllers for Quad-Rotor-type multi-agent systems, achieving precise control and coordination among multiple drones.</li>
       <li>Developed and tuned controllers for multiple aerial mobile nano-robots, optimizing performance and behavior across a range of operating scenarios.</li>
       <li>Built a ROS-based platform enabling coordination and communication among multiple vehicles for research and development.</li>
       <li>Set up Git repositories for version control, ensuring efficient collaboration and code management throughout the project.</li>
+      <li>Funded by CONACYT (Consejo Nacional de Ciencia y Tecnología, now SECIHTI).</li>
     </ul>
   </div>
 
@@ -177,9 +226,13 @@
   <div class="cv-item">
     <div class="cv-role">Adjunct Professor — Academy of Health Sciences</div>
     <div class="cv-meta">Universidad del Valle de México &middot; ago. 2025 &ndash; presente &middot; Zapopan, Jalisco, México</div>
+    <p>Teach undergraduate courses at the Health Sciences Academy, across the Biomedical Engineering, Biotechnology Engineering, and Pharmaceutical-Biotechnology Engineering programs. Course load evolves each term:</p>
     <ul>
-      <li>Design and teach four undergraduate courses: Analog, Digital, and Power Electronics; Analysis and Design of Electronic Circuits; Advanced Programming; and Kinetics and Dynamics.</li>
+      <li><strong>Fall 2025:</strong> Kinetics and Dynamics; Analog and Digital Electronics; Analysis and Design of Electronic Circuits.</li>
+      <li><strong>Spring 2026:</strong> Kinetics and Dynamics; Analog and Digital Electronics; Analysis and Design of Electronic Circuits; Advanced Programming; Power Electronics.</li>
+      <li><strong>Fall 2026 (current):</strong> Precalculus; Physiological Modeling; Image Analysis and Processing; Differential and Integral Calculus; Analog and Digital Electronics; Kinetics and Dynamics; Advanced Programming.</li>
     </ul>
+    <p>Across three semesters, designed course materials and labs spanning circuit theory, embedded/analog systems, mechanics, and programming for engineering undergraduates.</p>
   </div>
 
   <div class="cv-item">
@@ -193,7 +246,7 @@
 
   <div class="cv-item">
     <div class="cv-role">Project Control Assistant</div>
-    <div class="cv-meta">MCC Manejo de Contrato Consultores &middot; ene. 2023 &ndash; mar. 2024 &middot; Chiapas, México</div>
+    <div class="cv-meta">MCC Manejo de Contrato Consultores &middot; ene. 2023 &ndash; mar. 2024 &middot; Chiapas, México (remote until jul. 2023, on-site from ago. 2023)</div>
     <ul>
       <li>Collaborated with the CFE-Andritz-Hydroproject and CFE-Andritz-Seisa consortia on the repowering and modernization of the &ldquo;Peñitas&rdquo; and &ldquo;Angostura&rdquo; hydroelectric power plants.</li>
       <li>Oversaw contractual work schedules to ensure compliance with deadlines.</li>
@@ -208,20 +261,88 @@
     <div class="cv-role">Adjunct Professor — Department of Basic Sciences</div>
     <div class="cv-meta">Instituto Tecnológico de La Laguna &middot; ene. 2023 &ndash; jun. 2023 &middot; Torreón, Coahuila, México</div>
     <ul>
-      <li>Design and teach two undergraduate courses: Differential Equations and Integral Calculus.</li>
+      <li>Designed and taught Differential Equations and Integral Calculus courses for Mechatronics Engineering and Chemical Engineering students.</li>
     </ul>
   </div>
 
   <hr/>
 
   <h2>Publications</h2>
-  <ul class="pubs">
-    <li>Bearing Estimation on S&sup2; via Tangent-Space Measurements for UAV Formation Control &mdash; <em>IEEE CCE 2026 (accepted)</em></li>
-    <li>Bearing-Only Super-Twisting Control for Multi-Quadrotor Formations &mdash; <em>IEEE CCE 2025</em></li>
-    <li>Formation Control Design for Multi-Quad-Rotors with Experimental Validation &mdash; <em>CNCA 2023</em></li>
-    <li>Diseño de Control de Formación basado en Modos Deslizantes para un Grupo de Quad-Rotors &mdash; <em>COMRob 2023</em></li>
-    <li>Optimal Motions of a Welding Robot for Cooperative Tasks with a 2 DOF Positioner &mdash; <em>COMRob 2021</em></li>
-  </ul>
+  <div class="pub">
+    <img class="pub-thumb" src="images/pubs/cce2026.jpg" alt="Simulated quadrotor formation with bearing measurements" loading="lazy">
+    <div>
+      <div class="pub-title">Bearing Estimation on S&sup2; via Tangent-Space Measurements for UAV Formation Control</div>
+      <p class="pub-authors"><strong>J. C. Rodríguez</strong>, H. M. Becerra, J. Ruiz León</p>
+      <p class="pub-venue"><em>2026 23rd International Conference on Electrical Engineering, Computing Science and Automatic Control (CCE)</em></p>
+      <div class="pub-links">
+        <a href="papers/cce2026.pdf">PDF</a>
+      </div>
+    </div>
+  </div>
+
+  <div class="pub">
+    <img class="pub-thumb" src="images/pubs/cce2025.jpg" alt="3D trajectories of a ten-quadrotor formation" loading="lazy">
+    <div>
+      <div class="pub-title">Bearing-Only Super-Twisting Control for Multi-Quadrotor Formations</div>
+      <p class="pub-authors">F. G. López Ruiz, <strong>J. C. Rodríguez</strong>, H. M. Becerra, J. Ruiz León</p>
+      <p class="pub-venue"><em>2025 22nd International Conference on Electrical Engineering, Computing Science and Automatic Control (CCE)</em>, pp. 1&ndash;6</p>
+      <div class="pub-links">
+        <a href="papers/cce2025.pdf">PDF</a>
+        <a href="https://ieeexplore.ieee.org/document/11272041">IEEE Xplore</a>
+      </div>
+    </div>
+  </div>
+
+  <div class="pub">
+    <img class="pub-thumb" src="images/pubs/cnca2023.jpg" alt="Experimental multi-quadrotor laboratory setup" loading="lazy">
+    <div>
+      <div class="pub-title">Formation Control Design for Multi-Quad-Rotors with Experimental Validation</div>
+      <p class="pub-authors"><strong>J. C. Rodríguez-Cervantes</strong>, A. Dzul, H. Ríos</p>
+      <p class="pub-venue"><em>Congreso Nacional de Control Automático (CNCA), AMCA</em>, Acapulco, Guerrero, México, 2023</p>
+      <div class="pub-links">
+        <a href="papers/cnca2023.pdf">PDF</a>
+        <a href="https://www.youtube.com/watch?v=mZxGzYCmnuo">Video</a>
+      </div>
+    </div>
+  </div>
+
+  <div class="pub">
+    <img class="pub-thumb" src="images/pubs/comrob2023.jpg" alt="Crazyflie quadrotor with body frame" loading="lazy">
+    <div>
+      <div class="pub-title">Diseño de Control de Formación basado en Modos Deslizantes para un Grupo de Quad-Rotors</div>
+      <p class="pub-authors"><strong>J. C. Rodríguez-Cervantes</strong>, A. Dzul, H. Ríos</p>
+      <p class="pub-venue"><em>XXV Congreso Mexicano de Robótica (COMRob)</em>, 2023</p>
+      <div class="pub-links">
+        <a href="papers/comrob2023.pdf">PDF</a>
+        <a href="https://www.youtube.com/watch?v=mZxGzYCmnuo">Video</a>
+      </div>
+    </div>
+  </div>
+
+  <div class="pub">
+    <img class="pub-thumb" src="images/pubs/comrob2021.jpg" alt="Welding robot with a 2-DOF positioner" loading="lazy">
+    <div>
+      <div class="pub-title">Optimal Motions of a Welding Robot for Cooperative Tasks with a 2 DOF Positioner</div>
+      <p class="pub-authors">O. I. Santellano, J. A. Pámanes, <strong>J. C. Rodríguez</strong>, J. J. Pámanes</p>
+      <p class="pub-venue"><em>2021 XXIII Robotics Mexican Congress (ComRob)</em>, pp. 145&ndash;151</p>
+      <div class="pub-links">
+        <a href="papers/comrob2021.pdf">PDF</a>
+        <a href="https://ieeexplore.ieee.org/document/9628721">IEEE Xplore</a>
+      </div>
+    </div>
+  </div>
+
+  <hr/>
+
+  <h2>Certifications</h2>
+
+  <div class="cv-item">
+    <div class="cv-role">SAM 3: Visión Computacional con Segment Anything Model 3 de Meta</div>
+    <div class="cv-meta">Centro &middot; sept. 2026 &middot; <a href="https://www.credential.net/a7e584fe-9cbc-4a64-b47e-562e78934376">Verify credential</a></div>
+    <ul>
+      <li>End-to-end application of Meta's Segment Anything Model 3 to computer vision segmentation workflows.</li>
+    </ul>
+  </div>
 
   <hr/>
 

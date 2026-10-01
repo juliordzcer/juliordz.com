@@ -64,6 +64,27 @@
     margin: 1.25rem 0;
   }
   .badges img { margin: 2px; }
+  .cv-download {
+    text-align: center;
+    margin: 0 0 1.25rem;
+  }
+  .cv-download a {
+    display: inline-block;
+    padding: 0.5em 1.1em;
+    border: 1px solid var(--link);
+    border-radius: 6px;
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 0.95rem;
+  }
+  .cv-download a:hover {
+    background: var(--link);
+    color: var(--bg);
+  }
+  .interests {
+    color: var(--muted);
+    font-size: 0.95rem;
+  }
   hr {
     border: none;
     border-top: 1px solid var(--border);
@@ -177,10 +198,18 @@
     <a href="https://github.com/juliordzcer"><img src="images/badges/github.svg" alt="GitHub"/></a>
   </p>
 
+  <p class="cv-download">
+    <a href="cv.pdf" download>Download CV (PDF)</a>
+  </p>
+
   <hr/>
 
   <p>
     My research focuses on <strong>cooperative control of multi-UAV systems</strong> using only bearing measurements &mdash; no GPS, no distance sensors. Using robust nonlinear control techniques, I design formation controllers and state estimators that operate directly on the unit sphere S&sup2;, enabling scalable drone swarms for GPS-denied environments.
+  </p>
+
+  <p class="interests">
+    <strong>Research interests:</strong> bearing-only formation control &middot; multi-agent &amp; swarm coordination &middot; nonlinear and robust control (sliding-mode, super-twisting) &middot; state estimation on manifolds (S&sup2;, SO(3)) &middot; UAV/quadrotor systems &middot; GPS-denied autonomy.
   </p>
 
   <hr/>
@@ -189,7 +218,7 @@
 
   <div class="cv-item">
     <div class="cv-role">Ph.D. in Electrical Engineering — Automatic Control</div>
-    <div class="cv-meta">Centro de Investigación y de Estudios Avanzados del IPN (CINVESTAV) &middot; ene. 2025 &ndash; dic. 2029 &middot; Guadalajara, Jalisco, México</div>
+    <div class="cv-meta">Centro de Investigación y de Estudios Avanzados del IPN (CINVESTAV) &middot; Jan 2025 &ndash; Dec 2029 &middot; Guadalajara, Jalisco, México</div>
     <ul>
       <li>Focus: Bearing-only formation control strategies for quad-rotor systems, contributing to advancements in multi-agent coordination.</li>
       <li>Designed and analyzed novel distributed control algorithms to enhance the autonomy and robustness of UAV swarms.</li>
@@ -202,7 +231,7 @@
 
   <div class="cv-item">
     <div class="cv-role">M.Sc. in Electrical Engineering — Mechatronics and Automatic Control</div>
-    <div class="cv-meta">Instituto Tecnológico de La Laguna &middot; ago. 2021 &ndash; ago. 2023 &middot; Torreón, Coahuila, México</div>
+    <div class="cv-meta">Instituto Tecnológico de La Laguna &middot; Aug 2021 &ndash; Aug 2023 &middot; Torreón, Coahuila, México</div>
     <ul>
       <li>Thesis: Designed formation controllers for Quad-Rotor-type multi-agent systems, achieving precise control and coordination among multiple drones.</li>
       <li>Developed and tuned controllers for multiple aerial mobile nano-robots, optimizing performance and behavior across a range of operating scenarios.</li>
@@ -214,9 +243,9 @@
 
   <div class="cv-item">
     <div class="cv-role">B.Eng. in Mechatronics — Automation and Control</div>
-    <div class="cv-meta">Instituto Tecnológico de La Laguna &middot; ago. 2016 &ndash; jul. 2021 &middot; Torreón, Coahuila, México</div>
+    <div class="cv-meta">Instituto Tecnológico de La Laguna &middot; Aug 2016 &ndash; Jul 2021 &middot; Torreón, Coahuila, México</div>
     <ul>
-      <li>Professional internship (dic. 2020 &ndash; jun. 2021): developed the control subsystem for a two-degree-of-freedom cooperating table for an arc welding robot, optimizing motion trajectories and coordination with the robot.</li>
+      <li>Professional internship (Dec 2020 &ndash; Jun 2021): developed the control subsystem for a two-degree-of-freedom cooperating table for an arc welding robot, optimizing motion trajectories and coordination with the robot.</li>
       <li>Designed, assembled, and integrated the control cabinet; programmed the cooperative table positioning control system and implemented communication protocols with a Fanuc ARC Mate 100iC welding robot.</li>
     </ul>
   </div>
@@ -227,7 +256,7 @@
 
   <div class="cv-item">
     <div class="cv-role">Adjunct Professor — Academy of Health Sciences</div>
-    <div class="cv-meta">Universidad del Valle de México &middot; ago. 2025 &ndash; presente &middot; Zapopan, Jalisco, México</div>
+    <div class="cv-meta">Universidad del Valle de México &middot; Aug 2025 &ndash; Present &middot; Zapopan, Jalisco, México</div>
     <p>Teach undergraduate courses at the Health Sciences Academy, across the Biomedical Engineering, Biotechnology Engineering, and Pharmaceutical-Biotechnology Engineering programs. Course load evolves each term:</p>
     <ul>
       <li><strong>Fall 2025:</strong> Kinetics and Dynamics; Analog and Digital Electronics; Analysis and Design of Electronic Circuits.</li>
@@ -239,16 +268,17 @@
 
   <div class="cv-item">
     <div class="cv-role">Mechatronic Engineer</div>
-    <div class="cv-meta">GD Installazioni &middot; mar. 2024 &ndash; sept. 2024 &middot; Zapopan, Jalisco, México</div>
+    <div class="cv-meta">GD Installazioni &middot; Mar 2024 &ndash; Sept 2024 &middot; Zapopan, Jalisco, México (on-site projects in Chicago &amp; Indianapolis, USA)</div>
     <ul>
-      <li>Supported spare-parts warehouse operations (inbound and outbound), including material reception, storage, and preparation, using SAP for inventory management.</li>
-      <li>Involved in the installation and configuration of LGV (Laser Guided Vehicle) robots and conveyor systems.</li>
+      <li>Installed and commissioned automation equipment and conveyor systems for Pepsico Gatorade and E80 Group projects.</li>
+      <li>Installed and configured LGV (Laser Guided Vehicle) robots and supervised electromechanical warehouse equipment.</li>
+      <li>Managed inbound/outbound warehouse logistics and inventory using SAP, and trained technical staff on automated machinery.</li>
     </ul>
   </div>
 
   <div class="cv-item">
     <div class="cv-role">Project Control Assistant</div>
-    <div class="cv-meta">MCC Manejo de Contrato Consultores &middot; ene. 2023 &ndash; mar. 2024 &middot; Chiapas, México (remote until jul. 2023, on-site from ago. 2023)</div>
+    <div class="cv-meta">MCC Manejo de Contrato Consultores &middot; Jan 2023 &ndash; Mar 2024 &middot; Chiapas, México (remote until Jul 2023, on-site from Aug 2023)</div>
     <ul>
       <li>Collaborated with the CFE-Andritz-Hydroproject and CFE-Andritz-Seisa consortia on the repowering and modernization of the &ldquo;Peñitas&rdquo; and &ldquo;Angostura&rdquo; hydroelectric power plants.</li>
       <li>Oversaw contractual work schedules to ensure compliance with deadlines.</li>
@@ -261,7 +291,7 @@
 
   <div class="cv-item">
     <div class="cv-role">Adjunct Professor — Department of Basic Sciences</div>
-    <div class="cv-meta">Instituto Tecnológico de La Laguna &middot; ene. 2023 &ndash; jun. 2023 &middot; Torreón, Coahuila, México</div>
+    <div class="cv-meta">Instituto Tecnológico de La Laguna &middot; Jan 2023 &ndash; Jun 2023 &middot; Torreón, Coahuila, México</div>
     <ul>
       <li>Designed and taught Differential Equations and Integral Calculus courses for Mechatronics Engineering and Chemical Engineering students.</li>
     </ul>
@@ -338,14 +368,38 @@
 
   <hr/>
 
+  <h2>Invited Talks</h2>
+
+  <div class="cv-item">
+    <div class="cv-role">Control de formaciones de múltiples agentes basado en orientaciones</div>
+    <div class="cv-meta">Invited lecture &middot; Workshop on Robotics and Motion Planning, CIMAT &middot; Mar 2026 &middot; Guanajuato, México</div>
+  </div>
+
+  <div class="cv-item">
+    <div class="cv-role">Semana Cinvestav Guadalajara — 37th Anniversary, "Sistemas Inteligentes"</div>
+    <div class="cv-meta">Participant &middot; CINVESTAV Guadalajara &middot; Nov 2025 &middot; Zapopan, Jalisco, México</div>
+  </div>
+
+  <div class="cv-item">
+    <div class="cv-role">Robótica Colaborativa en la Industria: Optimización y Nuevas Tendencias</div>
+    <div class="cv-meta">Invited speaker &middot; Mechanical Engineering Conference Series, Universidad Iberoamericana Torreón &middot; Oct 2024 &middot; Torreón, Coahuila, México</div>
+  </div>
+
+  <hr/>
+
   <h2>Certifications</h2>
 
   <div class="cv-item">
     <div class="cv-role">SAM 3: Visión Computacional con Segment Anything Model 3 de Meta</div>
-    <div class="cv-meta">Centro &middot; sept. 2026 &middot; <a href="https://www.credential.net/a7e584fe-9cbc-4a64-b47e-562e78934376">Verify credential</a></div>
+    <div class="cv-meta">Centro &middot; Sept 2026 &middot; <a href="https://www.credential.net/a7e584fe-9cbc-4a64-b47e-562e78934376">Verify credential</a></div>
     <ul>
       <li>End-to-end application of Meta's Segment Anything Model 3 to computer vision segmentation workflows.</li>
     </ul>
+  </div>
+
+  <div class="cv-item">
+    <div class="cv-role">OSHA 10: General Industry Outreach Training Course</div>
+    <div class="cv-meta">OSHA Outreach Training Program (IACET CEU=1.2, Actively Proctored) &middot; Jul 2024</div>
   </div>
 
   <hr/>

@@ -15,7 +15,8 @@
     --fg: #1f2328;
     --muted: #57606a;
     --border: #d0d7de;
-    --link: #0a66c2;
+    --accent: #0a66c2;
+    --nav-bg: rgba(255, 255, 255, 0.75);
   }
   @media (prefers-color-scheme: dark) {
     :root {
@@ -23,82 +24,202 @@
       --fg: #e6edf3;
       --muted: #9198a1;
       --border: #30363d;
-      --link: #4aa3ff;
+      --accent: #4aa3ff;
+      --nav-bg: rgba(13, 17, 23, 0.75);
     }
   }
   * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  @media (prefers-reduced-motion: reduce) {
+    html { scroll-behavior: auto; }
+  }
   body {
     background: var(--bg);
     color: var(--fg);
     font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
     line-height: 1.6;
     margin: 0;
-    padding: 2.5rem 1.25rem 4rem;
   }
-  main {
-    max-width: 720px;
+  a { color: var(--accent); }
+
+  /* Navigation */
+  .site-nav {
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    background: var(--nav-bg);
+    -webkit-backdrop-filter: blur(10px);
+    backdrop-filter: blur(10px);
+    border-bottom: 1px solid var(--border);
+  }
+  .site-nav ul {
+    display: flex;
+    gap: 1.5rem;
+    max-width: 880px;
     margin: 0 auto;
+    padding: 0.7rem 1.25rem;
+    list-style: none;
+    overflow-x: auto;
+    white-space: nowrap;
+    scrollbar-width: none;
+  }
+  .site-nav ul::-webkit-scrollbar { display: none; }
+  @media (max-width: 600px) {
+    .site-nav ul {
+      gap: 1.1rem;
+      -webkit-mask-image: linear-gradient(to right, #000 85%, transparent);
+      mask-image: linear-gradient(to right, #000 85%, transparent);
+    }
+  }
+  .site-nav a {
+    color: var(--muted);
+    text-decoration: none;
+    font-size: 0.9rem;
+    font-weight: 500;
+  }
+  .site-nav a:hover { color: var(--accent); }
+
+  main {
+    max-width: 880px;
+    margin: 0 auto;
+    padding: 2.5rem 1.25rem 2rem;
+  }
+  section[id], footer[id] { scroll-margin-top: 4rem; }
+
+  /* Header */
+  .header {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    gap: 1.25rem;
   }
   .avatar {
-    display: block;
-    width: 360px;
-    max-width: 100%;
-    height: auto;
-    border-radius: 12px;
-    object-fit: cover;
-    margin: 0 auto 1.25rem;
+    position: relative;
+    flex: none;
+    width: 180px;
+    height: 180px;
+    border-radius: 50%;
+    overflow: hidden;
     border: 3px solid var(--border);
   }
+  .avatar img {
+    position: absolute;
+    width: 274%;
+    max-width: none;
+    left: -86%;
+    top: -66%;
+  }
   h1 {
-    text-align: center;
-    font-size: 1.6rem;
-    margin-bottom: 0.25rem;
+    font-size: 1.75rem;
+    line-height: 1.25;
+    margin: 0 0 0.35rem;
   }
   .tagline {
-    text-align: center;
     color: var(--muted);
-    margin-top: 0;
+    margin: 0;
   }
   .tagline em { color: var(--fg); }
-  .badges {
-    text-align: center;
-    margin: 1.25rem 0;
+  .socials {
+    display: flex;
+    justify-content: center;
+    gap: 0.9rem;
+    margin: 1rem 0;
   }
-  .badges img { margin: 2px; }
+  .socials a {
+    display: inline-flex;
+    color: var(--muted);
+    transition: color 0.15s;
+  }
+  .socials a:hover, .socials a:focus-visible { color: var(--accent); }
+  .socials svg {
+    width: 22px;
+    height: 22px;
+    fill: currentColor;
+  }
+  .socials svg.stroke {
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 2;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
   .cv-download {
-    text-align: center;
-    margin: 0 0 1.25rem;
-  }
-  .cv-download a {
     display: inline-block;
     padding: 0.5em 1.1em;
-    border: 1px solid var(--link);
+    border: 1px solid var(--accent);
     border-radius: 6px;
     text-decoration: none;
     font-weight: 600;
     font-size: 0.95rem;
   }
-  .cv-download a:hover {
-    background: var(--link);
+  .cv-download:hover {
+    background: var(--accent);
     color: var(--bg);
+  }
+  @media (min-width: 768px) {
+    .header {
+      flex-direction: row;
+      align-items: center;
+      text-align: left;
+      gap: 2.25rem;
+    }
+    .socials { justify-content: flex-start; }
+  }
+
+  /* Sections */
+  hr {
+    border: none;
+    border-top: 1px solid var(--border);
+    margin: 2.25rem 0;
+  }
+  h2 {
+    font-size: 1.4rem;
+    line-height: 1.3;
+    margin: 0 0 1rem;
+    padding-left: 0.7rem;
+    border-left: 4px solid var(--accent);
   }
   .interests {
     color: var(--muted);
     font-size: 0.95rem;
   }
-  hr {
-    border: none;
-    border-top: 1px solid var(--border);
-    margin: 2rem 0;
+
+  /* Pills */
+  .pill {
+    display: inline-block;
+    font-size: 0.8rem;
+    padding: 0.1rem 0.6rem;
+    margin: 0 0.3rem 0.3rem 0;
+    border: 1px solid var(--border);
+    border-radius: 999px;
+    color: var(--accent);
+    text-decoration: none;
+    transition: border-color 0.15s;
   }
-  .stack {
-    text-align: center;
+  a.pill:hover, a.pill:focus-visible { border-color: var(--accent); }
+  .stack .pill { color: var(--fg); font-size: 0.85rem; }
+
+  /* News */
+  .news {
+    list-style: none;
+    margin: 0;
+    padding: 0;
   }
-  .stack img { margin: 2px; }
-  h2 {
-    font-size: 1.05rem;
-    margin-bottom: 0.75rem;
+  .news li {
+    display: grid;
+    grid-template-columns: 6.5rem 1fr;
+    gap: 1rem;
+    padding: 0.35rem 0;
   }
+  .news time {
+    color: var(--muted);
+    font-size: 0.9rem;
+    font-variant-numeric: tabular-nums;
+    padding-top: 0.05rem;
+  }
+
+  /* Cards (publications and projects) */
   .pub {
     display: grid;
     grid-template-columns: 180px 1fr;
@@ -128,310 +249,364 @@
   }
   .pub-title {
     font-weight: 600;
+    font-size: 1.02rem;
     line-height: 1.35;
   }
-  .pub-authors, .pub-venue {
+  .pub-authors, .pub-venue, .pub-desc {
     font-size: 0.9rem;
     margin: 0.2rem 0 0;
+    color: var(--muted);
   }
   .pub-authors strong { color: var(--fg); }
-  .pub-authors, .pub-venue { color: var(--muted); }
   .pub-venue em { color: var(--fg); }
   .pub-links { margin-top: 0.45rem; }
-  .pub-links a {
-    display: inline-block;
-    font-size: 0.8rem;
-    padding: 0.1rem 0.55rem;
-    margin: 0 0.3rem 0.3rem 0;
-    border: 1px solid var(--border);
-    border-radius: 999px;
-    text-decoration: none;
-  }
-  .pub-links a:hover { border-color: var(--link); }
   @media (max-width: 560px) {
     .pub { grid-template-columns: 1fr; }
     .pub-thumb { width: 100%; }
+    .news li { grid-template-columns: 4.75rem 1fr; gap: 0.75rem; }
   }
-  a { color: var(--link); }
-  .cv-item {
-    margin-bottom: 1.25rem;
-  }
-  .cv-item:last-child {
-    margin-bottom: 0;
-  }
+
+  /* CV entries */
+  .cv-item { margin-bottom: 1.25rem; }
+  .cv-item:last-child { margin-bottom: 0; }
   .cv-role {
     font-weight: 600;
+    font-size: 1.02rem;
   }
   .cv-meta {
     color: var(--muted);
     font-size: 0.9rem;
     margin: 0.15rem 0 0.35rem;
   }
+  .cv-meta .pill { margin: 0 0 0 0.25rem; }
   .cv-item ul {
     margin: 0.35rem 0 0;
     padding-left: 1.25rem;
   }
-  .cv-item p {
-    margin: 0.35rem 0 0;
+  .cv-item p { margin: 0.35rem 0 0; }
+  .cv-item ul li { margin-bottom: 0.2rem; }
+  .langs {
+    margin: 0;
+    padding-left: 1.25rem;
   }
-  .cv-item ul li {
-    margin-bottom: 0.2rem;
+
+  /* Footer */
+  footer {
+    max-width: 880px;
+    margin: 0 auto;
+    padding: 1.5rem 1.25rem 3rem;
+    border-top: 1px solid var(--border);
+    color: var(--muted);
+    font-size: 0.9rem;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    gap: 0.75rem;
   }
+  footer p { margin: 0; }
+  footer .socials { margin: 0; gap: 0.75rem; }
+  footer .socials svg { width: 18px; height: 18px; }
 </style>
 </head>
 <body>
+<nav class="site-nav" aria-label="Sections">
+  <ul>
+    <li><a href="#publications">Publications</a></li>
+    <li><a href="#projects">Projects</a></li>
+    <li><a href="#experience">Experience</a></li>
+    <li><a href="#education">Education</a></li>
+    <li><a href="#talks">Talks</a></li>
+    <li><a href="#contact">Contact</a></li>
+  </ul>
+</nav>
 <main>
 
-  <img class="avatar" src="foto_web.jpg" alt="Julio Cesar Rodriguez Cervantes">
-
-  <h1>Julio Cesar Rodriguez Cervantes</h1>
-  <p class="tagline">
-    PhD Student in Electrical Engineering &middot; CINVESTAV Guadalajara<br/>
-    Lecturer at UVM and UNIVER<br/>
-    <em>Multi-UAV systems &middot; Bearing-only formation control &middot; State estimation on S&sup2;</em>
-  </p>
-
-  <p class="badges">
-    <a href="https://www.linkedin.com/in/juliordzcer/" target="_blank" rel="noopener"><img src="images/badges/linkedin.svg" alt="LinkedIn"/></a>
-    <a href="https://www.youtube.com/@juliordzcer" target="_blank" rel="noopener"><img src="images/badges/youtube.svg" alt="YouTube"/></a>
-    <a href="mailto:contact@juliordz.com"><img src="images/badges/email.svg" alt="Email"/></a>
-    <a href="https://scholar.google.com/citations?user=5gE7-JMAAAAJ&hl=es"><img src="images/badges/scholar.svg" alt="Google Scholar"/></a>
-    <a href="https://orcid.org/0009-0007-5382-2357"><img src="images/badges/orcid.svg" alt="ORCID"/></a>
-    <a href="https://github.com/juliordzcer"><img src="images/badges/github.svg" alt="GitHub"/></a>
-  </p>
-
-  <p class="cv-download">
-    <a href="resume.pdf" download>Download Resume (PDF)</a>
-  </p>
-
-  <hr/>
-
-  <p>
-    My research focuses on <strong>cooperative control of multi-UAV systems</strong> using only bearing measurements &mdash; no GPS, no distance sensors. Using robust nonlinear control techniques, I design formation controllers and state estimators that operate directly on the unit sphere S&sup2;, enabling scalable drone swarms for GPS-denied environments.
-  </p>
-
-  <p class="interests">
-    <strong>Research interests:</strong> bearing-only formation control and estimation for multi-agent systems &middot; robust nonlinear control techniques &middot; applications to unmanned aerial systems (UAVs).
-  </p>
-
-  <hr/>
-
-  <h2>Education</h2>
-
-  <div class="cv-item">
-    <div class="cv-role">Ph.D. in Electrical Engineering — Automatic Control</div>
-    <div class="cv-meta">Centro de Investigación y de Estudios Avanzados del IPN (CINVESTAV) &middot; Jan 2025 &ndash; Dec 2029 &middot; Guadalajara, Jalisco, México</div>
-    <ul>
-      <li>Focus: Bearing-only formation control strategies for quad-rotor systems, contributing to advancements in multi-agent coordination.</li>
-      <li>Designed and analyzed novel distributed control algorithms to enhance the autonomy and robustness of UAV swarms.</li>
-      <li>Developed high-fidelity simulations in MATLAB and Python to validate theoretical control models and algorithm performance.</li>
-      <li>Engineered a custom experimental platform with ROS&nbsp;2, Gazebo Ionic, and an ESP32-Drone for hardware-in-the-loop (HIL) validation of control strategies.</li>
-      <li>Conducted real multi-quadrotor flight experiments to validate the bearing-only controllers and estimators in hardware; a journal article with these results is in preparation.</li>
-      <li>Funded by SECIHTI (Secretaría de Ciencia, Humanidades, Tecnología e Innovación).</li>
-    </ul>
-  </div>
-
-  <div class="cv-item">
-    <div class="cv-role">M.Sc. in Electrical Engineering — Mechatronics and Automatic Control</div>
-    <div class="cv-meta">Instituto Tecnológico de La Laguna &middot; Aug 2021 &ndash; Aug 2023 &middot; Torreón, Coahuila, México</div>
-    <ul>
-      <li>Thesis: Designed formation controllers for Quad-Rotor-type multi-agent systems, achieving precise control and coordination among multiple drones.</li>
-      <li>Developed and tuned controllers for multiple aerial mobile nano-robots, optimizing performance and behavior across a range of operating scenarios.</li>
-      <li>Built a ROS-based platform enabling coordination and communication among multiple vehicles for research and development.</li>
-      <li>Set up Git repositories for version control, ensuring efficient collaboration and code management throughout the project.</li>
-      <li>Funded by CONACYT (Consejo Nacional de Ciencia y Tecnología, now SECIHTI).</li>
-    </ul>
-  </div>
-
-  <div class="cv-item">
-    <div class="cv-role">B.Eng. in Mechatronics — Automation and Control</div>
-    <div class="cv-meta">Instituto Tecnológico de La Laguna &middot; Aug 2016 &ndash; Jul 2021 &middot; Torreón, Coahuila, México</div>
-    <ul>
-      <li>Professional internship (Dec 2020 &ndash; Jun 2021): developed the control subsystem for a two-degree-of-freedom cooperating table for an arc welding robot, optimizing motion trajectories and coordination with the robot.</li>
-      <li>Designed, assembled, and integrated the control cabinet; programmed the cooperative table positioning control system and implemented communication protocols with a Fanuc ARC Mate 100iC welding robot.</li>
-    </ul>
-  </div>
-
-  <hr/>
-
-  <h2>Experience</h2>
-
-  <div class="cv-item">
-    <div class="cv-role">Adjunct Professor</div>
-    <div class="cv-meta">UNIVER (Universidad Univer) &middot; Oct 2026 &ndash; Present &middot; Guadalajara, Jalisco, México</div>
-    <p>Professor in Higher Education. Design and teach the Automation and Control course for Mechatronics Engineering students.</p>
-  </div>
-
-  <div class="cv-item">
-    <div class="cv-role">Adjunct Professor — Academy of Health Sciences</div>
-    <div class="cv-meta">Universidad del Valle de México &middot; Aug 2025 &ndash; Present &middot; Zapopan, Jalisco, México</div>
-    <p>Teach undergraduate courses at the Health Sciences Academy, across the Biomedical Engineering, Biotechnology Engineering, and Pharmaceutical Chemistry-Biotechnology (B.Sc.) programs. Course load evolves each term:</p>
-    <ul>
-      <li><strong>Fall 2025:</strong> Kinetics and Dynamics; Analog and Digital Electronics; Analysis and Design of Electronic Circuits.</li>
-      <li><strong>Spring 2026:</strong> Kinetics and Dynamics; Analog and Digital Electronics; Analysis and Design of Electronic Circuits; Advanced Programming; Power Electronics.</li>
-      <li><strong>Fall 2026 (current):</strong> Precalculus; Physiological Modeling; Image Analysis and Processing; Differential and Integral Calculus; Analog and Digital Electronics; Kinetics and Dynamics; Advanced Programming.</li>
-    </ul>
-    <p>Across three semesters, designed course materials and labs spanning circuit theory, embedded/analog systems, mechanics, and programming for engineering undergraduates.</p>
-  </div>
-
-  <div class="cv-item">
-    <div class="cv-role">Mechatronics Engineer</div>
-    <div class="cv-meta">GD Installazioni &middot; Mar 2024 &ndash; Sept 2024 &middot; Zapopan, Jalisco, México</div>
-    <ul>
-      <li>Installed and commissioned automation equipment and conveyor systems for PepsiCo Gatorade (Indianapolis, USA) and E80 Group (Chicago, USA) projects.</li>
-      <li>Installed and configured LGV (Laser Guided Vehicle) robots and supervised electromechanical warehouse equipment.</li>
-      <li>Managed inbound/outbound warehouse logistics and inventory using SAP, and trained technical staff on automated machinery.</li>
-    </ul>
-  </div>
-
-  <div class="cv-item">
-    <div class="cv-role">Project Control Assistant</div>
-    <div class="cv-meta">MCC Manejo de Contrato Consultores &middot; Jan 2023 &ndash; Mar 2024 &middot; Chiapas, México (remote until Jul 2023, on-site from Aug 2023)</div>
-    <ul>
-      <li>Collaborated with the CFE-Andritz-Hydroproject and CFE-Andritz-Seisa consortia on the repowering and modernization of the &ldquo;Peñitas&rdquo; and &ldquo;Angostura&rdquo; hydroelectric power plants.</li>
-      <li>Oversaw contractual work schedules to ensure compliance with deadlines.</li>
-      <li>Managed additional and extraordinary works, including reworks and incident handling.</li>
-      <li>Oversaw inbound shipments at the warehouse and tracked material delivery at the construction site.</li>
-      <li>Monitored personnel attendance records and man-hours worked per activity.</li>
-      <li>Reconciled contractual schedules with stakeholders.</li>
-    </ul>
-  </div>
-
-  <div class="cv-item">
-    <div class="cv-role">Adjunct Professor — Department of Basic Sciences</div>
-    <div class="cv-meta">Instituto Tecnológico de La Laguna &middot; Jan 2023 &ndash; Jun 2023 &middot; Torreón, Coahuila, México</div>
-    <ul>
-      <li>Designed and taught Differential Equations and Integral Calculus courses for Mechatronics Engineering and Chemical Engineering students.</li>
-    </ul>
-  </div>
-
-  <hr/>
-
-  <h2>Publications</h2>
-  <div class="pub">
-    <img class="pub-thumb" src="images/pubs/cce2026.jpg" alt="Simulated quadrotor formation with bearing measurements" loading="lazy">
+  <header class="header">
+    <div class="avatar">
+      <img src="foto_web.jpg" alt="Julio Cesar Rodriguez Cervantes">
+    </div>
     <div>
-      <div class="pub-title">Bearing Estimation on S&sup2; via Tangent-Space Measurements for UAV Formation Control</div>
-      <p class="pub-authors"><strong>J. C. Rodríguez</strong>, H. M. Becerra, J. Ruiz León</p>
-      <p class="pub-venue"><em>2026 23rd International Conference on Electrical Engineering, Computing Science and Automatic Control (CCE)</em></p>
-      <div class="pub-links">
-        <a href="papers/cce2026.pdf" target="_blank" rel="noopener">PDF</a>
-        <a href="https://www.youtube.com/watch?v=dzzxMoOREIw" target="_blank" rel="noopener">Video</a>
+      <h1>Julio Cesar Rodriguez Cervantes</h1>
+      <p class="tagline">
+        PhD Student in Electrical Engineering &middot; CINVESTAV Guadalajara<br/>
+        Lecturer at UVM and UNIVER<br/>
+        <em>Multi-UAV systems &middot; Bearing-only formation control &middot; State estimation on S&sup2;</em>
+      </p>
+      <p class="socials">
+        <a href="https://www.linkedin.com/in/juliordzcer/" target="_blank" rel="noopener" aria-label="LinkedIn"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg></a>
+        <a href="https://www.youtube.com/@juliordzcer" target="_blank" rel="noopener" aria-label="YouTube"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg></a>
+        <a href="mailto:contact@juliordz.com" target="_blank" rel="noopener" aria-label="Email"><svg class="stroke" viewBox="0 0 24 24" aria-hidden="true"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="m22 7-10 6L2 7"/></svg></a>
+        <a href="https://scholar.google.com/citations?user=5gE7-JMAAAAJ&amp;hl=es" target="_blank" rel="noopener" aria-label="Google Scholar"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5.242 13.769L0 9.5 12 0l12 9.5-5.242 4.269C17.548 11.249 14.978 9.5 12 9.5c-2.977 0-5.548 1.748-6.758 4.269zM12 10a7 7 0 1 0 0 14 7 7 0 0 0 0-14z"/></svg></a>
+        <a href="https://orcid.org/0009-0007-5382-2357" target="_blank" rel="noopener" aria-label="ORCID"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 0C5.372 0 0 5.372 0 12s5.372 12 12 12 12-5.372 12-12S18.628 0 12 0zM7.369 4.378c.525 0 .947.431.947.947s-.422.947-.947.947a.95.95 0 0 1-.947-.947c0-.525.422-.947.947-.947zm-.722 3.038h1.444v10.041H6.647V7.416zm3.562 0h3.9c3.712 0 5.344 2.653 5.344 5.025 0 2.578-2.016 5.025-5.325 5.025h-3.919V7.416zm1.444 1.303v7.444h2.297c3.272 0 4.022-2.484 4.022-3.722 0-2.016-1.284-3.722-4.097-3.722h-2.222z"/></svg></a>
+        <a href="https://github.com/juliordzcer" target="_blank" rel="noopener" aria-label="GitHub"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12"/></svg></a>
+      </p>
+      <a class="cv-download" href="resume.pdf" download>Download Resume (PDF)</a>
+    </div>
+  </header>
+
+  <hr/>
+
+  <section id="about">
+    <p>
+      My research focuses on <strong>cooperative control of multi-UAV systems</strong> using only bearing measurements &mdash; no GPS, no distance sensors. Using robust nonlinear control techniques, I design formation controllers and state estimators that operate directly on the unit sphere S&sup2;, enabling scalable drone swarms for GPS-denied environments.
+    </p>
+    <p class="interests">
+      <strong>Research interests:</strong> bearing-only formation control and estimation for multi-agent systems &middot; robust nonlinear control techniques &middot; applications to unmanned aerial systems (UAVs).
+    </p>
+  </section>
+
+  <hr/>
+
+  <section id="news">
+    <h2>News</h2>
+    <ul class="news">
+      <li><time datetime="2026-10">Oct 2026</time><span>Joined UNIVER as Adjunct Professor (Automation and Control).</span></li>
+      <li><time datetime="2026">2026</time><span>Paper &ldquo;Bearing Estimation on S&sup2; via Tangent-Space Measurements for UAV Formation Control&rdquo; presented at CCE 2026.</span></li>
+      <li><time datetime="2026-03">Mar 2026</time><span>Invited talk at the Workshop on Robotics and Motion Planning, CIMAT.</span></li>
+      <li><time datetime="2025-08">Aug 2025</time><span>Joined Universidad del Valle de México as Adjunct Professor.</span></li>
+    </ul>
+  </section>
+
+  <hr/>
+
+  <section id="publications">
+    <h2>Publications</h2>
+    <div class="pub">
+      <img class="pub-thumb" src="images/pubs/cce2026.jpg" alt="Simulated quadrotor formation with bearing measurements" loading="lazy">
+      <div>
+        <div class="pub-title">Bearing Estimation on S&sup2; via Tangent-Space Measurements for UAV Formation Control</div>
+        <p class="pub-authors"><strong>J. C. Rodríguez</strong>, H. M. Becerra, J. Ruiz León</p>
+        <p class="pub-venue"><em>2026 23rd International Conference on Electrical Engineering, Computing Science and Automatic Control (CCE)</em></p>
+        <div class="pub-links">
+          <a class="pill" href="papers/cce2026.pdf" target="_blank" rel="noopener">PDF</a>
+          <a class="pill" href="https://www.youtube.com/watch?v=dzzxMoOREIw" target="_blank" rel="noopener">Video</a>
+        </div>
       </div>
     </div>
-  </div>
 
-  <div class="pub">
-    <img class="pub-thumb" src="images/pubs/cce2025.jpg" alt="3D trajectories of a ten-quadrotor formation" loading="lazy">
-    <div>
-      <div class="pub-title">Bearing-Only Super-Twisting Control for Multi-Quadrotor Formations</div>
-      <p class="pub-authors">F. G. López Ruiz, <strong>J. C. Rodríguez</strong>, H. M. Becerra, J. Ruiz León</p>
-      <p class="pub-venue"><em>2025 22nd International Conference on Electrical Engineering, Computing Science and Automatic Control (CCE)</em>, pp. 1&ndash;6</p>
-      <div class="pub-links">
-        <a href="papers/cce2025.pdf" target="_blank" rel="noopener">PDF</a>
-        <a href="https://ieeexplore.ieee.org/document/11272041" target="_blank" rel="noopener">IEEE Xplore</a>
-        <a href="https://www.youtube.com/watch?v=pix3_PgBlzo" target="_blank" rel="noopener">Video</a>
+    <div class="pub">
+      <img class="pub-thumb" src="images/pubs/cce2025.jpg" alt="3D trajectories of a ten-quadrotor formation" loading="lazy">
+      <div>
+        <div class="pub-title">Bearing-Only Super-Twisting Control for Multi-Quadrotor Formations</div>
+        <p class="pub-authors">F. G. López Ruiz, <strong>J. C. Rodríguez</strong>, H. M. Becerra, J. Ruiz León</p>
+        <p class="pub-venue"><em>2025 22nd International Conference on Electrical Engineering, Computing Science and Automatic Control (CCE)</em>, pp. 1&ndash;6</p>
+        <div class="pub-links">
+          <a class="pill" href="papers/cce2025.pdf" target="_blank" rel="noopener">PDF</a>
+          <a class="pill" href="https://ieeexplore.ieee.org/document/11272041" target="_blank" rel="noopener">IEEE Xplore</a>
+          <a class="pill" href="https://www.youtube.com/watch?v=pix3_PgBlzo" target="_blank" rel="noopener">Video</a>
+        </div>
       </div>
     </div>
-  </div>
 
-  <div class="pub">
-    <img class="pub-thumb" src="images/pubs/cnca2023.jpg" alt="Experimental multi-quadrotor laboratory setup" loading="lazy">
-    <div>
-      <div class="pub-title">Formation Control Design for Multi-Quad-Rotors with Experimental Validation</div>
-      <p class="pub-authors"><strong>J. C. Rodríguez-Cervantes</strong>, A. Dzul, H. Ríos</p>
-      <p class="pub-venue"><em>Congreso Nacional de Control Automático (CNCA), AMCA</em>, Acapulco, Guerrero, México, 2023</p>
-      <div class="pub-links">
-        <a href="papers/cnca2023.pdf" target="_blank" rel="noopener">PDF</a>
-        <a href="https://www.youtube.com/watch?v=mZxGzYCmnuo" target="_blank" rel="noopener">Video</a>
+    <div class="pub">
+      <img class="pub-thumb" src="images/pubs/cnca2023.jpg" alt="Experimental multi-quadrotor laboratory setup" loading="lazy">
+      <div>
+        <div class="pub-title">Formation Control Design for Multi-Quad-Rotors with Experimental Validation</div>
+        <p class="pub-authors"><strong>J. C. Rodríguez-Cervantes</strong>, A. Dzul, H. Ríos</p>
+        <p class="pub-venue"><em>Congreso Nacional de Control Automático (CNCA), AMCA</em>, Acapulco, Guerrero, México, 2023</p>
+        <div class="pub-links">
+          <a class="pill" href="papers/cnca2023.pdf" target="_blank" rel="noopener">PDF</a>
+          <a class="pill" href="https://www.youtube.com/watch?v=mZxGzYCmnuo" target="_blank" rel="noopener">Video</a>
+        </div>
       </div>
     </div>
-  </div>
 
-  <div class="pub">
-    <img class="pub-thumb" src="images/pubs/comrob2023.jpg" alt="Crazyflie quadrotor with body frame" loading="lazy">
-    <div>
-      <div class="pub-title">Diseño de Control de Formación basado en Modos Deslizantes para un Grupo de Quad-Rotors</div>
-      <p class="pub-authors"><strong>J. C. Rodríguez-Cervantes</strong>, A. Dzul, H. Ríos</p>
-      <p class="pub-venue"><em>XXV Congreso Mexicano de Robótica (COMRob)</em>, 2023</p>
-      <div class="pub-links">
-        <a href="papers/comrob2023.pdf" target="_blank" rel="noopener">PDF</a>
-        <a href="https://www.researchgate.net/publication/374169936_Diseno_de_Control_de_Formacion_basado_en_Modos_Deslizantes_para_un_Grupo_de_Quad-Rotors" target="_blank" rel="noopener">ResearchGate</a>
-        <a href="https://www.youtube.com/watch?v=mZxGzYCmnuo" target="_blank" rel="noopener">Video</a>
+    <div class="pub">
+      <img class="pub-thumb" src="images/pubs/comrob2023.jpg" alt="Crazyflie quadrotor with body frame" loading="lazy">
+      <div>
+        <div class="pub-title">Diseño de Control de Formación basado en Modos Deslizantes para un Grupo de Quad-Rotors</div>
+        <p class="pub-authors"><strong>J. C. Rodríguez-Cervantes</strong>, A. Dzul, H. Ríos</p>
+        <p class="pub-venue"><em>XXV Congreso Mexicano de Robótica (COMRob)</em>, 2023</p>
+        <div class="pub-links">
+          <a class="pill" href="papers/comrob2023.pdf" target="_blank" rel="noopener">PDF</a>
+          <a class="pill" href="https://www.researchgate.net/publication/374169936_Diseno_de_Control_de_Formacion_basado_en_Modos_Deslizantes_para_un_Grupo_de_Quad-Rotors" target="_blank" rel="noopener">ResearchGate</a>
+          <a class="pill" href="https://www.youtube.com/watch?v=mZxGzYCmnuo" target="_blank" rel="noopener">Video</a>
+        </div>
       </div>
     </div>
-  </div>
 
-  <div class="pub">
-    <img class="pub-thumb" src="images/pubs/comrob2021.jpg" alt="Welding robot with a 2-DOF positioner" loading="lazy">
-    <div>
-      <div class="pub-title">Optimal Motions of a Welding Robot for Cooperative Tasks with a 2 DOF Positioner</div>
-      <p class="pub-authors">O. I. Santellano, J. A. Pámanes, <strong>J. C. Rodríguez</strong>, J. J. Pámanes</p>
-      <p class="pub-venue"><em>2021 XXIII Robotics Mexican Congress (ComRob)</em>, pp. 145&ndash;151</p>
-      <div class="pub-links">
-        <a href="papers/comrob2021.pdf" target="_blank" rel="noopener">PDF</a>
-        <a href="https://ieeexplore.ieee.org/document/9628721" target="_blank" rel="noopener">IEEE Xplore</a>
+    <div class="pub">
+      <img class="pub-thumb" src="images/pubs/comrob2021.jpg" alt="Welding robot with a 2-DOF positioner" loading="lazy">
+      <div>
+        <div class="pub-title">Optimal Motions of a Welding Robot for Cooperative Tasks with a 2 DOF Positioner</div>
+        <p class="pub-authors">O. I. Santellano, J. A. Pámanes, <strong>J. C. Rodríguez</strong>, J. J. Pámanes</p>
+        <p class="pub-venue"><em>2021 XXIII Robotics Mexican Congress (ComRob)</em>, pp. 145&ndash;151</p>
+        <div class="pub-links">
+          <a class="pill" href="papers/comrob2021.pdf" target="_blank" rel="noopener">PDF</a>
+          <a class="pill" href="https://ieeexplore.ieee.org/document/9628721" target="_blank" rel="noopener">IEEE Xplore</a>
+        </div>
       </div>
     </div>
-  </div>
+  </section>
 
   <hr/>
 
-  <h2>Invited Talks</h2>
-
-  <div class="cv-item">
-    <div class="cv-role">Multi-Agent Formation Control Based on Bearings</div>
-    <div class="cv-meta">Invited lecture &middot; Workshop on Robotics and Motion Planning, CIMAT &middot; Mar 2026 &middot; Guanajuato, México</div>
-  </div>
-
-  <div class="cv-item">
-    <div class="cv-role">Cinvestav Guadalajara Week — 37th Anniversary, "Intelligent Systems"</div>
-    <div class="cv-meta">Participant &middot; CINVESTAV Guadalajara &middot; Nov 2025 &middot; Zapopan, Jalisco, México</div>
-  </div>
-
-  <div class="cv-item">
-    <div class="cv-role">Collaborative Robotics in Industry: Optimization and New Trends</div>
-    <div class="cv-meta">Invited speaker &middot; Mechanical Engineering Conference Series, Universidad Iberoamericana Torreón &middot; Oct 2024 &middot; Torreón, Coahuila, México</div>
-  </div>
+  <section id="projects">
+    <h2>Projects</h2>
+    <div class="pub">
+      <div class="pub-thumb placeholder">Formation flight image coming soon</div>
+      <div>
+        <div class="pub-title">ESP-Drone &mdash; custom micro-quadrotor platform</div>
+        <p class="pub-venue">Hardware (EasyEDA Pro) &middot; ESP32 firmware &middot; 2025 &ndash; Present</p>
+        <p class="pub-desc">ESP32-S3 flight-controller board and a fully rewritten ESP-IDF&nbsp;6 flight firmware with nonlinear controllers and on-board bearing-only formation control.</p>
+        <div class="pub-links">
+          <a class="pill" href="esp-drone/">Project wiki</a>
+        </div>
+      </div>
+    </div>
+  </section>
 
   <hr/>
 
-  <h2>Certifications</h2>
+  <section id="experience">
+    <h2>Experience</h2>
 
-  <div class="cv-item">
-    <div class="cv-role">SAM 3: Visión Computacional con Segment Anything Model 3 de Meta</div>
-    <div class="cv-meta">Centro &middot; Sept 2026 &middot; <a href="https://www.credential.net/a7e584fe-9cbc-4a64-b47e-562e78934376">Verify credential</a></div>
-    <ul>
-      <li>End-to-end application of Meta's Segment Anything Model 3 to computer vision segmentation workflows.</li>
+    <div class="cv-item">
+      <div class="cv-role">Adjunct Professor</div>
+      <div class="cv-meta">UNIVER (Universidad Univer) &middot; Oct 2026 &ndash; Present &middot; Guadalajara, Jalisco, México</div>
+      <p>Professor in Higher Education. Design and teach the Automation and Control course for Mechatronics Engineering students.</p>
+    </div>
+
+    <div class="cv-item">
+      <div class="cv-role">Adjunct Professor — Academy of Health Sciences</div>
+      <div class="cv-meta">Universidad del Valle de México &middot; Aug 2025 &ndash; Present &middot; Zapopan, Jalisco, México</div>
+      <p>Teach undergraduate courses at the Health Sciences Academy, across the Biomedical Engineering, Biotechnology Engineering, and Pharmaceutical Chemistry-Biotechnology (B.Sc.) programs. Course load evolves each term:</p>
+      <ul>
+        <li><strong>Fall 2025:</strong> Kinetics and Dynamics; Analog and Digital Electronics; Analysis and Design of Electronic Circuits.</li>
+        <li><strong>Spring 2026:</strong> Kinetics and Dynamics; Analog and Digital Electronics; Analysis and Design of Electronic Circuits; Advanced Programming; Power Electronics.</li>
+        <li><strong>Fall 2026 (current):</strong> Precalculus; Physiological Modeling; Image Analysis and Processing; Differential and Integral Calculus; Analog and Digital Electronics; Kinetics and Dynamics; Advanced Programming.</li>
+      </ul>
+      <p>Across three semesters, designed course materials and labs spanning circuit theory, embedded/analog systems, mechanics, and programming for engineering undergraduates.</p>
+    </div>
+
+    <div class="cv-item">
+      <div class="cv-role">Mechatronics Engineer</div>
+      <div class="cv-meta">GD Installazioni &middot; Mar 2024 &ndash; Sept 2024 &middot; Zapopan, Jalisco, México</div>
+      <ul>
+        <li>Installed and commissioned automation equipment and conveyor systems for PepsiCo Gatorade (Indianapolis, USA) and E80 Group (Chicago, USA) projects.</li>
+        <li>Installed and configured LGV (Laser Guided Vehicle) robots and supervised electromechanical warehouse equipment.</li>
+        <li>Managed inbound/outbound warehouse logistics and inventory using SAP, and trained technical staff on automated machinery.</li>
+      </ul>
+    </div>
+
+    <div class="cv-item">
+      <div class="cv-role">Project Control Assistant</div>
+      <div class="cv-meta">MCC Manejo de Contrato Consultores &middot; Jan 2023 &ndash; Mar 2024 &middot; Chiapas, México (remote until Jul 2023, on-site from Aug 2023)</div>
+      <ul>
+        <li>Collaborated with the CFE-Andritz-Hydroproject and CFE-Andritz-Seisa consortia on the repowering and modernization of the &ldquo;Peñitas&rdquo; and &ldquo;Angostura&rdquo; hydroelectric power plants.</li>
+        <li>Oversaw contractual work schedules to ensure compliance with deadlines.</li>
+        <li>Managed additional and extraordinary works, including reworks and incident handling.</li>
+        <li>Oversaw inbound shipments at the warehouse and tracked material delivery at the construction site.</li>
+        <li>Monitored personnel attendance records and man-hours worked per activity.</li>
+        <li>Reconciled contractual schedules with stakeholders.</li>
+      </ul>
+    </div>
+
+    <div class="cv-item">
+      <div class="cv-role">Adjunct Professor — Department of Basic Sciences</div>
+      <div class="cv-meta">Instituto Tecnológico de La Laguna &middot; Jan 2023 &ndash; Jun 2023 &middot; Torreón, Coahuila, México</div>
+      <ul>
+        <li>Designed and taught Differential Equations and Integral Calculus courses for Mechatronics Engineering and Chemical Engineering students.</li>
+      </ul>
+    </div>
+  </section>
+
+  <hr/>
+
+  <section id="education">
+    <h2>Education</h2>
+
+    <div class="cv-item">
+      <div class="cv-role">Ph.D. in Electrical Engineering — Automatic Control</div>
+      <div class="cv-meta">CINVESTAV Guadalajara &middot; Jan 2025 &ndash; Dec 2029 &middot; Guadalajara, Jalisco, México</div>
+      <p>Bearing-only formation control and estimation for multi-quadrotor systems, validated in simulation, HIL and real flights. Funded by SECIHTI.</p>
+    </div>
+
+    <div class="cv-item">
+      <div class="cv-role">M.Sc. in Electrical Engineering — Mechatronics and Automatic Control</div>
+      <div class="cv-meta">Instituto Tecnológico de La Laguna &middot; Aug 2021 &ndash; Aug 2023 &middot; Torreón, Coahuila, México</div>
+      <p>Thesis: formation controllers for quad-rotor multi-agent systems with experimental validation on nano aerial robots. Funded by CONACYT (now SECIHTI).</p>
+    </div>
+
+    <div class="cv-item">
+      <div class="cv-role">B.Eng. in Mechatronics — Automation and Control</div>
+      <div class="cv-meta">Instituto Tecnológico de La Laguna &middot; Aug 2016 &ndash; Jul 2021 &middot; Torreón, Coahuila, México</div>
+      <p>Internship: control subsystem for a 2-DOF cooperating positioner for a Fanuc ARC Mate 100iC arc-welding robot.</p>
+    </div>
+  </section>
+
+  <hr/>
+
+  <section id="talks">
+    <h2>Invited Talks</h2>
+
+    <div class="cv-item">
+      <div class="cv-role">Multi-Agent Formation Control Based on Bearings</div>
+      <div class="cv-meta">Invited lecture &middot; Workshop on Robotics and Motion Planning, CIMAT &middot; Mar 2026 &middot; Guanajuato, México</div>
+    </div>
+
+    <div class="cv-item">
+      <div class="cv-role">Cinvestav Guadalajara Week — 37th Anniversary, "Intelligent Systems"</div>
+      <div class="cv-meta">Participant &middot; CINVESTAV Guadalajara &middot; Nov 2025 &middot; Zapopan, Jalisco, México</div>
+    </div>
+
+    <div class="cv-item">
+      <div class="cv-role">Collaborative Robotics in Industry: Optimization and New Trends</div>
+      <div class="cv-meta">Invited speaker &middot; Mechanical Engineering Conference Series, Universidad Iberoamericana Torreón &middot; Oct 2024 &middot; Torreón, Coahuila, México</div>
+    </div>
+  </section>
+
+  <hr/>
+
+  <section id="certifications">
+    <h2>Certifications</h2>
+
+    <div class="cv-item">
+      <div class="cv-role">SAM 3: Computer Vision with Meta's Segment Anything Model 3</div>
+      <div class="cv-meta">Centro &middot; Sept 2026 &middot; <a class="pill" href="https://www.credential.net/a7e584fe-9cbc-4a64-b47e-562e78934376" target="_blank" rel="noopener">Verify credential</a></div>
+      <ul>
+        <li>End-to-end application of Meta's Segment Anything Model 3 to computer vision segmentation workflows.</li>
+      </ul>
+    </div>
+
+    <div class="cv-item">
+      <div class="cv-role">OSHA 10: General Industry Outreach Training Course</div>
+      <div class="cv-meta">OSHA Outreach Training Program (IACET CEU=1.2, Actively Proctored) &middot; Jul 2024</div>
+    </div>
+  </section>
+
+  <hr/>
+
+  <section id="languages">
+    <h2>Languages</h2>
+    <ul class="langs">
+      <li>Spanish &mdash; Native</li>
+      <li>English &mdash; Professional working proficiency</li>
     </ul>
-  </div>
-
-  <div class="cv-item">
-    <div class="cv-role">OSHA 10: General Industry Outreach Training Course</div>
-    <div class="cv-meta">OSHA Outreach Training Program (IACET CEU=1.2, Actively Proctored) &middot; Jul 2024</div>
-  </div>
+  </section>
 
   <hr/>
 
-  <h2>Languages</h2>
-  <ul>
-    <li>Spanish &mdash; Native</li>
-    <li>English &mdash; Professional working proficiency</li>
-  </ul>
-
-  <hr/>
-
-  <h2>Stack</h2>
-  <p class="stack">
-    <img src="images/badges/python.svg" alt="Python"/>
-    <img src="images/badges/cpp.svg" alt="C++"/>
-    <img src="images/badges/matlab.svg" alt="MATLAB"/>
-    <img src="images/badges/ros2.svg" alt="ROS 2"/>
-    <img src="images/badges/latex.svg" alt="LaTeX"/>
-    <img src="images/badges/linux.svg" alt="Linux"/>
-  </p>
-
+  <section id="stack">
+    <h2>Stack</h2>
+    <p class="stack">
+      <span class="pill">Python</span>
+      <span class="pill">C++</span>
+      <span class="pill">MATLAB</span>
+      <span class="pill">ROS 2</span>
+      <span class="pill">LaTeX</span>
+      <span class="pill">Linux</span>
+    </p>
+  </section>
 
 </main>
+<footer id="contact">
+  <p>&copy; 2026 Julio Cesar Rodriguez Cervantes &middot; Last updated: Oct 2026<br/>
+    <a href="mailto:contact@juliordz.com">contact@juliordz.com</a></p>
+  <p class="socials">
+    <a href="https://www.linkedin.com/in/juliordzcer/" target="_blank" rel="noopener" aria-label="LinkedIn"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg></a>
+    <a href="https://github.com/juliordzcer" target="_blank" rel="noopener" aria-label="GitHub"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12"/></svg></a>
+  </p>
+</footer>
 </body>
 </html>

@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><link rel="canonical" href="https://juliordz.com/plcyard/web/" />
+      <link rel="shortcut icon" href="../img/favicon.ico" />
+    <title>PLCYard in the browser - PLCYard</title>
+    <link rel="stylesheet" href="../css/theme.css" />
+    <link rel="stylesheet" href="../css/theme_extra.css" />
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" />
+    
+      <script>
+        // Current page data
+        var mkdocs_page_name = "PLCYard in the browser";
+        var mkdocs_page_input_path = "web.md";
+        var mkdocs_page_url = "/plcyard/web/";
+      </script>
+    
+    <!--[if lt IE 9]>
+      <script src="../js/html5shiv.min.js"></script>
+    <![endif]-->
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
+      <script>hljs.highlightAll();</script> 
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+    <div class="wy-side-scroll">
+      <div class="wy-side-nav-search">
+          <a href=".." class="icon icon-home"> PLCYard
+        </a><div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="../search.html" method="get">
+      <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" title="Type search term here" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="..">Home</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../download/">Download</a>
+                </li>
+              </ul>
+              <ul class="current">
+                <li class="toctree-l1 current"><a class="reference internal current" href="#">PLCYard in the browser</a>
+    <ul class="current">
+    <li class="toctree-l2"><a class="reference internal" href="#the-screen">The screen</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#exercises-and-examples">Exercises and examples</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#writing-a-program">Writing a program</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#running-and-checking">Running and checking</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#what-stays-in-the-desktop-app">What stays in the desktop app</a>
+    </li>
+    </ul>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../getting-started/">Getting started</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../scan-cycle/">The scan cycle</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../notations/">Notations</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../ladder/">Ladder</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../structured-text/">Structured text</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../fbd/">Function block diagram</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../tags/">Tags, data types and arrays</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../routines/">Routines and blocks</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../simulations/">Simulations</a>
+                </li>
+              </ul>
+              <p class="caption"><span class="caption-text">Reference</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="../reference/instructions/">Instructions</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../reference/function-blocks/">Function blocks</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../reference/st-functions/">Structured text functions</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../reference/simulations/">Simulations</a>
+                  </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../writing-exercises/">Writing exercises</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../adding-a-simulation/">Adding a simulation</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../contributing/">Contributing</a>
+                </li>
+              </ul>
+      </div>
+    </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+      <nav class="wy-nav-top" role="navigation" aria-label="Mobile navigation menu">
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="..">PLCYard</a>
+        
+      </nav>
+      <div class="wy-nav-content">
+        <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href=".." class="icon icon-home" aria-label="Docs"></a></li>
+      <li class="breadcrumb-item active">PLCYard in the browser</li>
+    <li class="wy-breadcrumbs-aside">
+          <a href="https://github.com/juliordzcer/plcyard/edit/main/docs/wiki/web.md" class="icon icon-github"> Edit on GitHub</a>
+    </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+            <div class="section" itemprop="articleBody">
+              
+                <h1 id="plcyard-in-the-browser">PLCYard in the browser<a class="headerlink" href="#plcyard-in-the-browser" title="Permanent link">&para;</a></h1>
+<p><strong><a href="https://juliordz.com/plcyard/app/">Open PLCYard web</a></strong>: the same PLC, simulations and exercise
+checker as the desktop app, running in your browser. Nothing is installed and nothing is sent
+anywhere: the PLC runs on your computer (the first visit downloads it, a few megabytes; later
+visits start from the browser's cache).</p>
+<p><img alt="PLCYard web with the start/stop example" src="../img/web-start.png" /></p>
+<h2 id="the-screen">The screen<a class="headerlink" href="#the-screen" title="Permanent link">&para;</a></h2>
+<ul>
+<li><strong>Header</strong>, left to right:<ul>
+<li><strong>File</strong>: a new program in ladder, structured text or function blocks, open or save a <code>.plcy</code>
+  file (the desktop app opens it too), and the examples.</li>
+<li><strong>Exercises</strong> and <strong>Examples</strong>: the pickers below.</li>
+<li><strong>Machine</strong>: the simulation wired to the PLC.</li>
+<li><strong>Tags</strong> (named memory), undo and redo.</li>
+<li>The <strong>PLC</strong>: the RUN and FAULT lights, and <strong>PROGRAM / RUN</strong>. RUN sends your program to the
+  PLC and starts it. If you edit while it runs, <strong>Send changes</strong> appears: the PLC keeps running
+  the old program until you press it.</li>
+<li><strong>⚙</strong>: the notation (IEC symbols <code>%I0.0</code> or mnemonics, see <a href="../notations/">Notations</a>), the
+  welcome tour again and a link to this wiki.</li>
+</ul>
+</li>
+<li><strong>Left</strong>: the machine. Buttons are held while you press them, switches stay where you put them.
+  Below it, the list of its devices with their addresses; the I/O panel shows only the points your
+  program or the exercise uses (<strong>Show all 64 points</strong> for the rest).</li>
+<li><strong>Middle</strong>: the editor, with a tab per routine (<strong>+ Routine</strong> adds one, see
+  <a href="../routines/">Routines and blocks</a>).</li>
+<li><strong>Right</strong>: the exercise, when one is open.</li>
+</ul>
+<p>The first visit shows a short welcome; <strong>⚙ → How it works</strong> shows it again.</p>
+<h2 id="exercises-and-examples">Exercises and examples<a class="headerlink" href="#exercises-and-examples" title="Permanent link">&para;</a></h2>
+<p><img alt="The exercise picker" src="../img/web-exercises.png" /></p>
+<p><strong>Exercises</strong> opens the 24 exercises grouped by machine, each group with a picture of its machine,
+each exercise with its level (●○○○○ easy to ●●●●● hard) and a ✔ once you passed it (kept in your
+browser). Opening one wires its machine, names its devices and gives you an empty program.</p>
+<p><strong>Examples</strong> opens the finished programs, also grouped by machine with the language they are written
+in. Opening an example replaces the program in the editor: save yours first (File → Save) if you
+want to keep it.</p>
+<h2 id="writing-a-program">Writing a program<a class="headerlink" href="#writing-a-program" title="Permanent link">&para;</a></h2>
+<p><img alt="Editing a contact" src="../img/web-edit.png" /></p>
+<ul>
+<li><strong>Ladder</strong>: pick an instruction family (Bit, Timer/Counter, Compare…) and click an instruction:
+  it goes after the selected one, or in a new rung. <strong>Rung +</strong> adds a rung, <strong>Branch</strong> puts the
+  selected instruction in a parallel branch.</li>
+<li>The <strong>operand form</strong> opens right next to what you selected. Type an address or a tag: the list
+  suggests the machine's devices by name ("Start (NO)"), the named I/O points and your tags. Enter
+  applies, Esc closes. You can also <strong>drag an address</strong> from the machine onto an instruction.</li>
+<li>An instruction with a problem (no address yet, a tag that does not exist, the wrong type) has a
+  <strong>red dashed box</strong>; point at it to read why. The program only goes to the PLC once every problem
+  is fixed.</li>
+<li><strong>Structured text</strong>: a code editor with colours, line numbers, problems as you type and a watch
+  list of the values while the PLC runs.</li>
+<li><strong>Function blocks</strong>: click a block or drag it onto the diagram, drag from an output pin to an
+  input pin to wire them, select a block to set its operands. See
+  <a href="../fbd/">Function block diagram</a>.</li>
+</ul>
+<h2 id="running-and-checking">Running and checking<a class="headerlink" href="#running-and-checking" title="Permanent link">&para;</a></h2>
+<ol>
+<li>Press <strong>RUN</strong>. The energized parts of the ladder turn green, the machine moves.</li>
+<li>Play with the machine: press its buttons, open its valves, park a car…</li>
+<li>With an exercise open, <strong>Check my program</strong> (top of the exercise) runs every requirement
+   against your program on a fresh machine, much faster than real time, and lists what passed and
+   what failed with the reason. Long exercises can take a few seconds.</li>
+</ol>
+<p><strong>Ladder / ST / FBD</strong> next to the Check button starts the exercise again in another language.</p>
+<h2 id="what-stays-in-the-desktop-app">What stays in the desktop app<a class="headerlink" href="#what-stays-in-the-desktop-app" title="Permanent link">&para;</a></h2>
+<p>Data types, forcing, the PID setup dialog, single-scan stepping and comparing your solution with
+the reference solutions in three languages. A <code>.plcy</code> saved in the browser opens in the desktop
+app and the other way round.</p>
+              
+            </div>
+          </div><footer>
+    <div class="rst-footer-buttons" role="navigation" aria-label="Footer Navigation">
+        <a href="../download/" class="btn btn-neutral float-left" title="Download"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+        <a href="../getting-started/" class="btn btn-neutral float-right" title="Getting started">Next <span class="icon icon-circle-arrow-right"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <!-- Copyright etc -->
+  </div>
+
+  Built with <a href="https://www.mkdocs.org/">MkDocs</a> using a <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+</footer>
+          
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+
+  <div class="rst-versions" role="note" aria-label="Versions">
+  <span class="rst-current-version" data-toggle="rst-current-version">
+    
+        <span>
+          <a href="https://github.com/juliordzcer/plcyard" class="fa fa-github" style="color: #fcfcfc"> GitHub</a>
+        </span>
+    
+    
+      <span><a href="../download/" style="color: #fcfcfc">&laquo; Previous</a></span>
+    
+    
+      <span><a href="../getting-started/" style="color: #fcfcfc">Next &raquo;</a></span>
+    
+  </span>
+</div>
+    <script src="../js/jquery-3.6.0.min.js"></script>
+    <script>var base_url = "..";</script>
+    <script src="../js/theme_extra.js"></script>
+    <script src="../js/theme.js"></script>
+      <script src="../search/main.js"></script>
+    <script>
+        jQuery(function () {
+            SphinxRtdTheme.Navigation.enable(true);
+        });
+    </script>
+
+</body>
+</html>

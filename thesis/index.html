@@ -1,0 +1,2293 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; img-src 'self'; style-src 'unsafe-inline'; script-src 'self' https://cdn.jsdelivr.net; font-src 'self'; connect-src 'none'; base-uri 'self'; form-action 'none'; upgrade-insecure-requests">
+<meta name="referrer" content="strict-origin-when-cross-origin">
+<title>M.Sc. Thesis (English version) — Julio C. Rodríguez-Cervantes</title>
+<meta name="description" content="Experimental Validation of Formation Controllers for Multi-Agent Quadrotor Systems. English web version of the M.Sc. thesis by Julio C. Rodríguez-Cervantes, Instituto Tecnológico de La Laguna, 2023.">
+<link rel="icon" href="../favicon.svg" type="image/svg+xml">
+<link rel="canonical" href="https://juliordz.com/thesis/">
+<meta name="citation_title" content="Validación experimental de controladores multiagentes tipo Quad-Rotor">
+<meta name="citation_author" content="Rodríguez-Cervantes, Julio Cesar">
+<meta name="citation_publication_date" content="2023/08">
+<meta name="citation_dissertation_institution" content="Instituto Tecnológico de La Laguna">
+<meta name="citation_language" content="es">
+<meta name="citation_pdf_url" content="https://juliordz.com/papers/tesis_maestria2023.pdf">
+<meta property="og:type" content="article">
+<meta property="og:url" content="https://juliordz.com/thesis/">
+<meta property="og:title" content="Experimental Validation of Formation Controllers for Multi-Agent Quadrotor Systems">
+<meta property="og:description" content="M.Sc. thesis: formation control of multiple quadrotors with sliding-mode controllers, validated on Crazyflie nano quadrotors.">
+<meta property="og:image" content="https://juliordz.com/images/pubs/tesis2023.jpg">
+<script src="thesis.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/mathjax@3.2.2/es5/tex-svg.js"></script>
+<style>
+  :root {
+    color-scheme: light dark;
+    --bg: #ffffff;
+    --fg: #1f2328;
+    --muted: #57606a;
+    --border: #d0d7de;
+    --link: #0a66c2;
+    --code-bg: #f6f8fa;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #0d1117;
+      --fg: #e6edf3;
+      --muted: #9198a1;
+      --border: #30363d;
+      --link: #4aa3ff;
+      --code-bg: #161b22;
+    }
+  }
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body {
+    background: var(--bg);
+    color: var(--fg);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    line-height: 1.6;
+    margin: 0;
+    padding: 2.5rem 1.25rem 4rem;
+  }
+  a { color: var(--link); }
+  .layout {
+    max-width: 1000px;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: 200px 1fr;
+    gap: 2.5rem;
+  }
+  nav.toc {
+    position: sticky;
+    top: 1.5rem;
+    align-self: start;
+    font-size: 0.9rem;
+  }
+  nav.toc .back { display: block; margin-bottom: 1rem; }
+  nav.toc ul { list-style: none; padding: 0; margin: 0; }
+  nav.toc li { margin: 0.2rem 0; }
+  nav.toc ul ul { padding-left: 0.9rem; }
+  nav.toc a { text-decoration: none; color: var(--muted); }
+  nav.toc a:hover { color: var(--link); }
+  main { min-width: 0; max-width: 720px; }
+  h1 { font-size: 1.6rem; margin: 0 0 0.25rem; }
+  .tagline { color: var(--muted); margin-top: 0; }
+  h2 {
+    font-size: 1.2rem;
+    margin: 2.5rem 0 0.75rem;
+    padding-bottom: 0.3rem;
+    border-bottom: 1px solid var(--border);
+  }
+  h3 { font-size: 1rem; margin: 1.5rem 0 0.5rem; }
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.92rem;
+    margin: 0.75rem 0;
+    display: block;
+    overflow-x: auto;
+  }
+  th, td {
+    text-align: left;
+    padding: 0.4rem 0.6rem;
+    border: 1px solid var(--border);
+    vertical-align: top;
+  }
+  th { background: var(--code-bg); }
+  code {
+    background: var(--code-bg);
+    padding: 0.1em 0.35em;
+    border-radius: 4px;
+    font-size: 0.88em;
+  }
+  pre {
+    background: var(--code-bg);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 0.9rem 1rem;
+    overflow-x: auto;
+    font-size: 0.85rem;
+    line-height: 1.45;
+  }
+  .badge {
+    display: inline-block;
+    font-size: 0.75rem;
+    font-weight: 600;
+    padding: 0.1em 0.55em;
+    border-radius: 999px;
+    border: 1px solid var(--border);
+    color: var(--muted);
+    vertical-align: middle;
+  }
+  .badge.done { color: #1a7f37; border-color: #1a7f37; }
+  .badge.wip { color: #9a6700; border-color: #9a6700; }
+  ul.status { list-style: none; padding-left: 0; }
+  ul.status li { margin: 0.3rem 0; }
+  .note { color: var(--muted); font-size: 0.9rem; }
+  footer { margin-top: 3rem; color: var(--muted); font-size: 0.85rem; }
+  @media (max-width: 760px) {
+    .layout { grid-template-columns: 1fr; gap: 1rem; }
+    nav.toc { position: static; border-bottom: 1px solid var(--border); padding-bottom: 1rem; }
+  }
+  :root { --accent: var(--link); }
+  .layout { max-width: 1080px; grid-template-columns: 230px 1fr; }
+  main { max-width: 780px; }
+  nav.toc { max-height: calc(100vh - 3rem); overflow-y: auto; }
+  nav.toc .toc-title { font-weight: 600; color: var(--fg); margin: 0 0 0.4rem; }
+  nav.toc ul ul { display: block; }
+  .toc-section-number { color: var(--muted); margin-right: 0.3em; }
+  .kicker { color: var(--muted); font-size: 0.85rem; text-transform: uppercase; letter-spacing: 0.04em; margin: 0 0 0.3rem; }
+  .paper-head h1 { font-size: 1.7rem; line-height: 1.25; }
+  .orig, .inst { color: var(--muted); margin: 0.3rem 0; font-size: 0.95rem; }
+  .authors { margin: 0.6rem 0 0.2rem; }
+  .pills { display: flex; flex-wrap: wrap; gap: 0.5rem; margin: 0.9rem 0 0; }
+  .pill { display: inline-block; font-size: 0.85rem; padding: 0.2rem 0.75rem; border: 1px solid var(--border); border-radius: 999px; text-decoration: none; }
+  .pill:hover { border-color: var(--link); }
+  figure { margin: 1.5rem 0; text-align: center; }
+  figure img { max-width: 100%; height: auto; border-radius: 4px; background: #fff; }
+  figcaption { font-size: 0.9rem; color: var(--muted); margin-top: 0.4rem; text-align: left; }
+  .hero img { width: 100%; max-width: 640px; }
+  .subfigs .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem; }
+  .subfigs .grid figure { margin: 0; }
+  .subfigs .grid figcaption { text-align: center; }
+  .cite-block { border: 1px solid var(--border); border-radius: 6px; margin: 0.75rem 0; overflow: hidden; }
+  .cite-head { display: flex; justify-content: space-between; align-items: center; padding: 0.35rem 0.75rem; background: var(--code-bg); border-bottom: 1px solid var(--border); font-size: 0.85rem; font-weight: 600; }
+  .cite-head button { font: inherit; font-weight: 500; font-size: 0.8rem; padding: 0.15rem 0.7rem; border: 1px solid var(--border); border-radius: 999px; background: var(--bg); color: var(--fg); cursor: pointer; }
+  .cite-head button:hover { border-color: var(--link); }
+  .cite-block p { margin: 0; padding: 0.75rem; font-size: 0.92rem; }
+  .cite-block pre { margin: 0; border: 0; border-radius: 0; white-space: pre-wrap; word-break: break-word; }
+  .thesis h1 { font-size: 1.45rem; margin: 3rem 0 0.75rem; padding-bottom: 0.3rem; border-bottom: 2px solid var(--border); }
+  .thesis h2 { font-size: 1.15rem; border-bottom: 0; padding-bottom: 0; margin-top: 2rem; }
+  .thesis h3 { font-size: 1rem; }
+  .thesis h1[id], .thesis h2[id], .thesis h3[id], section[id] { scroll-margin-top: 1rem; }
+  .thesis p { text-align: justify; hyphens: auto; }
+  .math.display { display: block; overflow-x: auto; overflow-y: hidden; margin: 0.6rem 0; }
+  mjx-container[display="true"] { max-width: 100%; overflow-x: auto; overflow-y: hidden; }
+  .tbl { overflow-x: auto; margin: 1rem 0; }
+  .tbl table { display: table; width: auto; margin: 0 auto; font-size: 0.85rem; }
+  .tbl caption { caption-side: top; font-size: 0.9rem; color: var(--muted); padding-bottom: 0.4rem; text-align: left; }
+  .tbl td, .tbl th { text-align: center; white-space: nowrap; }
+  .teorema, .definicion, .suposicion, .observacion { margin: 1rem 0; padding: 0.6rem 0.9rem; border-left: 3px solid var(--border); background: var(--code-bg); border-radius: 0 6px 6px 0; }
+  #refs { font-size: 0.88rem; }
+  .csl-entry { margin: 0.4rem 0; display: flex; gap: 0.5rem; }
+  .csl-left-margin { flex: none; min-width: 2.2rem; }
+  @media (max-width: 760px) {
+    .layout { grid-template-columns: 1fr; }
+    nav.toc { max-height: none; }
+    .subfigs .grid { grid-template-columns: 1fr; }
+    .thesis p { text-align: left; }
+  }
+  .subfigs .grid { max-width: 560px; margin: 0 auto; }
+  .thesis figure img { max-width: min(100%, 620px); }
+
+</style>
+</head>
+<body>
+<div class="layout">
+<nav class="toc" aria-label="Contents">
+  <a class="back" href="../">&larr; juliordz.com</a>
+  <p class="toc-title">Contents</p>
+  <ul>
+    <li><a href="#cite">How to cite</a></li>
+    <li><a href="#abstract">Abstract</a></li>
+  </ul>
+  <ul>
+<li><a href="#cap-introduccion" id="toc-cap-introduccion"><span class="toc-section-number">1</span> Introduction</a>
+<ul>
+<li><a href="#motivation" id="toc-motivation"><span class="toc-section-number">1.1</span> Motivation</a></li>
+<li><a href="#sec-planteamiento-del-problema" id="toc-sec-planteamiento-del-problema"><span class="toc-section-number">1.2</span> Problem statement</a></li>
+<li><a href="#sec-estado-del-arte" id="toc-sec-estado-del-arte"><span class="toc-section-number">1.3</span> State of the Art</a></li>
+<li><a href="#sec-contribucion" id="toc-sec-contribucion"><span class="toc-section-number">1.4</span> Contribution</a></li>
+<li><a href="#sec-org" id="toc-sec-org"><span class="toc-section-number">1.5</span> Thesis organization</a></li>
+</ul></li>
+<li><a href="#cap-preliminares" id="toc-cap-preliminares"><span class="toc-section-number">2</span> Preliminaries</a>
+<ul>
+<li><a href="#notation" id="toc-notation"><span class="toc-section-number">2.1</span> Notation:</a></li>
+<li><a href="#definitions" id="toc-definitions"><span class="toc-section-number">2.2</span> Definitions</a></li>
+</ul></li>
+<li><a href="#cap-modelado-y-control" id="toc-cap-modelado-y-control"><span class="toc-section-number">3</span> Formation control in multi-quadrotor systems</a>
+<ul>
+<li><a href="#modelado-de-un-grupo-de-quad-rotors" id="toc-modelado-de-un-grupo-de-quad-rotors"><span class="toc-section-number">3.1</span> Modeling of a group of quadrotors</a></li>
+<li><a href="#sec-estrategia-de-control" id="toc-sec-estrategia-de-control"><span class="toc-section-number">3.2</span> Control strategy</a></li>
+</ul></li>
+<li><a href="#cap-resultados" id="toc-cap-resultados"><span class="toc-section-number">4</span> Simulation and experimental results.</a>
+<ul>
+<li><a href="#sec-resultados-de-simulacion" id="toc-sec-resultados-de-simulacion"><span class="toc-section-number">4.1</span> Simulation results</a></li>
+<li><a href="#sec-resultadosexperimentales" id="toc-sec-resultadosexperimentales"><span class="toc-section-number">4.2</span> Experimental results</a></li>
+</ul></li>
+<li><a href="#cap-conclusiones" id="toc-cap-conclusiones"><span class="toc-section-number">5</span> Conclusions</a>
+<ul>
+<li><a href="#academic-production" id="toc-academic-production">Academic Production</a></li>
+</ul></li>
+<li><a href="#ape-mt" id="toc-ape-mt"><span class="toc-section-number">A</span> Multi-Quadrotor Platform</a>
+<ul>
+<li><a href="#rpm-a-newtons" id="toc-rpm-a-newtons"><span class="toc-section-number">A.1</span> RPM to Newtons</a></li>
+</ul></li>
+<li><a href="#references">References</a></li>
+</ul>
+</nav>
+<main>
+  <header class="paper-head">
+    <p class="kicker">M.Sc. Thesis &middot; August 2023</p>
+    <h1>Experimental Validation of Formation Controllers for Multi-Agent Quadrotor Systems</h1>
+    <p class="orig">Original title (Spanish): <em>Validación experimental de controladores multiagentes tipo Quad-Rotor</em></p>
+    <p class="authors"><strong>Julio Cesar Rodríguez-Cervantes</strong><br>Advisors: Dr. Alejandro Enrique Dzul López and Dr. Héctor Ríos Barajas</p>
+    <p class="inst">Instituto Tecnológico de La Laguna &middot; M.Sc. in Electrical Engineering &middot; Torreón, Coahuila, México</p>
+    <div class="pills">
+      <a class="pill" href="../papers/tesis_maestria2023.pdf" target="_blank" rel="noopener">PDF (Spanish, official)</a>
+      <a class="pill" href="https://www.youtube.com/watch?v=mZxGzYCmnuo" target="_blank" rel="noopener">Video</a>
+      <a class="pill" href="#cite">Cite</a>
+    </div>
+  </header>
+
+  <figure class="hero">
+    <a href="https://www.youtube.com/watch?v=mZxGzYCmnuo" target="_blank" rel="noopener"><img src="img/flight.gif" width="560" height="315" alt="Crazyflie nano quadrotors flying in formation during one of the experiments"></a>
+    <figcaption>Formation flight of Crazyflie nano quadrotors during the experimental validation (sped up 3&times;). <a href="https://www.youtube.com/watch?v=mZxGzYCmnuo" target="_blank" rel="noopener">Watch the full video</a>.</figcaption>
+  </figure>
+
+  <section id="cite" class="cite">
+    <h2>How to cite</h2>
+    <p class="note">The official document is in Spanish; this page is an English translation of its content.</p>
+    <div class="cite-block">
+      <div class="cite-head"><span>APA</span><button type="button" data-copy="apa">Copy</button></div>
+      <p id="apa">Rodríguez-Cervantes, J. C. (2023). <em>Validación experimental de controladores multiagentes tipo Quad-Rotor</em> [Master’s thesis, Instituto Tecnológico de La Laguna]. https://juliordz.com/thesis/</p>
+    </div>
+    <div class="cite-block">
+      <div class="cite-head"><span>BibTeX</span><button type="button" data-copy="bib">Copy</button></div>
+      <pre id="bib">@mastersthesis{rodriguez2023validacion,
+  author  = {Rodr{\&#x27;i}guez-Cervantes, Julio Cesar},
+  title   = {Validaci{\&#x27;o}n experimental de controladores multiagentes tipo {Quad-Rotor}},
+  school  = {Instituto Tecnol{\&#x27;o}gico de La Laguna},
+  address = {Torre{\&#x27;o}n, Coahuila, M{\&#x27;e}xico},
+  year    = {2023},
+  month   = aug,
+  type    = {M.Sc. thesis},
+  note    = {In Spanish. Advisors: A. Dzul and H. R{\&#x27;i}os},
+  url     = {https://juliordz.com/thesis/}
+}</pre>
+    </div>
+  </section>
+
+  <section id="abstract">
+    <h2>Abstract</h2>
+    <p>This thesis presents numerical simulations and experimental results of robust controllers applied to a multi-agent system. The multi-agent system is composed of quadrotor vehicles, and the control objective consists of maintaining a formation structure. The designed controllers are based on PID (proportional-integral-derivative) control and robust control laws, including continuous sliding modes, together with graph theory; the dynamic model considers external disturbances. The controllers are implemented with the Robot Operating System (ROS) on Crazyflie nano quadrotors. Numerical simulations and experimental results are obtained for the PID, Continuous Twisting (TC), Super-Twisting Algorithm (STA), Nonsingular Terminal Sliding-Mode Control (NTSMC), and Singular Terminal Sliding-Mode Control (STSMC). Finally, the experimental results are analyzed with an averaged performance index to determine which controller achieves the best formation performance.</p>
+  </section>
+
+  <article class="thesis">
+
+<h1 data-number="1" id="cap-introduccion"><span class="header-section-number">1</span> Introduction</h1>
+<p>This chapter addresses the motivation of the work, which constitutes the basis of the problem statement. A review of the state of the art is also included, briefly showing some previous studies that have addressed the formation control problem in a multi-agent system. In addition, the contribution that this work offers to solve the stated problem is presented, as well as its organization.</p>
+<h2 data-number="1.1" id="motivation"><span class="header-section-number">1.1</span> Motivation</h2>
+<p>Unmanned aerial vehicles (UAVs) have experienced significant growth over the last two decades due to their wide variety of applications in different areas. For example, some of these applications include mapping and localization <span class="citation" data-cites="mcguire2019minimal">[1]</span>, target surveillance <span class="citation" data-cites="kingston2008decentralized">[2]</span>, search and rescue <span class="citation" data-cites="senanayake2016search">[3]</span>, smart agriculture <span class="citation" data-cites="albani2017monitoring">[4]</span>, and cooperative transportation <span class="citation" data-cites="maza2009multi">[5]</span>.</p>
+<p>UAVs are classified into several categories according to their size, range, and purpose. Fixed-wing UAVs have a structure similar to that of conventional aircraft and are generally used for long-range applications, such as surveillance of extensive areas. Rotary-wing UAVs, such as quadrotors, are more versatile and suitable for short-range tasks, such as inspections, object transport, among others.</p>
+<p>There is great interest in the use of quadrotors due to their compact design, ease of handling, vertical flight capability, as well as hovering flight, making them ideal for applications in confined spaces.</p>
+<p>This makes them a valuable tool for infrastructure inspections, terrain mapping, etc. On the other hand, their reduced cost, compared with other fixed-wing or hybrid UAVs, as well as their nonlinear dynamics, makes them an attractive option for various research aspects.</p>
+<p>One of the areas of study that has gained relevance is related to the cooperation of multiple vehicles. A multi-agent system consists of two or more elements. Multi-agent systems are capable of performing many tasks that could not be performed more effectively by a single agent (robot). This type of system can reduce cost, from the hardware platform to the software, that is, a large and expensive agent can be replaced by several small and inexpensive agents to implement tasks, although with greater algorithm complexity.</p>
+<p>Among the different collaborative tasks that a multi-agent system can perform, there is one that deals with the formation executed by the group of agents, that is, the coordination of their movements. Formation is very important since the positioning chosen among the agents (geometric pattern) influences the ability or not to perform the desired task, or the effectiveness that the multi-agent system may have to develop said task.</p>
+<p>The design of formation controllers presents a challenge due to the need to efficiently coordinate and control a group of agents, also considering the ability to deal with external disturbances. To achieve this, it is crucial to consider factors such as adequate modeling of the multi-agent system, communication among them, and the hardware necessary for their operation. Limited communication among agents can reduce the ability of the controllers to obtain the required information, so it is important to optimize the minimum amount of information necessary for each agent. To address this problem, the use of observers becomes fundamental, since they allow estimating the relevant information depending on the selected formation topology. By employing these approaches and developing robust controllers capable of dealing with external disturbances, the efficiency and precision of formation controllers for multi-agent systems can be improved. This is essential to advance toward autonomous and collaborative systems that can operate effectively in complex environments. For these reasons, it is important to consider the formation problem.</p>
+<p>Figure 1 shows different types of tasks executed by a multi-agent system based on quadrotors.</p>
+<figure class="subfigs"><div class="grid"><figure><img src="img/combate.jpg" loading="lazy" alt="Reconnaissance"><figcaption>Reconnaissance</figcaption></figure><figure><img src="img/Reconocimiento.jpg" loading="lazy" alt="Area mapping"><figcaption>Area mapping</figcaption></figure><figure><img src="img/Transporte.jpg" loading="lazy" alt="Transport"><figcaption>Transport</figcaption></figure><figure><img src="img/world.jpg" loading="lazy" alt="Entertainment"><figcaption>Entertainment</figcaption></figure></div><figcaption>Figure 1. Multi-agent tasks.</figcaption></figure>
+<h2 data-number="1.2" id="sec-planteamiento-del-problema"><span class="header-section-number">1.2</span> Problem statement</h2>
+<p>The equations describing the dynamics of a group of <em>n</em> quadrotors are given by (see Figure 2, and for modeling details see <span class="citation" data-cites="carrillo2013quad">[6]</span>):</p>
+<p><span class="math display">\begin{align}
+        \boldsymbol{\dot{\xi}}_{1i}  &amp;= \boldsymbol{\xi}_{2i} , \tag{1a}\\
+        \boldsymbol{\dot{\xi}}_{2i}  &amp;= \boldsymbol{g}_{\boldsymbol{\xi} i}(\boldsymbol{\eta}_{1i})u_{mi}-\boldsymbol{G}_{i} - \boldsymbol{\Lambda}_{\boldsymbol{\xi} i}\boldsymbol{\xi}_{2i} + \boldsymbol{d}_{\xi i}, \tag{1b}\\
+        \boldsymbol{\dot{\eta}}_{1i} &amp;= \boldsymbol{\eta}_{2i}, \tag{1c}\\
+        \boldsymbol{\dot{\eta}}_{2i} &amp;= \boldsymbol{J}_i\boldsymbol{\tau}_i + \boldsymbol{\Xi}_i \boldsymbol{w}_{\boldsymbol{\eta} i}(\boldsymbol{\eta}_{2i}) - \boldsymbol{\Lambda}_{\boldsymbol{\eta} i}\boldsymbol{\eta}_{2i} + \boldsymbol{d}_{\eta i}, \tag{1d}
+\end{align}</span></p>
+<p>with <span class="math inline">\(i =\overline{1,n}\)</span>, where <span class="math inline">\(\boldsymbol{\xi}_{1i} := [x_i \quad y_i \quad z_i]^{\top}~ \in \mathbb{R}^3\)</span>, <span class="math inline">\(\boldsymbol{\xi}_{2i} := [\dot{x}_{i} \quad \dot{y}_{i} \quad \dot{z}_{i}]^{\top}~ \in \mathbb{R}^3\)</span>, <span class="math inline">\(\boldsymbol{\eta}_{1i} := [\phi_{i} \quad \theta_{i} \quad \psi_{i}]^{\top}~ \in \mathbb{R}^3\)</span>, <span class="math inline">\(\boldsymbol{\eta}_{2i} := [\dot{\phi}_{i} \quad \dot{\theta}_{i},~\dot{\psi}_{i}]^{\top}~ \in \mathbb{R}^3\)</span>, <span class="math inline">\(\boldsymbol{d}_{\xi_{i}} := [d_{x_{i}} \quad d_{y_{i}} \quad d_{z_{i}}]^{\top}~ \in \mathbb{R}^3\)</span> and <span class="math inline">\(\boldsymbol{d}_{\eta_i} := [d_{\phi_i} \quad d_{\theta_i} \quad d_{\psi_i}]^{\top}~ \in \mathbb{R}^3\)</span>. The terms <span class="math inline">\(x_{i}, y_{i} \in \mathbb{R}\)</span> denote the coordinates in the horizontal plane, <span class="math inline">\(z_{i} \in \mathbb{R}\)</span> describes the vertical position; <span class="math inline">\(\phi_{i}, \theta_{i}\)</span> and <span class="math inline">\(\psi_{i} \in \mathbb{R}\)</span> represent the tilt angles about the <span class="math inline">\(X\)</span> axis (roll), the <span class="math inline">\(Y\)</span> axis (pitch), and the <span class="math inline">\(Z\)</span> axis (yaw), respectively. On the other hand, <span class="math inline">\(\boldsymbol{G}_{i} := [0 \quad 0 \quad g]^{\top} \in \mathbb{R}^3\)</span>, <span class="math inline">\(\boldsymbol{J}_{i} := \operatorname{diag}(J_{xi}^{-1},~ J_{yi}^{-1},~J_{zi}^{-1}) \in \mathbb{R}^{3\times 3}\)</span> and <span class="math inline">\(\boldsymbol{\tau}_i := [\tau_{\phi_{i}} \quad \tau_{\theta_{i}} \quad \tau_{\psi_{i}}]^{\top} \in \mathbb{R}^3\)</span> correspond to the gravity vector, the inertia matrix, and the angular momentum vector, with <span class="math inline">\(g\)</span> as the gravitational acceleration, <span class="math inline">\(J_{x_{i}}\)</span>, <span class="math inline">\(J_{y_{i}}\)</span> and <span class="math inline">\(J_{z_{i}}\)</span> as the moments of inertia about the <span class="math inline">\(X\)</span>, <span class="math inline">\(Y\)</span> and <span class="math inline">\(Z\)</span> axes, while <span class="math inline">\(\tau_{\phi_{i}}\)</span>, <span class="math inline">\(\tau_{\theta_{i}}\)</span> and <span class="math inline">\(\tau_{\psi_{i}} \in \mathbb{R}\)</span> are the roll, pitch, and yaw torques, respectively. The term <span class="math inline">\(u_{m_{i}} := {u_{i}}/{m_{i}}\)</span>, where <span class="math inline">\(u_i \in \mathbb{R}\)</span>, represents the thrust in <span class="math inline">\(Z\)</span> and <span class="math inline">\(m_i \in \mathbb{R}^+\)</span> represents the mass of each quadrotor. The matrices <span class="math inline">\(\boldsymbol{\Lambda}_{\xi i} := \operatorname{diag}{(a_{x i},a_{y i},a_{z i})} \in \mathbb{R}^{3\times 3}\)</span>, <span class="math inline">\(\boldsymbol{\Lambda}_{\eta i} := \operatorname{diag}{(a_{\phi i},a_{\theta i},a_{\psi i})} \in \mathbb{R}^{3\times 3}\)</span> and <span class="math inline">\(\boldsymbol{\Xi} i := \operatorname{diag}{(b_{\phi i}, b_{\theta i}, b_{\psi i})} \in \mathbb{R}^{3\times 3}\)</span> are given by the aerodynamic damping coefficients <span class="math inline">\(a_{x i}\)</span>, <span class="math inline">\(a_{y i}\)</span> and <span class="math inline">\(a_{z i}\)</span>, the rotational moment drag coefficients <span class="math inline">\(a_{\phi i}\)</span>, <span class="math inline">\(a_{\theta i}\)</span> and <span class="math inline">\(a_{\psi i}\)</span>, and the inertia coefficients <span class="math inline">\(b_{\phi i} := ({J_{y i} - J_{z i}})/{J_{x i}}\)</span>, <span class="math inline">\(b_{\theta i} := ({J_{z i} - J_{x i}})/{J_{y i}}\)</span> and <span class="math inline">\(b_{\psi i} := ({J_{x i} - J_{y i}})/{J_{z i}}\)</span>. The functions <span class="math inline">\(\boldsymbol{g}_{\boldsymbol{\boldsymbol{\xi}} i}  : \mathbb{R}^3 \rightarrow \mathbb{R}^3\)</span> and <span class="math inline">\(\boldsymbol{w}_{\boldsymbol{\eta} i} : \mathbb{R}^3 \rightarrow \mathbb{R}^3\)</span> are defined as follows: <span class="math inline">\(\boldsymbol{g}_{\boldsymbol{\xi i}}(\boldsymbol{\eta}_1 i) := [\cos\phi_{i} \operatorname{sen}\theta_{i} \cos\psi_{i} + \operatorname{sen}\phi_{i} \operatorname{sen}\psi_{i}  \quad \cos\phi_{i} \operatorname{sen}\theta_{i} \operatorname{sen}\psi_{i} - \operatorname{sen}\phi_{i} \cos\psi_{i} \quad  \cos\phi_{i} \cos\theta_{i} ]^{\top}\)</span> and <span class="math inline">\(\boldsymbol{w}_{\boldsymbol{\eta} i}(\boldsymbol{\eta}_{2 i}):=[\dot{\theta}_{i}\dot{\psi}_{i} \quad \dot{\phi}_{i}\dot{\psi}_{i} \quad \dot{\psi}_{i}\dot{\theta}_{i} ]^{\top}\)</span>. The terms <span class="math inline">\(d_{x}\)</span>, <span class="math inline">\(d_{y}\)</span>, <span class="math inline">\(d_{z}\)</span>, <span class="math inline">\(d_{\phi_i}\)</span>, <span class="math inline">\(d_{\theta_i}\)</span> and <span class="math inline">\(d_{\psi_i} ~ \in \mathbb{R}\)</span> represent the disturbances given by uncertainties and external disturbances, <em>e.g.</em>, some unmodeled dynamics and wind gusts.</p>
+<p>This thesis aims to solve the formation problem for a multi-quadrotor system using a leader-centered formation scheme.</p>
+<p>In multi-agent systems with leader-centered formation, a specific agent is designated as the leader, and it is the only one capable of knowing the desired trajectory. From the position of the leader agent, the formation of the other agents in the system is determined. The main challenge that arises is the coordination and control of the follower agents.</p>
+<p>To achieve this, a combination of continuous sliding modes and PID controllers will be used.</p>
+<p>In addition, a comparative analysis among the different controllers is carried out, using simulation and experimental results, with the purpose of identifying the control scheme that presents the best performance.</p>
+<figure id="fig-representacion-quad">
+<img src="img/Fig1.jpg" loading="lazy" />
+<figcaption>Figure 2. Crazyflie nano quadrotor.</figcaption>
+</figure>
+<h2 data-number="1.3" id="sec-estado-del-arte"><span class="header-section-number">1.3</span> State of the Art</h2>
+<p>In recent decades, the study of cooperative control and formation control of multi-agent systems has experienced significant growth due to the need to address complex tasks in various fields, such as logistics, exploration of inaccessible areas, and surveillance, among others.</p>
+<p>For example, in <span class="citation" data-cites="crazyswarm">[7]</span>, a method was proposed to track multiple quadrotors flying in formation indoors. In <span class="citation" data-cites="9476797">[8]</span>, a formation-containment control scheme is proposed for a set of micro quadrotors in which an adaptive sliding mode is employed. The proposed multi-agent system consists of a virtual leader and a set of modeled leaders and followers, where the virtual leader establishes the trajectory of the group of micro quadrotors. The proposal consists of two layers to solve the containment problem; in the first layer, the leaders achieve a time-varying formation with respect to the virtual leader, and then the followers converge to a convex hull generated by the leaders.</p>
+<p>In <span class="citation" data-cites="9856271">[9]</span>, a formation control with fixed-time stability is considered for a group of quadrotors that cooperatively transport a suspended load under a leader-follower scheme. This control scheme includes an observer to compensate for disturbances affecting the position dynamics.</p>
+<p>In <span class="citation" data-cites="RAMEZANIDOORAKI2021103671">[10]</span>, a bio-inspired flight algorithm is developed, which uses reinforcement learning to control a group of quadrotors in a manner similar to how animals do. Unlike conventional controllers such as PID, it is based on the idea that animals learn to control their movements through trial and error, using their maximum capabilities in an optimized way.</p>
+<p>In <span class="citation" data-cites="YAN202335">[11]</span>, a formation control strategy for multiple UAVs of quadrotor type is presented, using a multi-constrained Model Predictive Control approach. This strategy combines the Kalman-consensus filter and a fixed-time disturbance observer to achieve stable and robust formation control in complex environments.</p>
+<p>In <span class="citation" data-cites="9490672">[12]</span>, a robust consensus control of a leader-follower multi-agent system is presented, subject to communication failures, guaranteeing the convergence of the agents’ trajectories to a leader agent when all followers are experiencing information exchange failures.</p>
+<p>In <span class="citation" data-cites="SILVA2022121">[13]</span>, new conditions for consensus and stabilization of multi-agent systems are introduced through the use of dynamic output feedback protocols.</p>
+<p>In <span class="citation" data-cites="SU2023105608">[14]</span>, an adaptive and robust control methodology is proposed for cooperative load transport in networked UAV systems, which is based on formation tracking and offers an efficient and simplified solution to the problem, demonstrated through simulations and laboratory experiments.</p>
+<p>In <span class="citation" data-cites="sharma2023geometric">[15]</span>, a geometric controller for load transfer using quadrotors is proposed. In <span class="citation" data-cites="7991329">[16]</span>, the design of a robust controller for a set of quadrotors forming a geometric pattern is addressed. The proposed control strategy is based on sliding mode techniques in the presence of a class of disturbances.</p>
+<p>In <span class="citation" data-cites="ALDARMINI2022222">[17]</span>, the formation control of agents with unknown disturbances is addressed, considering two different cases: one where agents measure relative displacements and another where an agent measures its position in a global system.</p>
+<p>In <span class="citation" data-cites="9672641">[18]</span>, a control approach based on Active Disturbance Rejection is introduced for cooperative formation control of a set of UAVs. The strategy focuses on disturbance estimation with the aim of optimizing the efficiency and precision of the UAV formation. The proposed method uses observers to evaluate nonlinear disturbances and a feedback control based on these estimates to increase resistance against disturbances. Although this study does not include experimental validation, simulation results show an improvement in the performance of the UAV formation.</p>
+<p>In <span class="citation" data-cites="8865294">[19]</span>, the formation problem of multiple UAVs is addressed. A cooperative control technique is proposed that uses neural networks to increase the precision and stability of a PID control. To accelerate the convergence speed of the neural network, momentum terms and gradient factors are added. Simulation results indicate that the proposed algorithm optimizes convergence efficiency and demonstrates a certain robustness.</p>
+<p>In <span class="citation" data-cites="CHEN2022107618">[20]</span>, a two-layer control algorithm for UAV groups is presented that addresses trajectory tracking and avoids collisions in the presence of unknown disturbances. Using distributed control techniques and state observer, the safety of the UAVs is guaranteed while they follow their desired trajectories.</p>
+<p>In <span class="citation" data-cites="10097686">[21]</span>, a robust controller is proposed for the transport of an object by means of two UAVs, through a neural network; in addition, an observer is incorporated to estimate and compensate for disturbances, reinforcing the robustness of the controller. The results are limited to simulation. In <span class="citation" data-cites="10055086">[22]</span>, a robust formation controller is suggested that takes into account disturbances and time delay in the communication network of the system.</p>
+<p>In <span class="citation" data-cites="doi:10.1080/00207721.2019.1616128">[23]</span>, a formation control for a time-varying geometric pattern is presented. The authors employ a cascade control strategy (attitude-position) based on sliding modes. The controller design uses a linearization of the virtual controllers, which generate the reference signals corresponding to roll, pitch, and total thrust. On the other hand, in <span class="citation" data-cites="rios2018continuous">[24]</span>, trajectory tracking in a quadrotor is presented, also using a cascade sliding-mode control strategy; in this case, a linearization of the virtual controllers is not used in the controller design. This implies that the result in <span class="citation" data-cites="doi:10.1080/00207721.2019.1616128">[23]</span> is local, <em>i.e.</em>, for small angles, while in <span class="citation" data-cites="rios2018continuous">[24]</span> such a restriction is not present.</p>
+<h2 data-number="1.4" id="sec-contribucion"><span class="header-section-number">1.4</span> Contribution</h2>
+<p>Motivated by recent advances in the field, this thesis work extends the proposal presented in <span class="citation" data-cites="rios2018continuous">[24]</span>, with the aim of addressing leader-centered formation problems. The main contribution of this work lies in the experimental implementation of said formation scheme and the development of a platform for multi-quadrotor systems. To address the problem, robust controllers for the formation of quadrotors were considered using PID controllers, and continuous sliding-mode controllers, such as the Super-Twisting Algorithm <span class="citation" data-cites="doi:10.1080/00207179308923053">[25]</span>, Continuous Twisting <span class="citation" data-cites="TORRESGONZALEZ2017119">[26]</span>, Singular Terminal Sliding Modes <span class="citation" data-cites="fridman2015continuous">[27]</span>, and Nonsingular Terminal Sliding Modes <span class="citation" data-cites="KAMAL2016308">[28]</span>.</p>
+<h2 data-number="1.5" id="sec-org"><span class="header-section-number">1.5</span> Thesis organization</h2>
+<p>The rest of the document has the following structure. Chapter 2 presents some mathematical preliminaries necessary for the development of this work. Chapter 3 presents the modeling of a group of quadrotors, as well as the design of the robust controllers; it includes the design of observers, necessary for the consideration of external disturbances. The simulation and experimental results are shown in Chapter 4. The final conclusions are found in Chapter 5.</p>
+<h1 data-number="2" id="cap-preliminares"><span class="header-section-number">2</span> Preliminaries</h1>
+<h2 data-number="2.1" id="notation"><span class="header-section-number">2.1</span> Notation:</h2>
+<p><span class="math inline">\(0_n \in \mathbb{R}^{n \times n}\)</span> and <span class="math inline">\(I_n \in \mathbb{R}^{n \times n}\)</span> denote the zero and identity matrices of dimension <span class="math inline">\(n\)</span>, respectively; <span class="math inline">\(\mathbb{R}^+ := \{x \in \mathbb{R} : x \geq 0\}\)</span> denotes the set of all nonnegative real numbers. For a Lebesgue measurable function <span class="math inline">\(d : \mathbb{R}^+ \rightarrow \mathbb{R}^m\)</span>, the norm <span class="math inline">\(\|d\|_{[t_0, t_1)} = \operatorname{esssup}_{t \in [t_0, t_1)} \|d(t)\|\)</span> is defined, then <span class="math inline">\(\|d\|_f = \|d\|_{[t_f, +\infty)}\)</span> and <span class="math inline">\(\|d\|_{\infty} = \|d\|_{[0, +\infty)}\)</span>; The set of <span class="math inline">\(d(t)\)</span> with the property <span class="math inline">\(\|d\|_{\infty} &lt; +\infty\)</span> is denoted as <span class="math inline">\(\mathcal{L}_{\infty}\)</span>; and <span class="math inline">\(\mathcal{L}_D = \{d \in \mathcal{L}_{\infty} : \|d\|_{\infty} \leq D\}\)</span>, for any <span class="math inline">\(D &gt; 0\)</span>. A sequence of integers <span class="math inline">\(1, \ldots, n\)</span> is denoted as <span class="math inline">\(\overline{1, n}\)</span>. The function <span class="math inline">\(\lceil s \rfloor^{\beta} := |s|^{\beta}\operatorname{sign}(s)\)</span>, for any <span class="math inline">\(s \in \mathbb{R}\)</span> and <span class="math inline">\(\beta \in \mathbb{R}_{\geq 0}\)</span>, and <span class="math inline">\(\lceil s \rfloor^{\beta} := [\lceil s_1 \rfloor^{\beta} \quad \ldots \quad \lceil s_n \rfloor^{\beta}]^T\)</span>, for any <span class="math inline">\(s \in \mathbb{R}^n\)</span>.</p>
+<h2 data-number="2.2" id="definitions"><span class="header-section-number">2.2</span> Definitions</h2>
+<p>A continuous function <span class="math inline">\(\alpha: \mathbb{R}_+ \to \mathbb{R}_+\)</span> belongs to class <span class="math inline">\(\mathrm{K}\)</span> if it is strictly increasing and <span class="math inline">\(\alpha(0) = 0\)</span>; it belongs to class <span class="math inline">\(\mathrm{K}_\infty\)</span> if it is also unbounded. A continuous function <span class="math inline">\(\beta: \mathbb{R}_+ \times \mathbb{R}_+ \to \mathbb{R}_+\)</span> belongs to class <span class="math inline">\(\mathrm{KL}\)</span> if for each fixed value of <span class="math inline">\(s\)</span>, <span class="math inline">\(\beta(\cdot, s) \in K\)</span>, and <span class="math inline">\(\beta(r, \cdot)\)</span> is strictly decreasing toward zero for any fixed value of <span class="math inline">\(r \in \mathbb{R}_+\)</span>. The function <span class="math inline">\(\beta\)</span> belongs to class <span class="math inline">\(\mathrm{KL_T}\)</span> if for each fixed value of <span class="math inline">\(s\)</span>, <span class="math inline">\(\beta(\cdot, s) \in K\)</span>, and for each fixed value of <span class="math inline">\(r\)</span>, there exists <span class="math inline">\(0 &lt; T(r) &lt; \infty\)</span> such that <span class="math inline">\(\beta(r, s)\)</span> decreases toward zero with respect to <span class="math inline">\(s &lt; T(r)\)</span>, and <span class="math inline">\(\beta(r, s) = 0\)</span> for all <span class="math inline">\(s \geq T(r)\)</span>.</p>
+<p>The following time-varying differential equation is considered, represented as <span class="citation" data-cites="khalil2015nonlinear">[29]</span>: <span class="math display">\[\label{eq:3}
+    \frac{{dx(t)}}{{dt}} = f(t, x(t)), \quad t \geq t_0, \quad t_0 \in \mathbb{R}, \tag{2}\]</span> where <span class="math inline">\(x(t) \in \mathbb{R}^n\)</span> is the state, <span class="math inline">\(f: \mathbb{R}_{\geq 0} \times \mathbb{R}^n \rightarrow \mathbb{R}^n\)</span> is a continuous function with respect to <span class="math inline">\(x\)</span> and measurable with respect to <span class="math inline">\(t\)</span>, and moreover <span class="math inline">\(f(t, 0) = 0\)</span>. It is assumed that the solution of (2), for an initial condition <span class="math inline">\(x_0 \in \mathbb{R}^n\)</span> at a time <span class="math inline">\(t_0 \in \mathbb{R}\)</span>, is given by <span class="math inline">\(x(t, t_0, x_0)\)</span>, and is defined on some time interval <span class="math inline">\([t_0, t_0 + T)\)</span>, where <span class="math inline">\(0 \leq T &lt; \infty\)</span>. Let <span class="math inline">\(\Omega\)</span> be an open subset of <span class="math inline">\(\mathbb{R}^n\)</span>, such that <span class="math inline">\(0 \in \Omega\)</span>.</p>
+<div id="def-1" class="definicion">
+<p><strong>Definition 1</strong>. <em><span class="citation" data-cites="khalil2015nonlinear">[29]</span>, <span class="citation" data-cites="polyakov2011nonlinear">[30]</span>. <em>At the equilibrium point <span class="math inline">\(x = 0\)</span>, the system (2) is said to be:</em></em></p>
+<ul>
+<li><p><em>Uniformly Stable (US), <span>if for any <span class="math inline">\(\epsilon &gt; 0\)</span>, there exists a <span class="math inline">\(\delta(\epsilon)\)</span> such that for any <span class="math inline">\(x_0 \in \Omega\)</span>, if <span class="math inline">\(||x_0|| \leq \delta(\epsilon)\)</span>, then <span class="math inline">\(||x(t, t_0, x_0)|| \leq \epsilon\)</span> for all <span class="math inline">\(t \geq t_0\)</span>, for any <span class="math inline">\(t_0 \in \mathbb{R}\)</span>.</span></em></p></li>
+<li><p><em>Uniformly Exponentially Stable (UES), <em>if it satisfies the US condition and has exponential convergence from <span class="math inline">\(\Omega\)</span>, that is, for any <span class="math inline">\(x_0 \in \Omega\)</span>, it holds that <span class="math inline">\(||x(t, t_0, x_0)|| \leq k \cdot ||x_0|| \cdot e^{-\gamma(t - t_0)}\)</span> with <span class="math inline">\(k, \gamma &gt; 0\)</span> for all <span class="math inline">\(t \geq t_0\)</span> and any <span class="math inline">\(t_0 \in \mathbb{R}\)</span>.</em></em></p></li>
+<li><p><em>Uniformly Finite-Time Stable (UFTS), <em>if it satisfies the US condition and converges in finite time from <span class="math inline">\(\Omega\)</span>, that is, for any <span class="math inline">\(x_0 \in \Omega\)</span>, there exists a <span class="math inline">\(0 \leq T_{x_0} &lt; +\infty\)</span> such that <span class="math inline">\(x(t, t_0, x_0) = 0\)</span> for all <span class="math inline">\(t \geq t_0 + T_{x_0}\)</span> and any <span class="math inline">\(t_0 \in \mathbb{R}\)</span>. The function <span class="math inline">\(T_0(x_0) = \inf\{T_{x_0} \geq 0 : x(t, t_0, x_0) = 0, \forall t \geq t_0 + T_{x_0}\}\)</span> is called the settling time of system (2).</em></em></p></li>
+</ul>
+<p><em>If <span class="math inline">\(\Omega = \mathbb{R}^n\)</span>, then <span class="math inline">\(x = 0\)</span> is said to be globally US (GUS), UES (GUES), or UFTS (GUFTS), respectively.</em></p>
+</div>
+<div class="definicion">
+<p><strong>Definition 2</strong>. <em><em><span class="citation" data-cites="bernuau2013">[31]</span></em> Consider the system <span class="math display">\[\label{eq:3.1}
+    \frac{{dx(t)}}{{dt}} = f(t, x(t), u) \tag{3}\]</span> System (3) is said to be input-to-state stable (ISS) if, for any <span class="math inline">\(w\in \mathrm{L}_{\infty}\)</span>, there exist functions <span class="math inline">\(\beta \in \mathrm{KL}\)</span> and <span class="math inline">\(\gamma \in \mathrm{K}\)</span> such that <span class="math display">\[||x(t,x_{0},w)||\leq \beta(||x_{0}||,t)+\gamma(||w||_{\infty}),\ \forall t\geq 0.\]</span> Moreover, if <span class="math inline">\(\beta \in \mathrm{KL_{T}}\)</span>, system (2) is said to be finite-time input-to-state stable (FT-ISS).</em></p>
+</div>
+<div id="def-2" class="definicion">
+<p><strong>Definition 3</strong>. <em><em><span class="citation" data-cites="ren2008distributed">[32]</span> A formation graph <span class="math inline">\(\mathcal{G}={\{N,E,C\}}\)</span> consists of a set of nodes <span class="math inline">\(N = \{R_1, \ldots, R_n\}\)</span>, which correspond to each agent; a set of edges <span class="math inline">\(E = \{(R_j R_i) \in N \times N ,|, i = j\}\)</span>, which indicates that agent <span class="math inline">\(R_i\)</span> receives information from agent <span class="math inline">\(R_j\)</span>, and a set of labels <span class="math inline">\(C = \{c_{ji} \in \mathbb{R}^3 ,|, (R_j R_i) \in N \times N, i = j\}\)</span>, which represents a desired relative position vector of agent <span class="math inline">\(R_i\)</span> with respect to agent <span class="math inline">\(R_j\)</span>. Moreover, let <span class="math inline">\(N_i \subset N\)</span> be the set of detectable positions of agent <span class="math inline">\(R_i\)</span>.</em></em></p>
+</div>
+<h1 data-number="3" id="cap-modelado-y-control"><span class="header-section-number">3</span> Formation control in multi-quadrotor systems</h1>
+<p>This chapter addresses the modeling and formation control of multi-quadrotor systems. Each quadrotor is described by a simplified dynamics presented in Section 1.2. Six finite-time sliding-mode observers are used. A control strategy based on three PID controllers and three continuous sliding-mode controllers (which can be TC, STA, STSMC, or NTSMC) is proposed.</p>
+<h2 data-number="3.1" id="modelado-de-un-grupo-de-quad-rotors"><span class="header-section-number">3.1</span> Modeling of a group of quadrotors</h2>
+<p>The equations describing the dynamics of a group of <em>n</em> quadrotors are given by (for modeling details see <span class="citation" data-cites="carrillo2013quad">[6]</span>):</p>
+<p><span class="math display">\begin{align}
+        \boldsymbol{\dot{\xi}}_{1i}  &amp;= \boldsymbol{\xi}_{2i} , \tag{4a}\\
+        \boldsymbol{\dot{\xi}}_{2i}  &amp;= \boldsymbol{g}_{\boldsymbol{\xi} i}(\boldsymbol{\eta}_{1i})u_{mi}-\boldsymbol{G}_{i} - \boldsymbol{\Lambda}_{\boldsymbol{\xi} i}\boldsymbol{\xi}_{2i} + \boldsymbol{d}_{\xi i}, \tag{4b}\\
+        \boldsymbol{\dot{\eta}}_{1i} &amp;= \boldsymbol{\eta}_{2i}, \tag{4c}\\
+        \boldsymbol{\dot{\eta}}_{2i} &amp;= \boldsymbol{J}_i\boldsymbol{\tau}_i + \boldsymbol{\Xi}_i \boldsymbol{w}_{\boldsymbol{\eta} i}(\boldsymbol{\eta}_{2i}) - \boldsymbol{\Lambda}_{\boldsymbol{\eta} i}\boldsymbol{\eta}_{2i} + \boldsymbol{d}_{\eta i}, \tag{4d}\\
+        Y_i &amp;= [\boldsymbol{\xi_{1i}}^\top  \quad \boldsymbol{\eta}_{1i}^\top]^\top, \tag{4e}
+\end{align}</span></p>
+<p>with <span class="math inline">\(i =\overline{1,n}\)</span>, where <span class="math inline">\(\boldsymbol{\xi}_{1i} := [x_i \quad y_i \quad z_i]^{\top}~ \in \mathbb{R}^3\)</span>, <span class="math inline">\(\boldsymbol{\xi}_{2i} := [\dot{x}_{i} \quad \dot{y}_{i} \quad \dot{z}_{i}]^{\top}~ \in \mathbb{R}^3\)</span>, <span class="math inline">\(\boldsymbol{\eta}_{1i} := [\phi_{i} \quad \theta_{i} \quad \psi_{i}]^{\top}~ \in \mathbb{R}^3\)</span>, <span class="math inline">\(\boldsymbol{\eta}_{2i} := [\dot{\phi}_{i} \quad \dot{\theta}_{i},~\dot{\psi}_{i}]^{\top}~ \in \mathbb{R}^3\)</span>, <span class="math inline">\(\boldsymbol{d}_{\xi_{i}} := [d_{x_{i}} \quad d_{y_{i}} \quad d_{z_{i}}]^{\top}~ \in \mathbb{R}^3\)</span> and <span class="math inline">\(\boldsymbol{d}_{\eta_i} := [d_{\phi_i} \quad d_{\theta_i} \quad d_{\psi_i}]^{\top}~ \in \mathbb{R}^3\)</span>. The terms <span class="math inline">\(x_{i}, y_{i} \in \mathbb{R}\)</span> denote the coordinates in the horizontal plane, <span class="math inline">\(z_{i} \in \mathbb{R}\)</span> describes the vertical position; <span class="math inline">\(\phi_{i}, \theta_{i}\)</span> and <span class="math inline">\(\psi_{i} \in \mathbb{R}\)</span> represent the tilt angles around the <span class="math inline">\(X\)</span> axis (roll), the <span class="math inline">\(Y\)</span> axis (pitch), and the <span class="math inline">\(Z\)</span> axis (yaw), respectively. On the other hand, <span class="math inline">\(\boldsymbol{G}_{i} := [0 \quad 0 \quad g]^{\top} \in \mathbb{R}^3\)</span>, <span class="math inline">\(\boldsymbol{J}_{i} := \operatorname{diag}(J_{xi}^{-1},~ J_{yi}^{-1},~J_{zi}^{-1}) \in \mathbb{R}^{3\times 3}\)</span> and <span class="math inline">\(\boldsymbol{\tau}_i := [\tau_{\phi_{i}} \quad \tau_{\theta_{i}} \quad \tau_{\psi_{i}}]^{\top} \in \mathbb{R}^3\)</span> correspond to the gravity vector, the inertia matrix, and the angular momentum vector, with <span class="math inline">\(g\)</span> as the gravitational acceleration, <span class="math inline">\(J_{x_{i}}\)</span>, <span class="math inline">\(J_{y_{i}}\)</span> and <span class="math inline">\(J_{z_{i}}\)</span> as the moments of inertia about the <span class="math inline">\(X\)</span>, <span class="math inline">\(Y\)</span> and <span class="math inline">\(Z\)</span> axes, while <span class="math inline">\(\tau_{\phi_{i}}\)</span>, <span class="math inline">\(\tau_{\theta_{i}}\)</span> and <span class="math inline">\(\tau_{\psi_{i}} \in \mathbb{R}\)</span> are the roll, pitch, and yaw angular moments, respectively. The term <span class="math inline">\(u_{m_{i}} := {u_{i}}/{m_{i}}\)</span>, where <span class="math inline">\(u_i \in \mathbb{R}\)</span>, represents the thrust in <span class="math inline">\(Z\)</span> and <span class="math inline">\(m_i \in \mathbb{R}^+\)</span> represents the mass of each quadrotor. The matrices <span class="math inline">\(\boldsymbol{\Lambda}_{\xi i} := \operatorname{diag}{(a_{x i},a_{y i},a_{z i})} \in \mathbb{R}^{3\times 3}\)</span>, <span class="math inline">\(\boldsymbol{\Lambda}_{\eta i} := \operatorname{diag}{(a_{\phi i},a_{\theta i},a_{\psi i})} \in \mathbb{R}^{3\times 3}\)</span> and <span class="math inline">\(\boldsymbol{\Xi} i := \operatorname{diag}{(b_{\phi i}, b_{\theta i}, b_{\psi i})} \in \mathbb{R}^{3\times 3}\)</span> are given by the aerodynamic damping coefficients <span class="math inline">\(a_{x i}\)</span>, <span class="math inline">\(a_{y i}\)</span> and <span class="math inline">\(a_{z i}\)</span>, the rotational moment drag coefficients <span class="math inline">\(a_{\phi i}\)</span>, <span class="math inline">\(a_{\theta i}\)</span> and <span class="math inline">\(a_{\psi i}\)</span>, and the inertia coefficients <span class="math inline">\(b_{\phi i} := ({J_{y i} - J_{z i}})/{J_{x i}}\)</span>, <span class="math inline">\(b_{\theta i} := ({J_{z i} - J_{x i}})/{J_{y i}}\)</span> and <span class="math inline">\(b_{\psi i} := ({J_{x i} - J_{y i}})/{J_{z i}}\)</span>. The functions <span class="math inline">\(\boldsymbol{g}_{\boldsymbol{\boldsymbol{\xi}} i}  : \mathbb{R}^3 \rightarrow \mathbb{R}^3\)</span> and <span class="math inline">\(\boldsymbol{w}_{\boldsymbol{\eta} i} : \mathbb{R}^3 \rightarrow \mathbb{R}^3\)</span> are defined as follows: <span class="math inline">\(\boldsymbol{g}_{\boldsymbol{\xi i}}(\boldsymbol{\eta}_1 i) := [\cos\phi_{i} \operatorname{sen}\theta_{i} \cos\psi_{i} + \operatorname{sen}\phi_{i} \operatorname{sen}\psi_{i}  \quad \cos\phi_{i} \operatorname{sen}\theta_{i} \operatorname{sen}\psi_{i} - \operatorname{sen}\phi_{i} \cos\psi_{i} \quad  \cos\phi_{i} \cos\theta_{i} ]^{\top}\)</span> and <span class="math inline">\(\boldsymbol{w}_{\boldsymbol{\eta} i}(\boldsymbol{\eta}_{2 i}):=[\dot{\theta}_{i}\dot{\psi}_{i} \quad \dot{\phi}_{i}\dot{\psi}_{i} \quad \dot{\psi}_{i}\dot{\theta}_{i} ]^{\top}\)</span>. The terms <span class="math inline">\(d_{x}\)</span>, <span class="math inline">\(d_{y}\)</span>, <span class="math inline">\(d_{z}\)</span>, <span class="math inline">\(d_{\phi_i}\)</span>, <span class="math inline">\(d_{\theta_i}\)</span> and <span class="math inline">\(d_{\psi_i} ~ \in \mathbb{R}\)</span> represent the disturbances given by uncertainties and external disturbances, <em>e.g.</em>, some unmodeled dynamics and wind gusts. The variable <span class="math inline">\(Y_{i}\)</span> represents the system output vector, which measures the position and attitude of each agent.</p>
+<div id="sup-1" class="suposicion">
+<p><strong>Assumption 1</strong>. <em><em>The leader is the only agent capable of knowing the desired trajectory.</em></em></p>
+</div>
+<div id="sup-2" class="suposicion">
+<p><strong>Assumption 2</strong>. <em><em>In the graph under study, the leader has a directed spanning tree, that is, there are directed paths from the leader to all other agents (Figure 3).</em></em></p>
+</div>
+<div id="obs-1-1" class="observacion">
+<p><strong>Remark 1</strong>. <em><em>Assumption 2 indicates that no agent will be isolated. In this way, it is ensured that the agents converge to the desired formation using the minimum amount of information that the agents need to know.</em></em></p>
+</div>
+<div id="sup-trayectoria" class="suposicion">
+<p><strong>Assumption 3</strong>. <em>The desired trajectories <span class="math inline">\(x_d(t)\)</span>, <span class="math inline">\(y_d(t)\)</span>, <span class="math inline">\(z_d(t)\)</span> and <span class="math inline">\(\psi_d(t)\)</span> are bounded and continuously differentiable.</em></p>
+</div>
+<div id="sup-perturbaciones" class="suposicion">
+<p><strong>Assumption 4</strong>. <em>The disturbances are uniformly bounded and Lipschitz, <em>i.e.</em>, <span class="math inline">\(d_x \in \mathcal{L}_{D_1}\)</span>, <span class="math inline">\(d_y \in \mathcal{L}_{D_2}\)</span>, <span class="math inline">\(d_z \in \mathcal{L}_{D_3}\)</span>, <span class="math inline">\(d_{\phi} \in \mathcal{L}_{D_4}\)</span>, <span class="math inline">\(d_{\theta} \in \mathcal{L}_{D_5}\)</span>, <span class="math inline">\(d_{\psi} \in \mathcal{L}_{D_6}\)</span>, <span class="math inline">\(\dot{d}_x \in \mathcal{L}_{\bar{D}_1}\)</span>, <span class="math inline">\(\dot{d}_y \in \mathcal{L}_{\bar{D}_2}\)</span>, <span class="math inline">\(\dot{d}_z \in \mathcal{L}_{\bar{D}_3}\)</span>, <span class="math inline">\(\dot{\phi} \in \mathcal{L}_{\bar{D}_4}\)</span>, <span class="math inline">\(\dot{\theta} \in \mathcal{L}_{\bar{D}_5}\)</span>, <span class="math inline">\(\dot{\psi} \in \mathcal{L}_{\bar{D}_6}\)</span>; with known positive constants <span class="math inline">\(D_j\)</span> and <span class="math inline">\(\bar{D}_j\)</span>, <span class="math inline">\(j = \overline{1, 6}\)</span>.</em></p>
+</div>
+<p>Next, the following statements are introduced:</p>
+<ul>
+<li><p>Agent <span class="math inline">\(R_{n}\)</span> is considered the leader agent, and the other agents as followers.</p></li>
+<li><p>The desired formation vectors <span class="math inline">\(C_{j i}\)</span> are time-invariant, that is, <span class="math inline">\(C_{j i} = [c_{j i x} \quad c_{j i y} \quad c_{j i z}]^\top\)</span>.</p></li>
+<li><p>The desired trajectory, for the leader agent <span class="math inline">\(R_{n}\)</span>, is defined as <span class="math inline">\(\boldsymbol{\xi}_{d} = [x_{d} \quad y_{d} \quad z_{d}]^T\)</span> and <span class="math inline">\(\boldsymbol{\eta}_d = [\phi_{\star_n} \quad \theta_{\star_n} \quad \psi_d]\)</span>, where <span class="math inline">\(x_d\)</span>, <span class="math inline">\(y_d\)</span>, <span class="math inline">\(z_d\)</span>, and <span class="math inline">\(\psi_d \in \mathcal{C}^\infty\)</span> are some desired trajectories to be followed, while <span class="math inline">\(\phi_{\star_n}\)</span> and <span class="math inline">\(\theta_{\star_n}\)</span> are reference signals generated with virtual controls (to be designed later). The desired trajectory is continuous and bounded.</p></li>
+</ul>
+<h2 data-number="3.2" id="sec-estrategia-de-control"><span class="header-section-number">3.2</span> Control strategy</h2>
+<p>The design of the formation control, for a group of <span class="math inline">\(n\)</span> quadrotors, is based on the formation graph presented in Figure 3.</p>
+<figure id="fig-grafo">
+<img src="img/R2a.jpg" loading="lazy" />
+<figcaption>Figure 3. Leader-centered formation graph.</figcaption>
+</figure>
+<h3 data-number="3.2.1" id="sec-observador"><span class="header-section-number">3.2.1</span> Finite-time sliding-mode observer (FT-SMO)</h3>
+<p>The system is affected by unknown disturbances that impact the flight capability of each quadrotor agent. To address these problems, the use of observers is essential. In our case, the presented observer estimates the velocities in the <span class="math inline">\(x\)</span>, <span class="math inline">\(y\)</span>, <span class="math inline">\(z\)</span> coordinates and the angular velocities in <span class="math inline">\(\phi\)</span>, <span class="math inline">\(\theta\)</span>, and <span class="math inline">\(\psi\)</span>, in addition to the disturbances present in the system.</p>
+<p>Consider system (4), for which the following observer <span class="citation" data-cites="rios2018continuous">[24]</span> is proposed:</p>
+<p><span class="math display">\begin{align}
+        \dot{\hat{\boldsymbol{\xi}}}_{1 i} &amp;= \hat{\boldsymbol{\xi}}_{2 i} + \hat{\boldsymbol{K}}_{1 i} \boldsymbol{\varphi}_{1 i}(\hat{\boldsymbol{e}}_{\boldsymbol{\xi} i}) ,\label{eq:1a} \tag{5a}\\
+        \dot{\hat{\boldsymbol{\xi}}}_{2 i} &amp;= \boldsymbol{g}_{\boldsymbol{\xi} i}(\boldsymbol{\eta}_{1 i})u_{m i} - \boldsymbol{G} - \boldsymbol{\Lambda}_{\boldsymbol{\xi} i} \hat{\boldsymbol{\xi}}_{2 i} + \hat{\boldsymbol{\xi}}_{3 i}  + \hat{\boldsymbol{K}}_{2 i} \boldsymbol{\varphi}_{2 i}(\hat{\boldsymbol{e}}_{\boldsymbol{\xi} i}),\label{eq:1b} \tag{5b}\\
+        \dot{\hat{\boldsymbol{\xi}}}_{3 i} &amp;= \hat{\boldsymbol{K}}_{3 i} \boldsymbol{\varphi}_{3 i}(\hat{\boldsymbol{e}}_{\boldsymbol{\xi}i}) ,\label{eq:1c} \tag{5c}\\
+        \dot{\hat{\boldsymbol{\eta}}}_{1 i} &amp;=\hat{\boldsymbol{\eta}}_{2 i} + \hat{\boldsymbol{K}}_{4 i} \boldsymbol{\varphi}_{1 i}(\hat{\boldsymbol{e}}_{\boldsymbol{\eta} i}) ,\label{eq:1d} \tag{5d}\\
+        \dot{\hat{\boldsymbol{\eta}}}_{2 i} &amp;= \boldsymbol{J}_i\boldsymbol{\tau}_i+\boldsymbol{\Xi}_i \boldsymbol{w}_{i}(\hat{\boldsymbol{\eta}}_{2i}) - \boldsymbol{\Lambda}_{\boldsymbol{\eta} i}\hat{\boldsymbol{\eta}}_{2i} + \hat{\boldsymbol{\eta}}_{3i}  +\hat{\boldsymbol{K}}_{5 i} \boldsymbol{\varphi}_{2 i}(\hat{\boldsymbol{e}}_{\boldsymbol{\eta}i}) ,\label{eq:1e} \tag{5e}\\
+        \dot{\hat{\boldsymbol{\eta}}}_{3 i} &amp;= \hat{\boldsymbol{K}}_{6 i} \boldsymbol{\varphi}_{3 i}(\hat{\boldsymbol{e}}_{\boldsymbol{\eta} i}) ,\label{eq:1f} \tag{5f}
+\end{align}</span></p>
+<p>where <span class="math inline">\(\hat{\boldsymbol{e}}_{\boldsymbol{\xi} i}:=\boldsymbol{\xi}_{1i}-\boldsymbol{\hat{\xi}}_{1i} \in \mathbb{R}^3\)</span> and <span class="math inline">\(\hat{\boldsymbol{e}}_{\boldsymbol{\eta} i}:=\boldsymbol{\eta}_{1i}-\boldsymbol{\hat{\eta}}_{1i} \in \mathbb{R}^3\)</span> are the output errors; the nonlinear output injections <span class="math inline">\(\boldsymbol{\varphi}_{1 i}\)</span>, <span class="math inline">\(\boldsymbol{\varphi}_{2 i}\)</span>, <span class="math inline">\(\boldsymbol{\varphi}_{3 i} : \mathbb{R}^3 \rightarrow \mathbb{R}^3\)</span> are given as <span class="math display">\[\boldsymbol{\varphi}_{1 i}(\boldsymbol{s}) := \lceil \boldsymbol{s} \rfloor ^{\frac{2}{3}}, \quad \boldsymbol{\varphi}_{2}(\boldsymbol{s}) := \lceil \boldsymbol{s} \rfloor ^{\frac{1}{3}}, \quad \boldsymbol{\varphi}_{3}(\boldsymbol{s}) := \lceil \boldsymbol{s} \rfloor ^{0}\]</span> with <span class="math inline">\(\lceil \boldsymbol{s} \rfloor ^{\gamma}:=[ \lceil s_{1} \rfloor ^{\gamma} \quad \lceil s_{2} \rfloor ^{\gamma} \quad \lceil s_{3} \rfloor ^{\gamma} ]^\top\)</span>, and a diagonal gain matrix <span class="math inline">\(\boldsymbol{\hat{K}}_{ji}= \operatorname{diag}{(k_{j1i},k_{j2i},k_{j3i})}\)</span> with <span class="math inline">\(j =\overline{1,6}\)</span>. The estimation state error is defined as <span class="math inline">\(\hat{\boldsymbol{e}}:= [\hat{\boldsymbol{e}}_{\boldsymbol{\xi} i}^\top \quad \hat{\boldsymbol{\varepsilon}}_{\boldsymbol{\xi} i}^\top \quad \hat{\boldsymbol{\epsilon}}_{\boldsymbol{\xi} i}^\top \quad \hat{\boldsymbol{e}}_{\boldsymbol{\eta} i}^\top \quad \hat{\boldsymbol{\varepsilon}}_{\boldsymbol{\eta} i}^\top  \quad  \hat{\boldsymbol{\epsilon}}_{\boldsymbol{\eta} i}^\top]^T\)</span>, where <span class="math inline">\(\hat{\boldsymbol{\varepsilon}}_{\boldsymbol{\xi} i} := \boldsymbol{\xi}_{2i} -\boldsymbol{\hat{\xi}}_{2i}\)</span> and <span class="math inline">\(\hat{\boldsymbol{\varepsilon}}_{\boldsymbol{\eta} i} := \boldsymbol{\eta}_{2i} -\boldsymbol{\hat{\eta}}_{2i}\)</span>, <span class="math inline">\(\hat{\boldsymbol{\epsilon}}_{\boldsymbol{\xi} i} := \boldsymbol{d}_{\xi i}(t) - \hat{\boldsymbol{\xi}}_{3 i}\)</span> and <span class="math inline">\(\hat{\boldsymbol{\epsilon}}_{\boldsymbol{\eta} i} := \boldsymbol{d}_{\eta i}(t) - \hat{\boldsymbol{\eta}}_{3 i}\)</span> are the linear and angular velocity errors, respectively.</p>
+<p>The estimated variables corresponding to the velocity <span class="math inline">\(\xi_{2 i}\)</span> of the system are given by (5b) and the angular velocities <span class="math inline">\(\eta_{2 i}\)</span> by (5e), and the variables corresponding to the disturbance estimation of the system are (5c) and (5f).</p>
+<p>Then, if observer (5) <span class="citation" data-cites="rios2018continuous">[24]</span> is applied to system (4), and the gains are selected as <span class="citation" data-cites="SEEBER2017241">[33]</span>:</p>
+<div class="center">
+<div class="tbl"><table>
+<tbody>
+<tr class="odd">
+<td style="text-align: center;"><span class="math inline">\(\hat{k}_{11i} = 2\bar{D}_{x}^{\frac{1}{3}}\)</span>,</td>
+<td style="text-align: center;"><span class="math inline">\(\hat{k}_{12i} = 1.5\bar{D}_{x}^{\frac{1}{2}}\)</span>,</td>
+<td style="text-align: center;"><span class="math inline">\(\hat{k}_{13i} = 1.1\bar{D}_{x}\)</span>,</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;"><span class="math inline">\(\hat{k}_{21i} = 2\bar{D}_{y}^{\frac{1}{3}}\)</span>,</td>
+<td style="text-align: center;"><span class="math inline">\(\hat{k}_{22i} = 1.5\bar{D}_{y}^{\frac{1}{2}}\)</span>,</td>
+<td style="text-align: center;"><span class="math inline">\(\hat{k}_{23i} = 1.1\bar{D}_{y}\)</span>,</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;"><span class="math inline">\(\hat{k}_{31i} = 2\bar{D}_{z}^{\frac{1}{3}}\)</span>,</td>
+<td style="text-align: center;"><span class="math inline">\(\hat{k}_{32i} = 1.5\bar{D}_{z}^{\frac{1}{2}}\)</span>,</td>
+<td style="text-align: center;"><span class="math inline">\(\hat{k}_{33i} = 1.1\bar{D}_{z}\)</span>,</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;"><span class="math inline">\(\hat{k}_{41i} = 2\bar{D}_{\phi}^{\frac{1}{3}}\)</span>,</td>
+<td style="text-align: center;"><span class="math inline">\(\hat{k}_{42i} = 1.5\bar{D}_{\phi}^{\frac{1}{2}}\)</span>,</td>
+<td style="text-align: center;"><span class="math inline">\(\hat{k}_{43i} = 1.1\bar{D}_{\phi},\)</span></td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;"><span class="math inline">\(\hat{k}_{51i} = 2\bar{D}_{\theta}^{\frac{1}{3}}\)</span>,</td>
+<td style="text-align: center;"><span class="math inline">\(\hat{k}_{52i} = 1.5\bar{D}_{\theta}^{\frac{1}{2}}\)</span>,</td>
+<td style="text-align: center;"><span class="math inline">\(\hat{k}_{53i} = 1.1\bar{D}_{\theta},\)</span></td>
+</tr>
+<tr class="even">
+<td style="text-align: center;"><span class="math inline">\(\hat{k}_{61i} = 2\bar{D}_{\psi}^{\frac{1}{3}}\)</span>,</td>
+<td style="text-align: center;"><span class="math inline">\(\hat{k}_{62i} = 1.5\bar{D}_{\psi}^{\frac{1}{2}}\)</span>,</td>
+<td style="text-align: center;"><span class="math inline">\(\hat{k}_{63i} = 1.1\bar{D}_{\psi},\)</span></td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<p>and moreover Assumption 4 holds, <span class="math inline">\(\hat{\boldsymbol{e}}=0\)</span>, it is UFTS.</p>
+<h4 data-number="3.2.1.1" id="sec-identificacion-de-perturbaciones"><span class="header-section-number">3.2.1.1</span> Disturbance identification</h4>
+<p>Therefore, after some finite time, the estimation error dynamics can be written as follows <span class="math display">\[\begin{split}
+        \dot{\hat{\boldsymbol{e}}}_{\boldsymbol{\xi} i} &amp;= \hat{\boldsymbol{\varepsilon}}_{\boldsymbol{\xi} i} - \boldsymbol{\hat{K}}_{1 i} \boldsymbol{\varphi}_{1 i} (\boldsymbol{\hat{e}}_{\boldsymbol{\xi} i}) ,\\
+        \dot{\hat{\boldsymbol{\varepsilon}}}_{\boldsymbol{\xi} i} &amp;= \boldsymbol{\hat{\epsilon}}_{\boldsymbol{\xi} i} - \boldsymbol{\hat{K}}_{2i} \boldsymbol{\varphi}_{2 i} (\boldsymbol{\hat{e}}_{\boldsymbol{\xi} i}) , \\
+        \dot{\hat{\boldsymbol{\epsilon}}}_{\boldsymbol{\xi} i} &amp;= \boldsymbol{\dot{d}}_{\xi i} - \boldsymbol{\hat{K}}_{3i} \boldsymbol{\varphi}_{3 i} (\boldsymbol{\hat{e}}_{\boldsymbol{\xi} i}) ,\\
+        \dot{\hat{\boldsymbol{e}}}_{\boldsymbol{\eta} i} &amp;= \boldsymbol{\hat{\varepsilon}}_{\boldsymbol{\eta} i} - \boldsymbol{\hat{K}}_{4 i} \boldsymbol{\varphi}_{1 i} (\boldsymbol{\hat{e}}_{\boldsymbol{\eta} i}), \\
+        \dot{\hat{\boldsymbol{\varepsilon}}}_{\boldsymbol{\eta} i} &amp;= \boldsymbol{\hat{\epsilon}}_{\boldsymbol{\eta} i} - \boldsymbol{\hat{K}}_{5i} \boldsymbol{\varphi}_{2 i} (\boldsymbol{\hat{e}}_{\boldsymbol{\eta} i}) ,\\
+        \dot{\hat{\boldsymbol{\epsilon}}}_{\boldsymbol{\eta} i} &amp;= \boldsymbol{\dot{d}}_{\eta i} - \boldsymbol{\hat{K}}_{6i} \boldsymbol{\varphi}_{3 i} (\boldsymbol{\hat{e}}_{\boldsymbol{\eta} i}).
+    \end{split}\]</span></p>
+<p>Since this dynamics is UFTS, it holds that <span class="math inline">\(\hat{\boldsymbol{\xi}}_{1 i}(t) = \boldsymbol{\xi}_{1 i}(t)\)</span>, <span class="math inline">\(\hat{\boldsymbol{\xi}}_{2 i}(t) = \boldsymbol{\xi}_{2 i}(t)\)</span>, <span class="math inline">\(\hat{\boldsymbol{\xi}}_{3 i}(t) = \boldsymbol{d}_{\xi}(t)\)</span>, <span class="math inline">\(\hat{\boldsymbol{\eta}}_{1 i}(t) = \boldsymbol{\eta}_{1 i}(t)\)</span>, <span class="math inline">\(\hat{\boldsymbol{\eta}}_{2 i}(t) = \boldsymbol{\eta}_{2 i}(t)\)</span>, <span class="math inline">\(\hat{\boldsymbol{\eta}}_{3 i}(t) = \boldsymbol{d}_{\eta}(t)\)</span>, for all <span class="math inline">\(t\geq T_0 &gt;0\)</span>. If Assumption 4 holds, then the FT-SMO, given by (5), provides the following disturbance identifications for all <span class="math inline">\(t \geq T_0\)</span></p>
+<p><span class="math display">\begin{align}
+    \hat{\boldsymbol{\xi}}_{3i}(t) &amp;= [\hat{\xi}_{x3i}(t) \quad \hat{\xi}_{y3i}(t) \quad \hat{\xi}_{z3i}(t)]^\top = [d_{x}(t) \quad d_{y}(t) \quad d_{z}(t)]^\top , \tag{6a}\\
+    \hat{\boldsymbol{\eta}}_{3i}(t) &amp;= [\hat{\eta}_{\phi 3i}(t) \quad \hat{\eta}_{\theta 3i}(t) \quad \hat{\eta}_{\psi 3i}(t)]^\top= [d_{\phi}(t) \quad d_{\theta}(t) \quad d_{\psi}(t)]^\top. \tag{6b}
+\end{align}</span></p>
+<p>Such identification terms can be used to strengthen any type of control strategy.</p>
+<h3 data-number="3.2.2" id="diseno-de-controladores"><span class="header-section-number">3.2.2</span> Controller design</h3>
+<p>Considering the leader-centered formation graph, the formation errors for agents <span class="math inline">\(j=\overline{1,n-1}\)</span> are given as follows <span class="math display">\[\begin{split}
+        \boldsymbol{e}_{\boldsymbol{\xi} j} &amp;= \boldsymbol{\xi}_{1 j} - \boldsymbol{\xi}_{1 n} - C_{n,j}, \\
+        \boldsymbol{\varepsilon}_{\boldsymbol{\xi} j} &amp;= \hat{\boldsymbol{\xi}}_{2 j} - \boldsymbol{\xi}_{2 n}, \\
+        \boldsymbol{e}_{\boldsymbol{\eta} j} &amp;= \boldsymbol{\eta}_{1 j} - \boldsymbol{\eta}_{d j},\\
+        \boldsymbol{\varepsilon}_{\boldsymbol{\eta} j} &amp;= \hat{\boldsymbol{\eta}}_{2 j} - \dot{\boldsymbol{\eta}}_{d j},        
+    \end{split}\]</span> where <span class="math inline">\(C_{n,j}\in\mathbb{R}^{3}\)</span> is the formation vector with respect to the leader and <span class="math inline">\(\boldsymbol{\eta}_{d j}=[\phi_{\star j} \quad \theta_{\star j} \quad \psi_{n}]^{\top}\in\mathbb{R}^{3}\)</span>, with <span class="math inline">\(\phi_{\star j}\)</span> and <span class="math inline">\(\theta_{\star j}\)</span> as certain reference signals designed later.</p>
+<p>On the other hand, the tracking error of the leader agent <span class="math inline">\(n\)</span> is given as <span class="math display">\[\begin{split}
+        \boldsymbol{e}_{\boldsymbol{\xi} n} &amp;= \boldsymbol{\xi}_{1 n} - \boldsymbol{\xi}_{d},\\
+        \boldsymbol{\varepsilon}_{\boldsymbol{\xi} n} &amp;= \hat{\boldsymbol{\xi}}_{2 n} - \dot{\boldsymbol{\xi}}_{d},\\
+        \boldsymbol{e}_{\boldsymbol{\eta} n} &amp;= \boldsymbol{\eta}_{1 n} - \boldsymbol{\eta}_{d},\\
+        \boldsymbol{\varepsilon}_{\boldsymbol{\eta} n} &amp;= \hat{\boldsymbol{\eta}}_{2 n} - \dot{\boldsymbol{\eta}}_{d},
+    \end{split}\]</span> where <span class="math inline">\(\boldsymbol{\eta}_{d}=[\phi_{\star n} \quad \theta_{\star n} \quad \psi_{d}]^{\top}\in\mathbb{R}^{3}\)</span>, with references <span class="math inline">\(\phi_{\star n}\)</span> and <span class="math inline">\(\theta_{\star n}\)</span> also designed later.</p>
+<p>Due to the underactuated nature of quadrotors (four inputs for 6 degrees of freedom), two degrees of freedom cannot be “controlled” independently. Usually, these degrees of freedom correspond to pitch and roll, which are designed as reference signals, denoted as <span class="math inline">\(\phi_{\star_i}\)</span>, <span class="math inline">\(\theta_{\star_i}\)</span>.</p>
+<p>Thus, a virtual controller is introduced into the position error dynamics: <span class="math inline">\(\nu_i := [\nu_{xi} \quad \nu_{yi} \quad \nu_{zi}]^T\)</span>, and then the formation error dynamics can be written as: <span id="eq-dinamica-del-error" label="eq: Dinamica del error"></span> <span class="math display">\begin{align}
+    \dot{\boldsymbol{e}}_{\boldsymbol{\xi} i} &amp;= \boldsymbol{\varepsilon}_{\boldsymbol{\xi} i},\label{eq:DR:a} \tag{7a}\\
+    \dot{\boldsymbol{\varepsilon}}_{\boldsymbol{\xi} i} &amp;= \nu_{i} + \boldsymbol{w}_{\boldsymbol{\xi} i}(\boldsymbol{\eta}_{1 i}, u_{mi}, \nu_i)  - \boldsymbol{\Lambda}_{\boldsymbol{\xi} i}\boldsymbol{\xi}_{2 i} + \boldsymbol{d}_{\xi i} - \ddot{\boldsymbol{\xi}}_{d i} , \label{eq:DR:b} \tag{7b}\\
+    \dot{\boldsymbol{e}}_{\boldsymbol{\eta} i} &amp;= \boldsymbol{\varepsilon}_{\boldsymbol{\eta} i},\label{eq:DR:c} \tag{7c}\\
+    \dot{\boldsymbol{\varepsilon}}_{\boldsymbol{\eta} i} &amp;= \boldsymbol{J}_{i}\boldsymbol{\tau}_{i} + \boldsymbol{\Xi}_{i} \boldsymbol{w}_{\boldsymbol{\eta} i}(\boldsymbol{\eta}_{2 i}) - \boldsymbol{\Lambda}_{\boldsymbol{\eta} i} \boldsymbol{\eta_{2 i}} + \boldsymbol{d}_{\eta i} - \ddot{\boldsymbol{\eta}}_{d i},\label{eq:DR:d} \tag{7d}
+\end{align}</span></p>
+<p>where <span class="math inline">\(\boldsymbol{w}_{\boldsymbol{\xi} i}(\boldsymbol{\eta}_{1 i},u_{m i},\nu_{i}) = \boldsymbol{g}_{\boldsymbol{\xi} i}(\boldsymbol{\eta}_{1 i})u_{m i} - \boldsymbol{G}_{i} - \nu_{i}\)</span>. Then, the virtual control <span class="math inline">\(\nu_i\)</span> is selected as: <span id="eq-nu1" label="eq: nu1"></span> <span class="math display">\begin{align}
+        \nu_{x i} &amp;= u_{m i} (\cos{\phi_{\star i}}\operatorname{sen}{\theta_{\star i}}\cos{\psi_{di}} + \operatorname{sen}{\phi_{\star i}}\operatorname{sen}{\psi_{di}}), \label{eq:nu_xi} \tag{8a}\\
+        \nu_{y i} &amp;= u_{m i} (\operatorname{sen}{\phi_{\star i}}\operatorname{sen}{\theta_{\star i}}\operatorname{sen}{\psi_{di}} - \cos{\phi_{\star i}}\cos{\psi_{di}}), \label{eq:nu_yi} \tag{8b}\\
+        \nu_{z i} &amp;= u_{m i} (\cos{\phi_{\star i}}\cos{\theta_{\star i}}), \label{eq:nu_zi} \tag{8c}
+\end{align}</span></p>
+<p>where <span class="math inline">\(i = \overline{1,n}\)</span>, <span class="math inline">\(\psi_{di} = \psi_{n}\)</span>, except in <span class="math inline">\(i=n\)</span>, with <span class="math inline">\(\psi_{n} = \psi_{d}\)</span>; the reference signals for each agent are obtained by solving (8) for <span class="math inline">\(u_i\)</span>, <span class="math inline">\(\phi_{\star i}\)</span>, <span class="math inline">\(\theta_{\star i}\)</span>:</p>
+<p><span class="math display">\begin{align}
+    u_i&amp;=m_i \sqrt{\nu_{x i}^2 + \nu_{y i}^2 +(\nu_{z i}+g)^2},\label{eq:SR:a} \tag{9a}\\
+    \phi_{\star i} &amp;= \arcsen{[u_{m_i}^{-1}(\nu_{x i}\operatorname{sen}{\psi_{di}}-\nu_{y i}\cos{\psi_{di}})]},\label{eq:SR:b} \tag{9b}\\
+    \theta_{\star i} &amp;= \arctan{[(\nu_{z i}+g)^{-1}(\nu_{x i}\cos{\psi_{di}}+\nu_{y i}\operatorname{sen}{\psi_{di}})]}\label{eq:SR:c}. \tag{9c}
+\end{align}</span></p>
+<p>The signals obtained in (9) will help the system achieve the desired flight objective. On the other hand, the virtual control <span class="math inline">\(\nu_i\)</span>, and the angular momentum <span class="math inline">\(\boldsymbol{\tau}_{i}\)</span> have the following form</p>
+<p><span class="math display">\begin{align}
+    \nu_i &amp;= \bar{\nu}_i + \boldsymbol{\Lambda}_{\boldsymbol{\xi} i}\boldsymbol{\xi}_{2i} + \ddot{\boldsymbol{\xi}}_{di} - \hat{{\boldsymbol{\xi}}}_{3i} ,\label{eq:nu:a} \tag{10a}\\
+    \boldsymbol{\tau}_{i} &amp;=  \boldsymbol{J}_{i}^{-1}(\bar{\tau}_i - \boldsymbol{\Xi} \boldsymbol{w}_{\boldsymbol{\eta} i}(\boldsymbol{\eta}_{2 i}) + \boldsymbol{\Lambda}_{\boldsymbol{\eta} i} \boldsymbol{\eta}_{2 i} + \ddot{\boldsymbol{\eta}}_{d i} - \hat{\boldsymbol{\eta}}_{3 i}).\label{eq:tau:b} \tag{10b}
+\end{align}</span></p>
+<p>The auxiliary variables <span class="math inline">\(\bar{\nu}_i = [\bar{\nu}_{xi} \quad \bar{\nu}_{yi} \quad \bar{\nu}_{zi}]^\top\)</span> are designed as PIDs, given by:</p>
+<p><span class="math display">\begin{align}
+        \bar{\nu}_{xi} &amp;= k_{0xi} \epsilon_{xi} + k_{1xi} e_{xi} + k_{2xi} \varepsilon_{xi}, \label{eq:subeq:a} \tag{11a}\\
+        \bar{\nu}_{yi} &amp;= k_{0yi} \epsilon_{yi} + k_{1yi} e_{yi} + k_{2yi} \varepsilon_{yi}, \label{eq:subeq:b} \tag{11b}\\
+        \bar{\nu}_{zi} &amp;= k_{0zi} \epsilon_{zi} + k_{1zi} e_{zi} + k_{2zi} \varepsilon_{zi}, \label{eq:subeq:c} \tag{11c}
+\end{align}</span></p>
+<p>where <span class="math inline">\(\boldsymbol{e}_{\boldsymbol{\xi} i}=[e_{xi} \quad e_{yi} \quad e_{zi}]^{\top}\)</span>, <span class="math inline">\(\boldsymbol{\varepsilon}_{\boldsymbol{\xi} i} = [\varepsilon_{xi} \quad \varepsilon_{yi} \quad \varepsilon_{zi}]^{\top}\)</span>, <span class="math inline">\(\boldsymbol{\epsilon}_{\boldsymbol{\xi} i} = \int_{0}^{t} \boldsymbol{e}_{\boldsymbol{\xi} i}(\tau)d\tau=[\epsilon_{xi}\ \epsilon_{yi}\ \epsilon_{zi}]^{\top}\)</span>; the gains <span class="math inline">\(k_{0qi}\)</span>, <span class="math inline">\(k_{1qi}\)</span>, <span class="math inline">\(k_{2qi}\)</span>, with <span class="math inline">\(i= \overline{1,n}\)</span> and <span class="math inline">\(q = x, y, z\)</span>, are selected such that the matrices <span class="math display">\[\label{eq: matriz 1}
+        \begin{bmatrix}
+            0 &amp; 1 &amp; 0 \\
+            0 &amp; 0 &amp; 1 \\
+            k_{0qi} &amp; k_{1qi} &amp; k_{2qi}
+        \end{bmatrix}, \tag{12}\]</span> are Hurwitz for all <span class="math inline">\(i = \overline{1,n}\)</span> and <span class="math inline">\(q  = x,~ y,~ z\)</span></p>
+<p>The angular momenta <span class="math inline">\(\bar{\tau}= [\bar{\tau}_{\phi i} \quad \bar{\tau}_{\theta i} \quad \bar{\tau}_{\psi i}]^\top\)</span> will be designed using the following controllers</p>
+<ul>
+<li><p>PID: <span class="math display">\[\begin{split}
+            \Bar{\tau}_{l i} &amp;= k_{0li} \epsilon_{l i} + k_{1l i} e_{l i} + k_{2l i} \varepsilon_{l i}, ~ \forall ~l= \phi,~ \theta,~ \psi
+        \end{split}\label{eq:PID} \tag{13}\]</span> the gains <span class="math inline">\(k_{0li}\)</span>, <span class="math inline">\(k_{1li}\)</span>, <span class="math inline">\(k_{2li}\)</span>, with <span class="math inline">\(i= \overline{1,n}\)</span>, are such that the matrices:</p>
+<p><span class="math display">\[\begin{bmatrix}
+            0 &amp; 1 &amp; 0 \\
+            0 &amp; 0 &amp; 1 \\
+            k_{0li} &amp; k_{1li} &amp; k_{2li}
+        \end{bmatrix},\]</span><span id="eq-matriz-2" label="eq: matriz 2"></span> are Hurwitz for all <span class="math inline">\(i = \overline{1,n}\)</span> and <span class="math inline">\(l=\phi,~ \theta,~\psi\)</span>.</p></li>
+<li><p>STA <span class="citation" data-cites="doi:10.1080/00207179308923053">[25]</span>: <span class="math display">\[\begin{split}
+            s_{li} &amp;= \varepsilon_{li} + k_{l0i} e_{li},\\
+            \Bar{\tau}_{li} &amp;= v_{li} - k_{l1i} \lceil s_{li} \rfloor ^{\frac{1}{2}},\\
+            \dot{v}_i &amp; = -k_{l2i} \lceil s_{li} \rfloor ^0,
+        \end{split}\label{eq:ST} \tag{14}\]</span> where a possible selection of the gains is given in Table 1 (for more details, see <span class="citation" data-cites="SEEBER2017241">[33]</span>), for all <span class="math inline">\(i = \overline{1,n}\)</span> and <span class="math inline">\(l=\phi,~ \theta,~\psi\)</span>.</p></li>
+<li><p>TC <span class="citation" data-cites="TORRESGONZALEZ2017119">[26]</span>: <span class="math display">\[\begin{split}
+            \Bar{\tau}_{li} &amp;= v_{i} - k_{l0i} \lceil e_{li} \rfloor ^{\frac{1}{3}} - k_{l1i} \lceil \varepsilon_{li} \rfloor ^{\frac{1}{2}}, \\
+            \dot{v}_{i} &amp; = -k_{l2i} \lceil e_{li} \rfloor ^0  -k_{l3i} \lceil \varepsilon_{li} \rfloor ^0,
+        \end{split}\label{eq:TC} \tag{15}\]</span> where a possible selection of the gains is given in Table 2, for all <span class="math inline">\(i = \overline{1,n}\)</span> and <span class="math inline">\(l=\phi,~ \theta,~\psi\)</span>.</p></li>
+<li><p>STSMC <span class="citation" data-cites="fridman2015continuous">[27]</span>: <span class="math display">\[\begin{split}
+            s_{li} &amp;= \varepsilon_{li} + k_{l0i} \lceil e_{li} \rfloor ^{\frac{2}{3}},\\
+            \Bar{\tau}_{li} &amp;= v_{i} - k_{l1i} \lceil s_{li} \rfloor ^{\frac{1}{2}}, \\
+            \dot{v}_{i} &amp; = -k_{l2i} \lceil s_{li} \rfloor ^0,
+        \end{split}\label{eq:MDST} \tag{16}\]</span> where a possible selection of the gains is given in Table 1, for all <span class="math inline">\(i = \overline{1,n}\)</span> and <span class="math inline">\(l=\phi,~ \theta,~\psi\)</span>.</p></li>
+<li><p>NTSMC <span class="citation" data-cites="KAMAL2016308">[28]</span>: <span class="math display">\[\begin{split}
+            s_{li} &amp;= e_{li} + k_{l0i} \lceil \varepsilon_{li} \rfloor ^{\frac{2}{3}},\\
+            \Bar{\tau}_{li} &amp;= v_{i} - k_{l1i} \lceil s_{li} \rfloor ^{\frac{1}{3}} ,\\
+            \dot{v}_{i} &amp; = -k_{l2i} \lceil s_{li} \rfloor ^0,
+        \end{split}\label{eq:MDNST} \tag{17}\]</span> where a possible selection of the gains is given in Table 3, for all <span class="math inline">\(i = \overline{1,n}\)</span> and <span class="math inline">\(l=\phi,~ \theta,~\psi\)</span>.</p></li>
+</ul>
+<div id="tab-st-y-mdst">
+<div class="tbl"><table>
+<caption>Table 1. Gain selection for the STA and STSMC</caption>
+<thead>
+<tr class="header">
+<th style="text-align: center;">Set</th>
+<th style="text-align: center;"><span class="math inline">\(k_{l0i}\)</span></th>
+<th style="text-align: center;"><span class="math inline">\(k_{l1i}\)</span></th>
+<th style="text-align: center;"><span class="math inline">\(k_{l2i}\)</span></th>
+<th style="text-align: center;"><span class="math inline">\(\zeta\)</span></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: center;">1</td>
+<td style="text-align: center;"><span class="math inline">\(&gt;0\)</span></td>
+<td style="text-align: center;"><span class="math inline">\(1.5 \zeta^{\frac{1}{2}}\)</span></td>
+<td style="text-align: center;"><span class="math inline">\(1.1 \zeta\)</span></td>
+<td style="text-align: center;"><span class="math inline">\(&gt;0\)</span></td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<p><span id="tab-st-y-mdst" label="Tab. ST y MDST"></span></p>
+<div id="tab-tc">
+<div class="tbl"><table>
+<caption>Table 2. Gain selection for the TC</caption>
+<thead>
+<tr class="header">
+<th style="text-align: center;">Set</th>
+<th style="text-align: center;"><span class="math inline">\(k_{l0i}\)</span></th>
+<th style="text-align: center;"><span class="math inline">\(k_{l1i}\)</span></th>
+<th style="text-align: center;"><span class="math inline">\(k_{l2i}\)</span></th>
+<th style="text-align: center;"><span class="math inline">\(k_{l3i}\)</span></th>
+<th style="text-align: center;"><span class="math inline">\(\zeta\)</span></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: center;">1</td>
+<td style="text-align: center;"><span class="math inline">\(25\zeta^{\frac{2}{3}}\)</span></td>
+<td style="text-align: center;"><span class="math inline">\(15\zeta^{\frac{2}{3}}\)</span></td>
+<td style="text-align: center;"><span class="math inline">\(2.3\zeta^{\frac{1}{2}}\)</span></td>
+<td style="text-align: center;"><span class="math inline">\(1.1\zeta\)</span></td>
+<td style="text-align: center;"><span class="math inline">\(&gt;0\)</span></td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">2</td>
+<td style="text-align: center;"><span class="math inline">\(19\zeta^{\frac{2}{3}}\)</span></td>
+<td style="text-align: center;"><span class="math inline">\(10\zeta^{\frac{2}{3}}\)</span></td>
+<td style="text-align: center;"><span class="math inline">\(2.3\zeta^{\frac{1}{2}}\)</span></td>
+<td style="text-align: center;"><span class="math inline">\(1.1\zeta\)</span></td>
+<td style="text-align: center;"><span class="math inline">\(&gt;0\)</span></td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;">3</td>
+<td style="text-align: center;"><span class="math inline">\(13\zeta^{\frac{2}{3}}\)</span></td>
+<td style="text-align: center;"><span class="math inline">\(7.5\zeta^{\frac{2}{3}}\)</span></td>
+<td style="text-align: center;"><span class="math inline">\(2.3\zeta^{\frac{1}{2}}\)</span></td>
+<td style="text-align: center;"><span class="math inline">\(1.1\zeta\)</span></td>
+<td style="text-align: center;"><span class="math inline">\(&gt;0\)</span></td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">4</td>
+<td style="text-align: center;"><span class="math inline">\(7\zeta^{\frac{2}{3}}\)</span></td>
+<td style="text-align: center;"><span class="math inline">\(5\zeta^{\frac{2}{3}}\)</span></td>
+<td style="text-align: center;"><span class="math inline">\(2.3\zeta^{\frac{1}{2}}\)</span></td>
+<td style="text-align: center;"><span class="math inline">\(1.1\zeta\)</span></td>
+<td style="text-align: center;"><span class="math inline">\(&gt;0\)</span></td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<p><span id="tab-tc" label="Tab. TC"></span></p>
+<div id="tab-mdnst">
+<div class="tbl"><table>
+<caption>Table 3. Gain selection for the NTSMC</caption>
+<thead>
+<tr class="header">
+<th style="text-align: center;">Set</th>
+<th style="text-align: center;"><span class="math inline">\(k_{l0i}\)</span></th>
+<th style="text-align: center;"><span class="math inline">\(k_{l1i}\)</span></th>
+<th style="text-align: center;"><span class="math inline">\(k_{l2i}\)</span></th>
+<th style="text-align: center;"><span class="math inline">\(\zeta\)</span></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: center;">1</td>
+<td style="text-align: center;"><span class="math inline">\(20  \zeta^{-\frac{1}{2}}\)</span></td>
+<td style="text-align: center;"><span class="math inline">\(4.4\zeta^{\frac{2}{3}}\)</span></td>
+<td style="text-align: center;"><span class="math inline">\(2.5\zeta^{\frac{1}{2}}\)</span></td>
+<td style="text-align: center;"><span class="math inline">\(&gt;0\)</span></td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">2</td>
+<td style="text-align: center;"><span class="math inline">\(28.7\zeta^{-\frac{1}{2}}\)</span></td>
+<td style="text-align: center;"><span class="math inline">\(4.5\zeta^{\frac{2}{3}}\)</span></td>
+<td style="text-align: center;"><span class="math inline">\(2  \zeta^{\frac{1}{2}}\)</span></td>
+<td style="text-align: center;"><span class="math inline">\(&gt;0\)</span></td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;">3</td>
+<td style="text-align: center;"><span class="math inline">\(7.7 \zeta^{-\frac{1}{2}}\)</span></td>
+<td style="text-align: center;"><span class="math inline">\(7.5\zeta^{\frac{2}{3}}\)</span></td>
+<td style="text-align: center;"><span class="math inline">\(2  \zeta^{\frac{1}{2}}\)</span></td>
+<td style="text-align: center;"><span class="math inline">\(&gt;0\)</span></td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">4</td>
+<td style="text-align: center;"><span class="math inline">\(\zeta^{-\frac{1}{2}}\)</span></td>
+<td style="text-align: center;"><span class="math inline">\(16\zeta^{\frac{2}{3}}\)</span></td>
+<td style="text-align: center;"><span class="math inline">\(7  \zeta^{\frac{1}{2}}\)</span></td>
+<td style="text-align: center;"><span class="math inline">\(&gt;0\)</span></td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<p><span id="tab-mdnst" label="Tab. MDNST"></span></p>
+<div id="teo-2" class="teorema">
+<p><strong>Theorem 1</strong>. <em>Let control (9) be given, and consider that (10) applied to system (4) and Assumptions 3, 4 are satisfied. Assuming that the gains of the virtual PID controllers of each agent are selected such that the matrices (12) are Hurwitz, and <span class="math inline">\(\bar{\tau}_{\phi i}\)</span>, <span class="math inline">\(\bar{\tau}_{\theta i}\)</span>, and <span class="math inline">\(\bar{\tau}_{\psi i}\)</span> are designed according to any controller given in a)-e). Then, in steady state <span class="math inline">\([\boldsymbol{e}_{\xi i}^\top \quad \boldsymbol{\varepsilon}_{\xi i}^\top \quad \boldsymbol{e}_{\eta i}^\top \quad \boldsymbol{\varepsilon}_{\eta i}^\top ]^\top\)</span>, the tracking error dynamics is UES.</em></p>
+</div>
+<p>Applying controller (9), (10a), and (11), it is possible to prove that the formation error dynamics (7a)-(7b) is ISS with respect to <span class="math inline">\(e_{\eta i}\)</span> (for more details, see <span class="citation" data-cites="rios2018continuous">[24]</span>). On the other hand, applying (9b), (9c), (10b), and any of the controllers (15), (16), or (17), it is possible to prove that <span class="math inline">\([e_{\eta i} \quad \varepsilon_{\eta i}]^\top = [0 \quad 0]^\top\)</span> is UFTS. When controllers (13) or (14) are applied, <span class="math inline">\([e_{\eta i} \quad \varepsilon_{\eta i}]^\top = [0 \quad 0]^\top\)</span> is UES (for more details, see <span class="citation" data-cites="rios2018continuous">[24]</span>).</p>
+<p>Finally, as a consequence of the aforementioned results, it follows that the trajectories of the formation error dynamics (7) converge to zero uniformly and exponentially <span class="citation" data-cites="rios2018continuous">[24]</span>, <em>i.e.</em>, the result of Theorem 1.</p>
+<p>The control scheme is shown in Figure 4. It can be seen that agent <span class="math inline">\(n\)</span> is the only one that knows the desired trajectory <span class="math inline">\(\xi_d = [x_d \quad y_d \quad z_d ]^\top\)</span> and <span class="math inline">\(\psi_d\)</span>, the desired trajectory of the follower agents <span class="math inline">\(n-1\)</span> is generated from the position of the leader plus the desired formation vector for each agent. The desired acceleration, as well as the control (10a), are fed back in the <em>Nonlinear decoupling</em> block. In the case of the follower agents, these accelerations can be estimated with the observers.</p>
+<figure id="fig-esquema-de-control">
+<img src="img/DF.png" loading="lazy" alt="Figure">
+<figcaption>Figure 4. Control scheme.</figcaption>
+</figure>
+<h1 data-number="4" id="cap-resultados"><span class="header-section-number">4</span> Simulation and experimental results.</h1>
+<p>This chapter presents the simulation and experimental results obtained by applying different controllers to maintain the formation of nano quadrotors. The performance of the PID, TC, STA, STSMC and NTSMC controllers is analyzed in terms of trajectories and yaw angle, as well as the formation errors and control effort of each agent.</p>
+<h2 data-number="4.1" id="sec-resultados-de-simulacion"><span class="header-section-number">4.1</span> Simulation results</h2>
+<p>The following disturbances are considered for the simulations: <span class="math display">\[\begin{split}
+        d_x &amp;= 0.3 \operatorname{sen}(0.4t), \\
+        d_y &amp;= 0.3 \cos(0.4t), \\
+        d_z &amp;= -0.5 + 0.1 \operatorname{sen}(0.4t) - 0.1 \operatorname{sen}(0.6t) + 0.1 \cos(0.8t), \\
+        d_\phi &amp;= -0.5 + 0.2 \operatorname{sen}(0.4t) - 0.2 \operatorname{sen}(0.6t) + 0.2 \cos(0.6t), \\
+        d_\theta &amp;= -0.5 + 0.2 \cos(0.8t) - 0.2 \operatorname{sen}(0.4t) + 0.2 \cos(0.8t), \\
+        d_\psi &amp;= -0.5 + 0.2 \cos(0.8t) - 0.2 \operatorname{sen}(0.6t) + 0.2 \cos(0.8t).
+    \end{split}\]</span></p>
+<p>Five agents are considered (<span class="math inline">\(n=5\)</span>). The rotational drag coefficients are <span class="math inline">\(a_{li}=1.52\times10^{-7}\)</span> [Ns/rad], with <span class="math inline">\(l = \phi, \theta, \psi\)</span>; the aerodynamic damping coefficients are <span class="math inline">\(a_{x i} = a_{y i} = a_{z i} = 2.47\times10^{-7}\)</span> [Ns/kgm]; the moments of inertia of the agents are <span class="math inline">\(J_{xi}=9.827\times10^{-5}\)</span> [kg<span class="math inline">\(\cdot\)</span> m<span class="math inline">\(^2\)</span>], <span class="math inline">\(J_{yi}=8.185\times10^{-5}\)</span> [kg<span class="math inline">\(\cdot\)</span> m<span class="math inline">\(^2\)</span>], <span class="math inline">\(J_{zi}=9.613\times10^{-5}\)</span> [kg<span class="math inline">\(\cdot\)</span> m<span class="math inline">\(^2\)</span>]; the mass of the agents is <span class="math inline">\(m_i= 0.032\)</span> [kg].</p>
+<p>The desired trajectories of the leader (<span class="math inline">\(R_5\)</span>) are given by: <span class="math display">\[\begin{split}
+        x_d &amp;= (\arctan(15) + \arctan(t - 15)) \cos\left(\frac{\pi}{5}t\right), \\
+        y_d &amp;= (\arctan(15) + \arctan(t - 15)) \operatorname{sen}\left(\frac{\pi}{5}t\right), \\
+        z_d &amp;= 1 + \tan(t - 5) - 2.5, \\
+        \psi_d &amp;= 0.
+    \end{split}\label{eq: Trayectoria lider} \tag{18}\]</span></p>
+<p>The formation vectors are the following: <span class="math inline">\(C_{51} = [1 \quad 1 \quad 0]^\top\)</span>, <span class="math inline">\(C_{52} = [-1 \quad 1 \quad 0]^\top\)</span>, <span class="math inline">\(C_{53} = [1 \quad -1 \quad 0]^\top\)</span>, <span class="math inline">\(C_{54} = [-1 \quad -1 \quad 0]^\top\)</span>. The selected gains of the controllers are shown in Table 6, while the gains of the observers are <span class="math inline">\(\boldsymbol{\hat{K}}_{1i} = 4.0716I_{3}\)</span>, <span class="math inline">\(\boldsymbol{\hat{K}}_{2i} = 2.3717I_{3}\)</span>, <span class="math inline">\(\boldsymbol{\hat{K}}_{3i} = 2.75I_{3}\)</span>, <span class="math inline">\(\boldsymbol{\hat{K}}_{4i} = 4.3267I_{3}\)</span>, <span class="math inline">\(\boldsymbol{\hat{K}}_{5i} = 2.5981I_{3}\)</span> and <span class="math inline">\(\boldsymbol{\hat{K}}_{6i} = 3.3I_{3}\)</span>, for all <span class="math inline">\(i = \overline{1,n}\)</span>, with <span class="math inline">\(I_{3}\)</span> as an identity matrix of dimension <span class="math inline">\(3 \times 3\)</span>.</p>
+<p>Figure 5 shows the trajectory of the agents, where agent <span class="math inline">\(R_5\)</span> is the leader agent, and it is observed that the follower agents preserve the desired formation with respect to the leader; the figure corresponds to the NTSMC controller, since it had the best performance in terms of position error, and moreover the five controllers show a similar behavior and the difference observed visually is minimal.</p>
+<p>To illustrate the performance of the controllers, the following performance index is proposed: <span class="math display">\[f_{RMS}(t) = \bigg( \frac{1}{\Delta T} \int_{t-\Delta T}^{T} || f(\sigma)^2|| d\sigma \bigg)^{\frac{1}{2}} \tag{19}\]</span> where <span class="math inline">\(f_{RMS}: \mathbb{R} \rightarrow \mathbb{R}_{\geq 0}\)</span> represents the root-mean-square error of the function <span class="math inline">\(f: \mathbb{R} \rightarrow \mathbb{R}^n\)</span>. The results of the performance indices of the average formation errors in (<span class="math inline">\(x_i, y_i, z_i, \psi_i\)</span>) are shown in Figure 6, and the control signals (<span class="math inline">\(u_i, \tau_{\phi i}, \tau_{\theta i}, \tau_{\psi i}\)</span>) in Figure 7, with <span class="math inline">\(\Delta T = 2\)</span>. Tables 4 and 5 show the properties of the average, of the performance index of the signals, of the errors and of control. Regarding the errors, it is observed that the NTSMC controller has, in general, the best performance; however, regarding the performance index of the inputs, the STA controller is the best.</p>
+<div id="tab-rms-pos">
+<div class="tbl"><table>
+<caption>Table 4. Performance index of the position errors (<span class="math inline">\(x_i, y_i, z_i, \psi_i\)</span>)</caption>
+<thead>
+<tr class="header">
+<th style="text-align: center;">Controller</th>
+<th style="text-align: center;"><span class="math inline">\(e_{x i}-RMS\)</span></th>
+<th style="text-align: center;"><span class="math inline">\(e_{y i}-RMS\)</span></th>
+<th style="text-align: center;"><span class="math inline">\(e_{z i}-RMS\)</span></th>
+<th style="text-align: center;"><span class="math inline">\(e_{\psi i}-RMS\)</span></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: center;">PID</td>
+<td style="text-align: center;"><span class="math inline">\(4.062 \times 10^{-4}\)</span></td>
+<td style="text-align: center;"><span class="math inline">\(0.001\)</span></td>
+<td style="text-align: center;"><span class="math inline">\(8.461 \times 10^{-4}\)</span></td>
+<td style="text-align: center;"><span class="math inline">\(3.777 \times 10^{-5}\)</span></td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">TC</td>
+<td style="text-align: center;"><span class="math inline">\(1.662 \times 10^{-4}\)</span></td>
+<td style="text-align: center;"><span class="math inline">\(6.648 \times 10^{-4}\)</span></td>
+<td style="text-align: center;"><span class="math inline">\(8.484 \times 10^{-4}\)</span></td>
+<td style="text-align: center;"><span class="math inline">\(3.406 \times 10^{-7}\)</span></td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;">STA</td>
+<td style="text-align: center;"><span class="math inline">\(4.358 \times 10^{-4}\)</span></td>
+<td style="text-align: center;"><span class="math inline">\(5.997 \times 10^{-4}\)</span></td>
+<td style="text-align: center;"><span class="math inline">\(8.485 \times 10^{-4}\)</span></td>
+<td style="text-align: center;"><span class="math inline">\(1.946 \times 10^{-6}\)</span></td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">STSMC</td>
+<td style="text-align: center;"><span class="math inline">\(3.691 \times 10^{-4}\)</span></td>
+<td style="text-align: center;"><span class="math inline">\(0.001\)</span></td>
+<td style="text-align: center;"><span class="math inline">\(8.484 \times 10^{-4}\)</span></td>
+<td style="text-align: center;"><span class="math inline">\(\mathbf{4.045 \times 10^{-5}}\)</span></td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;">NTSMC</td>
+<td style="text-align: center;"><span class="math inline">\(\mathbf{1.029 \times 10^{-4}}\)</span></td>
+<td style="text-align: center;"><span class="math inline">\(\mathbf{2.684 \times 10^{-4}}\)</span></td>
+<td style="text-align: center;"><span class="math inline">\(\mathbf{2.684 \times 10^{-4}}\)</span></td>
+<td style="text-align: center;"><span class="math inline">\(5.182 \times 10^{-6}\)</span></td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<p><span id="tab-rms-pos" label="Tab:RMS_POS"></span></p>
+<div id="tab-rms-sc">
+<div class="tbl"><table>
+<caption>Table 5. Performance index of the control inputs (<span class="math inline">\(u_{i},\tau_{\phi i}, \tau_{\theta i}, \tau_{\psi i}\)</span>)</caption>
+<thead>
+<tr class="header">
+<th style="text-align: center;">Controller</th>
+<th style="text-align: center;"><span class="math inline">\(u_{ i}-RMS\)</span></th>
+<th style="text-align: center;"><span class="math inline">\(\tau_{\phi i}-RMS\)</span></th>
+<th style="text-align: center;"><span class="math inline">\(\tau_{\theta i}-RMS\)</span></th>
+<th style="text-align: center;"><span class="math inline">\(\tau_{\psi i}-RMS\)</span></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: center;">PID</td>
+<td style="text-align: center;">0.329</td>
+<td style="text-align: center;"><span class="math inline">\(1.829 \times 10^{-4}\)</span></td>
+<td style="text-align: center;"><span class="math inline">\(5.921 \times 10^{-5}\)</span></td>
+<td style="text-align: center;"><span class="math inline">\(5.775 \times 10^{-5}\)</span></td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">TC</td>
+<td style="text-align: center;">0.329</td>
+<td style="text-align: center;"><span class="math inline">\(2.957 \times 10^{-4}\)</span></td>
+<td style="text-align: center;"><span class="math inline">\(2.458 \times 10^{-4}\)</span></td>
+<td style="text-align: center;"><span class="math inline">\(1.111 \times 10^{-4}\)</span></td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;">STA</td>
+<td style="text-align: center;">0.329</td>
+<td style="text-align: center;"><span class="math inline">\(\mathbf{1.149 \times 10^{-4}}\)</span></td>
+<td style="text-align: center;"><span class="math inline">\(\mathbf{8.903 \times 10^{-5}}\)</span></td>
+<td style="text-align: center;"><span class="math inline">\(\mathbf{5.776 \times 10^{-5}}\)</span></td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">STSMC</td>
+<td style="text-align: center;">0.329</td>
+<td style="text-align: center;"><span class="math inline">\(1.291 \times 10^{-4}\)</span></td>
+<td style="text-align: center;"><span class="math inline">\(1.073 \times 10^{-4}\)</span></td>
+<td style="text-align: center;"><span class="math inline">\(5.802 \times 10^{-5}\)</span></td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;">NTSMC</td>
+<td style="text-align: center;">0.329</td>
+<td style="text-align: center;">0.003</td>
+<td style="text-align: center;">0.002</td>
+<td style="text-align: center;">0.001</td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<p><span id="tab-rms-sc" label="Tab:RMS_SC"></span></p>
+<figure id="fig-pos">
+<img src="img/POS.png" loading="lazy" alt="Figure">
+<figcaption>Figure 5. Trajectories of the agents.</figcaption>
+</figure>
+<figure id="fig-error">
+<img src="img/ERMS1.png" loading="lazy" alt="Figure">
+<figcaption>Figure 6. Index of the position errors of the agents.</figcaption>
+</figure>
+<figure id="fig-senales-de-control">
+<img src="img/SCRMS1.png" loading="lazy" alt="Figure">
+<figcaption>Figure 7. Index of the control signals of the agents.</figcaption>
+</figure>
+<div id="tab-ganancias">
+<div class="tbl"><table>
+<caption>Table 6. Controller parameters.</caption>
+<thead>
+<tr class="header">
+<th style="text-align: center;"></th>
+<th colspan="6" style="text-align: center;"><strong>Parameters</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: center;">Controller</td>
+<td style="text-align: center;"><span class="math inline">\(k_{0xi}\)</span></td>
+<td style="text-align: center;"><span class="math inline">\(k_{0yi}\)</span></td>
+<td style="text-align: center;"><span class="math inline">\(k_{0zi}\)</span></td>
+<td style="text-align: center;"><span class="math inline">\(k_{\phi0i}\)</span></td>
+<td style="text-align: center;"><span class="math inline">\(k_{\theta0 i}\)</span></td>
+<td style="text-align: center;"><span class="math inline">\(k_{\psi 0i}\)</span></td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">PID</td>
+<td style="text-align: center;">5.0</td>
+<td style="text-align: center;">5.0</td>
+<td style="text-align: center;">20.0</td>
+<td style="text-align: center;">18.0</td>
+<td style="text-align: center;">18.0</td>
+<td style="text-align: center;">20.0</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;">STA</td>
+<td style="text-align: center;">5.0</td>
+<td style="text-align: center;">5.0</td>
+<td style="text-align: center;">20.0</td>
+<td style="text-align: center;">12.0</td>
+<td style="text-align: center;">12.0</td>
+<td style="text-align: center;">2.8</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">TC</td>
+<td style="text-align: center;">5.0</td>
+<td style="text-align: center;">5.0</td>
+<td style="text-align: center;">20.0</td>
+<td style="text-align: center;">44.3147</td>
+<td style="text-align: center;">44.3147</td>
+<td style="text-align: center;">29.0099</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;">STSMC</td>
+<td style="text-align: center;">5.0</td>
+<td style="text-align: center;">5.0</td>
+<td style="text-align: center;">20.0</td>
+<td style="text-align: center;">2.6</td>
+<td style="text-align: center;">2.6</td>
+<td style="text-align: center;">2.1</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">NTSMC</td>
+<td style="text-align: center;">5.0</td>
+<td style="text-align: center;">5.0</td>
+<td style="text-align: center;">20.0</td>
+<td style="text-align: center;">0.1051</td>
+<td style="text-align: center;">0.1051</td>
+<td style="text-align: center;">0.1054</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;">Controller</td>
+<td style="text-align: center;"><span class="math inline">\(k_{1xi}\)</span></td>
+<td style="text-align: center;"><span class="math inline">\(k_{1yi}\)</span></td>
+<td style="text-align: center;"><span class="math inline">\(k_{1zi}\)</span></td>
+<td style="text-align: center;"><span class="math inline">\(k_{\phi1 i}\)</span></td>
+<td style="text-align: center;"><span class="math inline">\(k_{\theta1 i}\)</span></td>
+<td style="text-align: center;"><span class="math inline">\(k_{\psi1 i}\)</span></td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">PID</td>
+<td style="text-align: center;">28.5</td>
+<td style="text-align: center;">28.5</td>
+<td style="text-align: center;">155.2</td>
+<td style="text-align: center;">180.0</td>
+<td style="text-align: center;">180.0</td>
+<td style="text-align: center;">200.0</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;">STA</td>
+<td style="text-align: center;">28.5</td>
+<td style="text-align: center;">28.5</td>
+<td style="text-align: center;">155.2</td>
+<td style="text-align: center;">12.0934</td>
+<td style="text-align: center;">12.0934</td>
+<td style="text-align: center;">0.5293</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">TC</td>
+<td style="text-align: center;">28.5</td>
+<td style="text-align: center;">28.5</td>
+<td style="text-align: center;">155.2</td>
+<td style="text-align: center;">23.0434</td>
+<td style="text-align: center;">23.0434</td>
+<td style="text-align: center;">16.7705</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;">STSMC</td>
+<td style="text-align: center;">28.5</td>
+<td style="text-align: center;">28.5</td>
+<td style="text-align: center;">155.2</td>
+<td style="text-align: center;">10.1181</td>
+<td style="text-align: center;">10.1181</td>
+<td style="text-align: center;">4.3732</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">NTSMC</td>
+<td style="text-align: center;">28.5</td>
+<td style="text-align: center;">28.5</td>
+<td style="text-align: center;">155.2</td>
+<td style="text-align: center;">322.6356</td>
+<td style="text-align: center;">322.6356</td>
+<td style="text-align: center;">321.3278</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;">Controller</td>
+<td style="text-align: center;"><span class="math inline">\(k_{2xi}\)</span></td>
+<td style="text-align: center;"><span class="math inline">\(k_{2yi}\)</span></td>
+<td style="text-align: center;"><span class="math inline">\(k_{2zi}\)</span></td>
+<td style="text-align: center;"><span class="math inline">\(k_{\phi2 i}\)</span></td>
+<td style="text-align: center;"><span class="math inline">\(k_{\theta2 i}\)</span></td>
+<td style="text-align: center;"><span class="math inline">\(k_{\psi2 i}\)</span></td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">PID</td>
+<td style="text-align: center;">5.5</td>
+<td style="text-align: center;">5.5</td>
+<td style="text-align: center;">10.0</td>
+<td style="text-align: center;">10.0</td>
+<td style="text-align: center;">10.0</td>
+<td style="text-align: center;">10.0</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;">STA</td>
+<td style="text-align: center;">5.5</td>
+<td style="text-align: center;">5.5</td>
+<td style="text-align: center;">10.0</td>
+<td style="text-align: center;">71.50</td>
+<td style="text-align: center;">71.50</td>
+<td style="text-align: center;">0.1370</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">TC</td>
+<td style="text-align: center;">5.5</td>
+<td style="text-align: center;">5.5</td>
+<td style="text-align: center;">10.0</td>
+<td style="text-align: center;">5.4280</td>
+<td style="text-align: center;">5.4280</td>
+<td style="text-align: center;">2.8750</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;">STSMC</td>
+<td style="text-align: center;">5.5</td>
+<td style="text-align: center;">5.5</td>
+<td style="text-align: center;">10.0</td>
+<td style="text-align: center;">50.05</td>
+<td style="text-align: center;">50.05</td>
+<td style="text-align: center;">9.350</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">NTSMC</td>
+<td style="text-align: center;">5.5</td>
+<td style="text-align: center;">5.5</td>
+<td style="text-align: center;">10.0</td>
+<td style="text-align: center;">633.8</td>
+<td style="text-align: center;">633.8</td>
+<td style="text-align: center;">630.0</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;">Controller</td>
+<td style="text-align: center;"><span class="math inline">\(k_{3xi}\)</span></td>
+<td style="text-align: center;"><span class="math inline">\(k_{3yi}\)</span></td>
+<td style="text-align: center;"><span class="math inline">\(k_{3zi}\)</span></td>
+<td style="text-align: center;"><span class="math inline">\(k_{\phi 3i}\)</span></td>
+<td style="text-align: center;"><span class="math inline">\(k_{\theta 3i}\)</span></td>
+<td style="text-align: center;"><span class="math inline">\(k_{\psi3 i}\)</span></td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">PID</td>
+<td style="text-align: center;"><span class="math inline">\(-\)</span></td>
+<td style="text-align: center;"><span class="math inline">\(-\)</span></td>
+<td style="text-align: center;"><span class="math inline">\(-\)</span></td>
+<td style="text-align: center;"><span class="math inline">\(-\)</span></td>
+<td style="text-align: center;"><span class="math inline">\(-\)</span></td>
+<td style="text-align: center;"><span class="math inline">\(-\)</span></td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;">STA</td>
+<td style="text-align: center;"><span class="math inline">\(-\)</span></td>
+<td style="text-align: center;"><span class="math inline">\(-\)</span></td>
+<td style="text-align: center;"><span class="math inline">\(-\)</span></td>
+<td style="text-align: center;"><span class="math inline">\(-\)</span></td>
+<td style="text-align: center;"><span class="math inline">\(-\)</span></td>
+<td style="text-align: center;"><span class="math inline">\(-\)</span></td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">TC</td>
+<td style="text-align: center;"><span class="math inline">\(-\)</span></td>
+<td style="text-align: center;"><span class="math inline">\(-\)</span></td>
+<td style="text-align: center;"><span class="math inline">\(-\)</span></td>
+<td style="text-align: center;">2.5960</td>
+<td style="text-align: center;">2.5960</td>
+<td style="text-align: center;">1.3750</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;">STSMC</td>
+<td style="text-align: center;"><span class="math inline">\(-\)</span></td>
+<td style="text-align: center;"><span class="math inline">\(-\)</span></td>
+<td style="text-align: center;"><span class="math inline">\(-\)</span></td>
+<td style="text-align: center;"><span class="math inline">\(-\)</span></td>
+<td style="text-align: center;"><span class="math inline">\(-\)</span></td>
+<td style="text-align: center;"><span class="math inline">\(-\)</span></td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">NTSMC</td>
+<td style="text-align: center;"><span class="math inline">\(-\)</span></td>
+<td style="text-align: center;"><span class="math inline">\(-\)</span></td>
+<td style="text-align: center;"><span class="math inline">\(-\)</span></td>
+<td style="text-align: center;"><span class="math inline">\(-\)</span></td>
+<td style="text-align: center;"><span class="math inline">\(-\)</span></td>
+<td style="text-align: center;"><span class="math inline">\(-\)</span></td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<p><span id="tab-ganancias" label="Tab: Ganancias"></span></p>
+<h2 data-number="4.2" id="sec-resultadosexperimentales"><span class="header-section-number">4.2</span> Experimental results</h2>
+<p>To demonstrate the effectiveness of the proposed controllers, these were implemented on a system of three nano quadrotors. The system consists of a virtual leader and two followers. The experimental platform is described in Subsection 4.2.1.</p>
+<h3 data-number="4.2.1" id="sec-plataforma"><span class="header-section-number">4.2.1</span> Experimental Platform</h3>
+<p>The Crazyflie nano quadrotor platform consists of three main components, as shown in Figure 8:</p>
+<ol>
+<li><p>Optitrack Motion Capture positioning system.</p></li>
+<li><p>Ground station.</p></li>
+<li><p>Crazyflie nano quadrotors.</p></li>
+</ol>
+<p>The operation of the experimental platform is detailed in Appendix A.</p>
+<figure id="fig-plataforma">
+<img src="img/Plataforma.jpg" loading="lazy" alt="Figure">
+<figcaption>Figure 8. Crazyflie nano quadrotor platform.</figcaption>
+</figure>
+<h3 data-number="4.2.2" id="sec-experimentos"><span class="header-section-number">4.2.2</span> Experimental Validation</h3>
+<p>In the validation, the attitude controllers (13), (14), (15), (17) and (16) and the position controller (9) were implemented on the Crazyflie nano quadrotors; it should be noted that the observers were not used in the experiments. The position feedback was obtained through the Optitrack motion capture system, transmitted via ROS-VRPN to the UAVs together with the desired trajectory from an external computer (ground station). The trajectory of the virtual leader (<span class="math inline">\(R_3\)</span>) was defined according to (18). The formation vectors are the following: <span class="math display">\[\begin{split}
+        C_{31} &amp;= [-0.2 \quad 0 \quad 0]^\top, \\
+        C_{32} &amp;= [ 0.2 \quad 0 \quad 0]^\top. \\
+    \end{split}\]</span></p>
+<h4 data-number="4.2.2.1" id="experimental-results"><span class="header-section-number">4.2.2.1</span> Experimental Results </h4>
+<p>Figures 9, 10, 11, 12 and 13 show the results obtained when applying the PID, TC, STA, STSMC and NTSMC controllers to the system, respectively. In them, it can be seen that the controllers manage to maintain the desired formation of the agents.</p>
+<p>The figures present the average trajectory of the agents <span class="math inline">\(R_1\)</span>, <span class="math inline">\(R_2\)</span> and <span class="math inline">\(R_3\)</span> on the axes <span class="math inline">\(x\)</span>, <span class="math inline">\(y\)</span> and <span class="math inline">\(z\)</span>. These trajectories were obtained after performing ten experiments for each type of controller. The behavior of the yaw angle is also included. The gains selected for each controller are detailed in Table 7.</p>
+<p>To evaluate the performance of each controller, the average formation error (in RMS) of the follower agents <span class="math inline">\(R_1\)</span> and <span class="math inline">\(R_2\)</span> (<span class="math inline">\(x, y, z, \psi\)</span>) was calculated for each controller. In addition, the minimum, mean and maximum RMS performance indices were considered for each agent. The best results are highlighted in bold. Data from an initial time <span class="math inline">\(t_0 = 10\)</span> [s] and a final time <span class="math inline">\(t_f = 60\)</span> [s] were considered to prevent the indices from being affected by the initial conditions of the nano quadrotors. The results are reflected in Figures 14 and 15, which show the RMS errors of (<span class="math inline">\(x_i\)</span>, <span class="math inline">\(y_i\)</span>, <span class="math inline">\(z_i\)</span>, <span class="math inline">\(\psi_i\)</span>) of position and yaw for each agent. The average control inputs of (<span class="math inline">\(u_i\)</span>, <span class="math inline">\(\tau_{\phi i}\)</span>, <span class="math inline">\(\tau_{\theta i}\)</span>, <span class="math inline">\(\tau_{\psi i}\)</span>) in RMS for each controller are in Figures 16 and 17.</p>
+<p>Tables 8-11 show the performance indices of the position and yaw error. A very similar performance is observed among the controllers, but the NTSMC controller is the one that shows the worst performance. Tables 12-15 present the performance indices corresponding to the control inputs. The NTSMC controller is the one with the worst performance. In Tables 16-19, which represent the performance indices of the position and yaw errors of agent <span class="math inline">\(R_1\)</span>, it is observed that the STA controller has the best performance. While Tables 20-23 show the performance indices of the control inputs of agent <span class="math inline">\(R_2\)</span>, where a similar behavior is observed among the controllers.</p>
+<p>It is observed that the controllers present notably similar behaviors among themselves. However, when comparing the indices, it is concluded that the controllers with the best performance are PID and STA, while the NTSMC controller is the one that shows the worst performance.</p>
+<p>It is important to highlight that their performance can be affected by several external factors, such as the loss of information from the ground station, the limitations of the hardware of the computer to which they are connected, and the restrictions in the processing capacity of the microprocessor of the nano quadrotors, especially when the controller demands a high computational load. The initial conditions of the agent can also influence its performance. Despite these complications, the effectiveness of the controllers in maintaining the desired formation has been validated.</p>
+<p>The control signals of the Crazyflie nano quadrotor must be sent in RPM (revolutions per minute). To perform the conversion of the control input, which is in Newtons, to RPM, a function described in <span class="citation" data-cites="20.500.11850/214143">[34]</span> is used. The details of this function are explained in Appendix A.1.</p>
+<figure id="fig-pid-results">
+<img src="img/PID1.png" loading="lazy" alt="Figure">
+<figcaption>Figure 9. PID controller results: Position and yaw</figcaption>
+</figure>
+<figure id="fig-tc-results">
+<img src="img/TC1.png" loading="lazy" alt="Figure">
+<figcaption>Figure 10. TC controller results: Position and yaw</figcaption>
+</figure>
+<figure id="fig-st-results">
+<img src="img/STA1.png" loading="lazy" alt="Figure">
+<figcaption>Figure 11. STA controller results: Position and yaw</figcaption>
+</figure>
+<figure id="fig-mdst-results">
+<img src="img/STSMC1.png" loading="lazy" alt="Figure">
+<figcaption>Figure 12. STSMC controller results: Position and yaw</figcaption>
+</figure>
+<figure id="fig-mdnst-results">
+<img src="img/NTSMC1.png" loading="lazy" alt="Figure">
+<figcaption>Figure 13. NTSMC controller results: Position and yaw</figcaption>
+</figure>
+<figure id="fig-errores-rms-1">
+<img src="img/E1.png" loading="lazy" alt="Figure">
+<figcaption>Figure 14. RMS position and yaw errors of the follower agent <span class="math inline">\(R_1\)</span></figcaption>
+</figure>
+<figure id="fig-errores-rms-2">
+<img src="img/E2.png" loading="lazy" alt="Figure">
+<figcaption>Figure 15. RMS position and yaw errors of the follower agent <span class="math inline">\(R_2\)</span></figcaption>
+</figure>
+<figure id="fig-sc-rms-1">
+<img src="img/SC1.png" loading="lazy" alt="Figure">
+<figcaption>Figure 16. RMS control inputs of the follower agent <span class="math inline">\(R_1\)</span></figcaption>
+</figure>
+<figure id="fig-sc-rms-2">
+<img src="img/SC2.png" loading="lazy" alt="Figure">
+<figcaption>Figure 17. RMS control inputs of the follower agent <span class="math inline">\(R_2\)</span></figcaption>
+</figure>
+<div id="tab-ganancias-exp">
+<div class="tbl"><table>
+<caption>Table 7. Controller parameters.</caption>
+<thead>
+<tr class="header">
+<th style="text-align: center;"></th>
+<th colspan="6" style="text-align: center;">Parameters</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: center;">Controller</td>
+<td style="text-align: center;"><span class="math inline">\(k_{0xi}\)</span></td>
+<td style="text-align: center;"><span class="math inline">\(k_{0yi}\)</span></td>
+<td style="text-align: center;"><span class="math inline">\(k_{0zi}\)</span></td>
+<td style="text-align: center;"><span class="math inline">\(k_{\phi0i}\)</span></td>
+<td style="text-align: center;"><span class="math inline">\(k_{\theta0 i}\)</span></td>
+<td style="text-align: center;"><span class="math inline">\(k_{\psi 0i}\)</span></td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">PID</td>
+<td style="text-align: center;">1.0</td>
+<td style="text-align: center;">1.0</td>
+<td style="text-align: center;">0.1</td>
+<td style="text-align: center;">3.0</td>
+<td style="text-align: center;">3.0</td>
+<td style="text-align: center;">2.0</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;">STA</td>
+<td style="text-align: center;">1.0</td>
+<td style="text-align: center;">1.0</td>
+<td style="text-align: center;">0.1</td>
+<td style="text-align: center;">0.0035</td>
+<td style="text-align: center;">0.0035</td>
+<td style="text-align: center;">0.0027</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">TC</td>
+<td style="text-align: center;">1.0</td>
+<td style="text-align: center;">1.0</td>
+<td style="text-align: center;">0.1</td>
+<td style="text-align: center;">2.0</td>
+<td style="text-align: center;">2.0</td>
+<td style="text-align: center;">1.0</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;">STSMC</td>
+<td style="text-align: center;">1.0</td>
+<td style="text-align: center;">1.0</td>
+<td style="text-align: center;">0.1</td>
+<td style="text-align: center;">0.0035</td>
+<td style="text-align: center;">0.0035</td>
+<td style="text-align: center;">0.0027</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">NTSMC</td>
+<td style="text-align: center;">1.0</td>
+<td style="text-align: center;">1.0</td>
+<td style="text-align: center;">0.1</td>
+<td style="text-align: center;">0.1051</td>
+<td style="text-align: center;">0.1051</td>
+<td style="text-align: center;">10.8894</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;">Controller</td>
+<td style="text-align: center;"><span class="math inline">\(k_{1xi}\)</span></td>
+<td style="text-align: center;"><span class="math inline">\(k_{1yi}\)</span></td>
+<td style="text-align: center;"><span class="math inline">\(k_{1zi}\)</span></td>
+<td style="text-align: center;"><span class="math inline">\(k_{\phi1 i}\)</span></td>
+<td style="text-align: center;"><span class="math inline">\(k_{\theta1 i}\)</span></td>
+<td style="text-align: center;"><span class="math inline">\(k_{\psi1 i}\)</span></td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">PID</td>
+<td style="text-align: center;">10.95</td>
+<td style="text-align: center;">10.95</td>
+<td style="text-align: center;">12.15</td>
+<td style="text-align: center;">14.95</td>
+<td style="text-align: center;">14.95</td>
+<td style="text-align: center;">12.15</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;">STA</td>
+<td style="text-align: center;">10.95</td>
+<td style="text-align: center;">10.95</td>
+<td style="text-align: center;">12.15</td>
+<td style="text-align: center;">1.4031</td>
+<td style="text-align: center;">1.4031</td>
+<td style="text-align: center;">0.5293</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">TC</td>
+<td style="text-align: center;">10.95</td>
+<td style="text-align: center;">10.95</td>
+<td style="text-align: center;">12.15</td>
+<td style="text-align: center;">12.0</td>
+<td style="text-align: center;">12.0</td>
+<td style="text-align: center;">8.0</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;">STSMC</td>
+<td style="text-align: center;">10.95</td>
+<td style="text-align: center;">10.95</td>
+<td style="text-align: center;">12.15</td>
+<td style="text-align: center;">1.4031</td>
+<td style="text-align: center;">1.4031</td>
+<td style="text-align: center;">0.5293</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">NTSMC</td>
+<td style="text-align: center;">10.95</td>
+<td style="text-align: center;">10.95</td>
+<td style="text-align: center;">12.15</td>
+<td style="text-align: center;">6.46</td>
+<td style="text-align: center;">6.46</td>
+<td style="text-align: center;">4.7247</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;">Controller</td>
+<td style="text-align: center;"><span class="math inline">\(k_{2xi}\)</span></td>
+<td style="text-align: center;"><span class="math inline">\(k_{2yi}\)</span></td>
+<td style="text-align: center;"><span class="math inline">\(k_{2zi}\)</span></td>
+<td style="text-align: center;"><span class="math inline">\(k_{\phi2 i}\)</span></td>
+<td style="text-align: center;"><span class="math inline">\(k_{\theta2 i}\)</span></td>
+<td style="text-align: center;"><span class="math inline">\(k_{\psi2 i}\)</span></td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">PID</td>
+<td style="text-align: center;">6.5</td>
+<td style="text-align: center;">6.5</td>
+<td style="text-align: center;">3.0</td>
+<td style="text-align: center;">10.5</td>
+<td style="text-align: center;">10.5</td>
+<td style="text-align: center;">7.0</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;">STA</td>
+<td style="text-align: center;">6.5</td>
+<td style="text-align: center;">6.5</td>
+<td style="text-align: center;">3.0</td>
+<td style="text-align: center;">0.9625</td>
+<td style="text-align: center;">0.9625</td>
+<td style="text-align: center;">0.8360</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">TC</td>
+<td style="text-align: center;">6.5</td>
+<td style="text-align: center;">6.5</td>
+<td style="text-align: center;">3.0</td>
+<td style="text-align: center;">3.0</td>
+<td style="text-align: center;">3.0</td>
+<td style="text-align: center;">2.0</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;">STSMC</td>
+<td style="text-align: center;">6.5</td>
+<td style="text-align: center;">6.5</td>
+<td style="text-align: center;">3.0</td>
+<td style="text-align: center;">0.9625</td>
+<td style="text-align: center;">0.9625</td>
+<td style="text-align: center;">0.8360</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">NTSMC</td>
+<td style="text-align: center;">6.5</td>
+<td style="text-align: center;">6.5</td>
+<td style="text-align: center;">3.0</td>
+<td style="text-align: center;">1.6</td>
+<td style="text-align: center;">1.6</td>
+<td style="text-align: center;">1.0</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;">Controller</td>
+<td style="text-align: center;"><span class="math inline">\(k_{3xi}\)</span></td>
+<td style="text-align: center;"><span class="math inline">\(k_{3yi}\)</span></td>
+<td style="text-align: center;"><span class="math inline">\(k_{3zi}\)</span></td>
+<td style="text-align: center;"><span class="math inline">\(k_{\phi 3i}\)</span></td>
+<td style="text-align: center;"><span class="math inline">\(k_{\theta 3i}\)</span></td>
+<td style="text-align: center;"><span class="math inline">\(k_{\psi3 i}\)</span></td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">PID</td>
+<td style="text-align: center;"><span class="math inline">\(-\)</span></td>
+<td style="text-align: center;"><span class="math inline">\(-\)</span></td>
+<td style="text-align: center;"><span class="math inline">\(-\)</span></td>
+<td style="text-align: center;"><span class="math inline">\(-\)</span></td>
+<td style="text-align: center;"><span class="math inline">\(-\)</span></td>
+<td style="text-align: center;"><span class="math inline">\(-\)</span></td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;">STA</td>
+<td style="text-align: center;"><span class="math inline">\(-\)</span></td>
+<td style="text-align: center;"><span class="math inline">\(-\)</span></td>
+<td style="text-align: center;"><span class="math inline">\(-\)</span></td>
+<td style="text-align: center;"><span class="math inline">\(-\)</span></td>
+<td style="text-align: center;"><span class="math inline">\(-\)</span></td>
+<td style="text-align: center;"><span class="math inline">\(-\)</span></td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">TC</td>
+<td style="text-align: center;"><span class="math inline">\(-\)</span></td>
+<td style="text-align: center;"><span class="math inline">\(-\)</span></td>
+<td style="text-align: center;"><span class="math inline">\(-\)</span></td>
+<td style="text-align: center;">1.0</td>
+<td style="text-align: center;">1.0</td>
+<td style="text-align: center;">1.0</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;">STSMC</td>
+<td style="text-align: center;"><span class="math inline">\(-\)</span></td>
+<td style="text-align: center;"><span class="math inline">\(-\)</span></td>
+<td style="text-align: center;"><span class="math inline">\(-\)</span></td>
+<td style="text-align: center;"><span class="math inline">\(-\)</span></td>
+<td style="text-align: center;"><span class="math inline">\(-\)</span></td>
+<td style="text-align: center;"><span class="math inline">\(-\)</span></td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">NTSMC</td>
+<td style="text-align: center;"><span class="math inline">\(-\)</span></td>
+<td style="text-align: center;"><span class="math inline">\(-\)</span></td>
+<td style="text-align: center;"><span class="math inline">\(-\)</span></td>
+<td style="text-align: center;"><span class="math inline">\(-\)</span></td>
+<td style="text-align: center;"><span class="math inline">\(-\)</span></td>
+<td style="text-align: center;"><span class="math inline">\(-\)</span></td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<p><span id="tab-ganancias-exp" label="Tab: Ganancias Exp"></span></p>
+<div id="tab-rms-x1">
+<div class="tbl"><table>
+<caption>Table 8. Performance index of the error of <span class="math inline">\(x_1\)</span></caption>
+<thead>
+<tr class="header">
+<th style="text-align: center;">Controller</th>
+<th style="text-align: center;"><span class="math inline">\(\text{min}(e_{x 1}-RMS)\)</span></th>
+<th style="text-align: center;"><span class="math inline">\(e_{x 1}-RMS\)</span></th>
+<th style="text-align: center;"><span class="math inline">\(\text{max}(e_{x 1}-RMS)\)</span></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: center;">PID</td>
+<td style="text-align: center;"><span class="math inline">\(0.0018\)</span></td>
+<td style="text-align: center;"><span class="math inline">\(0.0232\)</span></td>
+<td style="text-align: center;"><span class="math inline">\(\mathbf{0.0412}\)</span></td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">TC</td>
+<td style="text-align: center;"><span class="math inline">\(\mathbf{0.0012}\)</span></td>
+<td style="text-align: center;"><span class="math inline">\(0.0264\)</span></td>
+<td style="text-align: center;"><span class="math inline">\(0.0420\)</span></td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;">STA</td>
+<td style="text-align: center;"><span class="math inline">\(0.0036\)</span></td>
+<td style="text-align: center;"><span class="math inline">\(0.0254\)</span></td>
+<td style="text-align: center;"><span class="math inline">\(0.0432\)</span></td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">STSMC</td>
+<td style="text-align: center;"><span class="math inline">\(\mathbf{0.0012}\)</span></td>
+<td style="text-align: center;"><span class="math inline">\(\mathbf{0.0212}\)</span></td>
+<td style="text-align: center;"><span class="math inline">\(0.0426\)</span></td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;">NTSMC</td>
+<td style="text-align: center;"><span class="math inline">\(0.0033\)</span></td>
+<td style="text-align: center;"><span class="math inline">\(0.0250\)</span></td>
+<td style="text-align: center;"><span class="math inline">\(0.0527\)</span></td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<p><span id="tab-rms-x1" label="Tab:RMS_X1"></span></p>
+<div id="tab-rms-y1">
+<div class="tbl"><table>
+<caption>Table 9. Performance index of the <span class="math inline">\(y_1\)</span> error</caption>
+<thead>
+<tr class="header">
+<th style="text-align: center;">Controller</th>
+<th style="text-align: center;"><span class="math inline">\(\text{min}(e_{y 1}-RMS)\)</span></th>
+<th style="text-align: center;"><span class="math inline">\(e_{y 1}-RMS\)</span></th>
+<th style="text-align: center;"><span class="math inline">\(\text{max}(e_{y 1}-RMS)\)</span></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: center;">PID</td>
+<td style="text-align: center;"><span class="math inline">\(\mathbf{0.0014}\)</span></td>
+<td style="text-align: center;"><span class="math inline">\(\mathbf{0.0348}\)</span></td>
+<td style="text-align: center;"><span class="math inline">\(\mathbf{0.0612}\)</span></td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">TC</td>
+<td style="text-align: center;"><span class="math inline">\(0.0028\)</span></td>
+<td style="text-align: center;"><span class="math inline">\(0.0383\)</span></td>
+<td style="text-align: center;"><span class="math inline">\(0.0673\)</span></td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;">STA</td>
+<td style="text-align: center;"><span class="math inline">\(0.0041\)</span></td>
+<td style="text-align: center;"><span class="math inline">\(0.0363\)</span></td>
+<td style="text-align: center;"><span class="math inline">\(0.0698\)</span></td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">STSMC</td>
+<td style="text-align: center;"><span class="math inline">\(0.0027\)</span></td>
+<td style="text-align: center;"><span class="math inline">\(0.0409\)</span></td>
+<td style="text-align: center;"><span class="math inline">\(0.0816\)</span></td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;">NTSMC</td>
+<td style="text-align: center;"><span class="math inline">\(0.0039\)</span></td>
+<td style="text-align: center;"><span class="math inline">\(0.0459\)</span></td>
+<td style="text-align: center;"><span class="math inline">\(0.0821\)</span></td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<p><span id="tab-rms-y1" label="Tab:RMS_Y1"></span></p>
+<div id="tab-rms-z1">
+<div class="tbl"><table>
+<caption>Table 10. Performance index of the <span class="math inline">\(z_1\)</span> errors</caption>
+<thead>
+<tr class="header">
+<th style="text-align: center;">Controller</th>
+<th style="text-align: center;"><span class="math inline">\(\text{min}(e_{z 1}-RMS)\)</span></th>
+<th style="text-align: center;"><span class="math inline">\(e_{z 1}-RMS\)</span></th>
+<th style="text-align: center;"><span class="math inline">\(\text{max}(e_{z 1}-RMS)\)</span></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: center;">PID</td>
+<td style="text-align: center;"><span class="math inline">\(0.0006\)</span></td>
+<td style="text-align: center;"><span class="math inline">\(0.0085\)</span></td>
+<td style="text-align: center;"><span class="math inline">\(0.0331\)</span></td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">TC</td>
+<td style="text-align: center;"><span class="math inline">\(\mathbf{0.00038}\)</span></td>
+<td style="text-align: center;"><span class="math inline">\(0.0066\)</span></td>
+<td style="text-align: center;"><span class="math inline">\(\mathbf{0.0254}\)</span></td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;">STA</td>
+<td style="text-align: center;"><span class="math inline">\(0.0005\)</span></td>
+<td style="text-align: center;"><span class="math inline">\(0.0064\)</span></td>
+<td style="text-align: center;"><span class="math inline">\(0.0296\)</span></td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">STSMC</td>
+<td style="text-align: center;"><span class="math inline">\(0.00045\)</span></td>
+<td style="text-align: center;"><span class="math inline">\(\mathbf{0.0060}\)</span></td>
+<td style="text-align: center;"><span class="math inline">\(0.0261\)</span></td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;">NTSMC</td>
+<td style="text-align: center;"><span class="math inline">\(0.00042\)</span></td>
+<td style="text-align: center;"><span class="math inline">\(0.0065\)</span></td>
+<td style="text-align: center;"><span class="math inline">\(0.0283\)</span></td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<p><span id="tab-rms-z1" label="Tab:RMS_Z1"></span></p>
+<div id="tab-rms-psi1">
+<div class="tbl"><table>
+<caption>Table 11. Performance index of the <span class="math inline">\(\psi_1\)</span> error</caption>
+<thead>
+<tr class="header">
+<th style="text-align: center;">Controller</th>
+<th style="text-align: center;"><span class="math inline">\(\text{min}(e_{\psi 1}-RMS)\)</span></th>
+<th style="text-align: center;"><span class="math inline">\(e_{\psi 1}-RMS\)</span></th>
+<th style="text-align: center;"><span class="math inline">\(\text{max}(e_{\psi 1}-RMS)\)</span></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: center;">PID</td>
+<td style="text-align: center;"><span class="math inline">\(0.0032\)</span></td>
+<td style="text-align: center;"><span class="math inline">\(0.0230\)</span></td>
+<td style="text-align: center;"><span class="math inline">\(0.0502\)</span></td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">TC</td>
+<td style="text-align: center;"><span class="math inline">\(\mathbf{0.0008}\)</span></td>
+<td style="text-align: center;"><span class="math inline">\(0.0109\)</span></td>
+<td style="text-align: center;"><span class="math inline">\(0.0332\)</span></td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;">STA</td>
+<td style="text-align: center;"><span class="math inline">\(0.0016\)</span></td>
+<td style="text-align: center;"><span class="math inline">\(0.0074\)</span></td>
+<td style="text-align: center;"><span class="math inline">\(0.0179\)</span></td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">STSMC</td>
+<td style="text-align: center;"><span class="math inline">\(0.0012\)</span></td>
+<td style="text-align: center;"><span class="math inline">\(0.0084\)</span></td>
+<td style="text-align: center;"><span class="math inline">\(\mathbf{0.0151}\)</span></td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;">NTSMC</td>
+<td style="text-align: center;"><span class="math inline">\(0.00093\)</span></td>
+<td style="text-align: center;"><span class="math inline">\(\mathbf{0.0068}\)</span></td>
+<td style="text-align: center;"><span class="math inline">\(0.0213\)</span></td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<p><span id="tab-rms-psi1" label="Tab:RMS_PSI1"></span></p>
+<div id="tab-rms-u1">
+<div class="tbl"><table>
+<caption>Table 12. Performance index of the control input <span class="math inline">\(u_1\)</span></caption>
+<thead>
+<tr class="header">
+<th style="text-align: center;">Controller</th>
+<th style="text-align: center;"><span class="math inline">\(\text{min}(u_{ 1}-RMS)\)</span></th>
+<th style="text-align: center;"><span class="math inline">\(u_{ 1}-RMS\)</span></th>
+<th style="text-align: center;"><span class="math inline">\(\text{max}(u_{ 1}-RMS)\)</span></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: center;">PID</td>
+<td style="text-align: center;"><span class="math inline">\(0.0987\)</span></td>
+<td style="text-align: center;"><span class="math inline">\(0.1000\)</span></td>
+<td style="text-align: center;"><span class="math inline">\(0.1015\)</span></td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">TC</td>
+<td style="text-align: center;"><span class="math inline">\(0.0956\)</span></td>
+<td style="text-align: center;"><span class="math inline">\(0.0971\)</span></td>
+<td style="text-align: center;"><span class="math inline">\(0.0994\)</span></td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;">STA</td>
+<td style="text-align: center;"><span class="math inline">\(0.0946\)</span></td>
+<td style="text-align: center;"><span class="math inline">\(\mathbf{0.0963}\)</span></td>
+<td style="text-align: center;"><span class="math inline">\(\mathbf{0.0979}\)</span></td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">STSMC</td>
+<td style="text-align: center;"><span class="math inline">\(\mathbf{0.0941}\)</span></td>
+<td style="text-align: center;"><span class="math inline">\(0.0965\)</span></td>
+<td style="text-align: center;"><span class="math inline">\(0.0982\)</span></td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;">NTSMC</td>
+<td style="text-align: center;"><span class="math inline">\(0.0961\)</span></td>
+<td style="text-align: center;"><span class="math inline">\(0.0980\)</span></td>
+<td style="text-align: center;"><span class="math inline">\(0.1000\)</span></td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<p><span id="tab-rms-u1" label="Tab:RMS_U1"></span></p>
+<div id="tab-rms-tph1">
+<div class="tbl"><table>
+<caption>Table 13. Performance index of the control input <span class="math inline">\(\tau_{\phi1}\)</span></caption>
+<thead>
+<tr class="header">
+<th style="text-align: center;">Controller</th>
+<th style="text-align: center;"><span class="math inline">\(\text{min}(\tau_{\phi1}-RMS)\)</span></th>
+<th style="text-align: center;"><span class="math inline">\(\tau_{\phi1}-RMS\)</span></th>
+<th style="text-align: center;"><span class="math inline">\(\text{max}(\tau_{\phi1}-RMS)\)</span></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: center;">PID</td>
+<td style="text-align: center;"><span class="math inline">\(\mathbf{0.0003}\)</span></td>
+<td style="text-align: center;"><span class="math inline">\(\mathbf{0.0013}\)</span></td>
+<td style="text-align: center;"><span class="math inline">\(\mathbf{0.0025}\)</span></td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">TC</td>
+<td style="text-align: center;"><span class="math inline">\(0.0017\)</span></td>
+<td style="text-align: center;"><span class="math inline">\(0.0043\)</span></td>
+<td style="text-align: center;"><span class="math inline">\(0.0071\)</span></td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;">STA</td>
+<td style="text-align: center;"><span class="math inline">\(0.00096\)</span></td>
+<td style="text-align: center;"><span class="math inline">\(0.0037\)</span></td>
+<td style="text-align: center;"><span class="math inline">\(0.0061\)</span></td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">STSMC</td>
+<td style="text-align: center;"><span class="math inline">\(0.0027\)</span></td>
+<td style="text-align: center;"><span class="math inline">\(0.0060\)</span></td>
+<td style="text-align: center;"><span class="math inline">\(0.0085\)</span></td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;">NTSMC</td>
+<td style="text-align: center;"><span class="math inline">\(0.0011\)</span></td>
+<td style="text-align: center;"><span class="math inline">\(0.0032\)</span></td>
+<td style="text-align: center;"><span class="math inline">\(0.0053\)</span></td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<p><span id="tab-rms-tph1" label="Tab:RMS_TPH1"></span></p>
+<div id="tab-rms-tth1">
+<div class="tbl"><table>
+<caption>Table 14. Performance index of the control input <span class="math inline">\(\tau_{\theta 1}\)</span></caption>
+<thead>
+<tr class="header">
+<th style="text-align: center;">Controller</th>
+<th style="text-align: center;"><span class="math inline">\(\text{min}(\tau_{\theta 1}-RMS)\)</span></th>
+<th style="text-align: center;"><span class="math inline">\(\tau_{\theta 1}-RMS\)</span></th>
+<th style="text-align: center;"><span class="math inline">\(\text{max}(\tau_{\theta 1}-RMS)\)</span></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: center;">PID</td>
+<td style="text-align: center;"><span class="math inline">\(0.00052\)</span></td>
+<td style="text-align: center;"><span class="math inline">\({0.0018}\)</span></td>
+<td style="text-align: center;"><span class="math inline">\(\mathbf{0.0029}\)</span></td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">TC</td>
+<td style="text-align: center;"><span class="math inline">\(0.00053\)</span></td>
+<td style="text-align: center;"><span class="math inline">\(\mathbf{0.0017}\)</span></td>
+<td style="text-align: center;"><span class="math inline">\(0.0040\)</span></td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;">STA</td>
+<td style="text-align: center;"><span class="math inline">\(0.0013\)</span></td>
+<td style="text-align: center;"><span class="math inline">\(0.0037\)</span></td>
+<td style="text-align: center;"><span class="math inline">\(0.0058\)</span></td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">STSMC</td>
+<td style="text-align: center;"><span class="math inline">\(\mathbf{0.0010}\)</span></td>
+<td style="text-align: center;"><span class="math inline">\(0.0032\)</span></td>
+<td style="text-align: center;"><span class="math inline">\(0.0053\)</span></td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;">NTSMC</td>
+<td style="text-align: center;"><span class="math inline">\(\mathbf{0.0010}\)</span></td>
+<td style="text-align: center;"><span class="math inline">\(0.0023\)</span></td>
+<td style="text-align: center;"><span class="math inline">\(0.0043\)</span></td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<p><span id="tab-rms-tth1" label="Tab:RMS_TTH1"></span></p>
+<div id="tab-rms-tps1">
+<div class="tbl"><table>
+<caption>Table 15. Control input performance index <span class="math inline">\(\tau_{\psi1}\)</span></caption>
+<thead>
+<tr class="header">
+<th style="text-align: center;">Controller</th>
+<th style="text-align: center;"><span class="math inline">\(\text{min}(\tau_{\psi1}-RMS)\)</span></th>
+<th style="text-align: center;"><span class="math inline">\(\tau_{\psi1}-RMS\)</span></th>
+<th style="text-align: center;"><span class="math inline">\(\text{max}(\tau_{\psi1}-RMS)\)</span></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: center;">PID</td>
+<td style="text-align: center;"><span class="math inline">\(0.00057\)</span></td>
+<td style="text-align: center;"><span class="math inline">\(\mathbf{0.0013}\)</span></td>
+<td style="text-align: center;"><span class="math inline">\(0.0034\)</span></td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">TC</td>
+<td style="text-align: center;"><span class="math inline">\(\mathbf{0.0002}\)</span></td>
+<td style="text-align: center;"><span class="math inline">\(0.0022\)</span></td>
+<td style="text-align: center;"><span class="math inline">\(0.0044\)</span></td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;">STA</td>
+<td style="text-align: center;"><span class="math inline">\(0.00056\)</span></td>
+<td style="text-align: center;"><span class="math inline">\(0.0024\)</span></td>
+<td style="text-align: center;"><span class="math inline">\(0.0041\)</span></td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">STSMC</td>
+<td style="text-align: center;"><span class="math inline">\(0.00037\)</span></td>
+<td style="text-align: center;"><span class="math inline">\(\mathbf{0.0013}\)</span></td>
+<td style="text-align: center;"><span class="math inline">\(\mathbf{0.0027}\)</span></td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;">NTSMC</td>
+<td style="text-align: center;"><span class="math inline">\(0.0004\)</span></td>
+<td style="text-align: center;"><span class="math inline">\(0.0017\)</span></td>
+<td style="text-align: center;"><span class="math inline">\(0.0037\)</span></td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<p><span id="tab-rms-tps1" label="Tab:RMS_TPS1"></span></p>
+<div id="tab-rms-x2">
+<div class="tbl"><table>
+<caption>Table 16. Performance index of the <span class="math inline">\(x_2\)</span> error</caption>
+<thead>
+<tr class="header">
+<th style="text-align: center;">Controller</th>
+<th style="text-align: center;"><span class="math inline">\(\text{min}(e_{x 2}-RMS)\)</span></th>
+<th style="text-align: center;"><span class="math inline">\(e_{x 2}-RMS\)</span></th>
+<th style="text-align: center;"><span class="math inline">\(\text{max}(e_{x 2}-RMS)\)</span></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: center;">PID</td>
+<td style="text-align: center;"><span class="math inline">\(0.0025\)</span></td>
+<td style="text-align: center;"><span class="math inline">\(0.0269\)</span></td>
+<td style="text-align: center;"><span class="math inline">\(0.0492\)</span></td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">TC</td>
+<td style="text-align: center;"><span class="math inline">\(\mathbf{0.0011}\)</span></td>
+<td style="text-align: center;"><span class="math inline">\(0.0287\)</span></td>
+<td style="text-align: center;"><span class="math inline">\(0.0438\)</span></td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;">STA</td>
+<td style="text-align: center;"><span class="math inline">\(0.0014\)</span></td>
+<td style="text-align: center;"><span class="math inline">\(\mathbf{0.0218}\)</span></td>
+<td style="text-align: center;"><span class="math inline">\(\mathbf{0.0403}\)</span></td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">STSMC</td>
+<td style="text-align: center;"><span class="math inline">\(0.0020\)</span></td>
+<td style="text-align: center;"><span class="math inline">\(0.0303\)</span></td>
+<td style="text-align: center;"><span class="math inline">\(0.0492\)</span></td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;">NTSMC</td>
+<td style="text-align: center;"><span class="math inline">\(0.0047\)</span></td>
+<td style="text-align: center;"><span class="math inline">\(0.0321\)</span></td>
+<td style="text-align: center;"><span class="math inline">\(0.0507\)</span></td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<p><span id="tab-rms-x2" label="Tab:RMS_X2"></span></p>
+<div id="tab-rms-y2">
+<div class="tbl"><table>
+<caption>Table 17. Performance index of the <span class="math inline">\(y_2\)</span> error</caption>
+<thead>
+<tr class="header">
+<th style="text-align: center;">Controller</th>
+<th style="text-align: center;"><span class="math inline">\(\text{min}(e_{y 2}-RMS)\)</span></th>
+<th style="text-align: center;"><span class="math inline">\(e_{y 2}-RMS\)</span></th>
+<th style="text-align: center;"><span class="math inline">\(\text{max}(e_{y 2}-RMS)\)</span></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: center;">PID</td>
+<td style="text-align: center;"><span class="math inline">\(\mathbf{0.0006}\)</span></td>
+<td style="text-align: center;"><span class="math inline">\(0.0359\)</span></td>
+<td style="text-align: center;"><span class="math inline">\(0.0614\)</span></td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">TC</td>
+<td style="text-align: center;"><span class="math inline">\(0.0031\)</span></td>
+<td style="text-align: center;"><span class="math inline">\(0.0399\)</span></td>
+<td style="text-align: center;"><span class="math inline">\(0.0751\)</span></td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;">STA</td>
+<td style="text-align: center;"><span class="math inline">\(0.0020\)</span></td>
+<td style="text-align: center;"><span class="math inline">\(\mathbf{0.0340}\)</span></td>
+<td style="text-align: center;"><span class="math inline">\(\mathbf{0.0595}\)</span></td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">STSMC</td>
+<td style="text-align: center;"><span class="math inline">\(0.0024\)</span></td>
+<td style="text-align: center;"><span class="math inline">\(0.0356\)</span></td>
+<td style="text-align: center;"><span class="math inline">\(0.0624\)</span></td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;">NTSMC</td>
+<td style="text-align: center;"><span class="math inline">\(0.0017\)</span></td>
+<td style="text-align: center;"><span class="math inline">\(0.0461\)</span></td>
+<td style="text-align: center;"><span class="math inline">\(0.0896\)</span></td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<p><span id="tab-rms-y2" label="Tab:RMS_Y2"></span></p>
+<div id="tab-rms-z2">
+<div class="tbl"><table>
+<caption>Table 18. Performance index of the <span class="math inline">\(z_2\)</span> error</caption>
+<thead>
+<tr class="header">
+<th style="text-align: center;">Controller</th>
+<th style="text-align: center;"><span class="math inline">\(\text{min}(e_{z 2}-RMS)\)</span></th>
+<th style="text-align: center;"><span class="math inline">\(e_{z 2}-RMS\)</span></th>
+<th style="text-align: center;"><span class="math inline">\(\text{max}(e_{z 2}-RMS)\)</span></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: center;">PID</td>
+<td style="text-align: center;"><span class="math inline">\(\mathbf{0.004}\)</span></td>
+<td style="text-align: center;"><span class="math inline">\(0.0078\)</span></td>
+<td style="text-align: center;"><span class="math inline">\(0.0303\)</span></td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">TC</td>
+<td style="text-align: center;"><span class="math inline">\(\mathbf{0.0004}\)</span></td>
+<td style="text-align: center;"><span class="math inline">\(\mathbf{0.0068}\)</span></td>
+<td style="text-align: center;"><span class="math inline">\(0.0275\)</span></td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;">STA</td>
+<td style="text-align: center;"><span class="math inline">\(\mathbf{0.0004}\)</span></td>
+<td style="text-align: center;"><span class="math inline">\(0.0084\)</span></td>
+<td style="text-align: center;"><span class="math inline">\(0.0347\)</span></td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">STSMC</td>
+<td style="text-align: center;"><span class="math inline">\(0.00058\)</span></td>
+<td style="text-align: center;"><span class="math inline">\(\mathbf{0.0068}\)</span></td>
+<td style="text-align: center;"><span class="math inline">\(\mathbf{0.0263}\)</span></td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;">NTSMC</td>
+<td style="text-align: center;"><span class="math inline">\(0.00054\)</span></td>
+<td style="text-align: center;"><span class="math inline">\(0.0070\)</span></td>
+<td style="text-align: center;"><span class="math inline">\(0.0304\)</span></td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<p><span id="tab-rms-z2" label="Tab:RMS_Z2"></span></p>
+<div id="tab-rms-psi2">
+<div class="tbl"><table>
+<caption>Table 19. Position error performance index <span class="math inline">\(\psi_2\)</span></caption>
+<thead>
+<tr class="header">
+<th style="text-align: center;">Controller</th>
+<th style="text-align: center;"><span class="math inline">\(\text{min}(e_{ \psi_ 2}-RMS)\)</span></th>
+<th style="text-align: center;"><span class="math inline">\(e_{ \psi_ 2}-RMS\)</span></th>
+<th style="text-align: center;"><span class="math inline">\(\text{max}(e_{ \psi_ 2}-RMS)\)</span></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: center;">PID</td>
+<td style="text-align: center;"><span class="math inline">\(0.0032\)</span></td>
+<td style="text-align: center;"><span class="math inline">\(0.0230\)</span></td>
+<td style="text-align: center;"><span class="math inline">\(0.0502\)</span></td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">TC</td>
+<td style="text-align: center;"><span class="math inline">\(\mathbf{0.0009}\)</span></td>
+<td style="text-align: center;"><span class="math inline">\(0.0110\)</span></td>
+<td style="text-align: center;"><span class="math inline">\(0.0332\)</span></td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;">STA</td>
+<td style="text-align: center;"><span class="math inline">\(0.0016\)</span></td>
+<td style="text-align: center;"><span class="math inline">\(0.0074\)</span></td>
+<td style="text-align: center;"><span class="math inline">\(0.0179\)</span></td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">STSMC</td>
+<td style="text-align: center;"><span class="math inline">\(0.0012\)</span></td>
+<td style="text-align: center;"><span class="math inline">\(0.0084\)</span></td>
+<td style="text-align: center;"><span class="math inline">\(\mathbf{0.0151}\)</span></td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;">NTSMC</td>
+<td style="text-align: center;"><span class="math inline">\(\mathbf{0.0009}\)</span></td>
+<td style="text-align: center;"><span class="math inline">\(\mathbf{0.0068}\)</span></td>
+<td style="text-align: center;"><span class="math inline">\(0.0213\)</span></td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<p><span id="tab-rms-psi2" label="Tab:RMS_PSI2"></span></p>
+<div id="tab-rms-u2">
+<div class="tbl"><table>
+<caption>Table 20. Control input performance index <span class="math inline">\(u_2\)</span></caption>
+<thead>
+<tr class="header">
+<th style="text-align: center;">Controller</th>
+<th style="text-align: center;"><span class="math inline">\(\text{min}(u_{ 2}-RMS)\)</span></th>
+<th style="text-align: center;"><span class="math inline">\(u_{ 2}-RMS\)</span></th>
+<th style="text-align: center;"><span class="math inline">\(\text{max}(u_{ 2}-RMS)\)</span></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: center;">PID</td>
+<td style="text-align: center;"><span class="math inline">\(0.0981\)</span></td>
+<td style="text-align: center;"><span class="math inline">\(0.0995\)</span></td>
+<td style="text-align: center;"><span class="math inline">\(0.1013\)</span></td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">TC</td>
+<td style="text-align: center;"><span class="math inline">\(0.0957\)</span></td>
+<td style="text-align: center;"><span class="math inline">\(0.0971\)</span></td>
+<td style="text-align: center;"><span class="math inline">\(0.0996\)</span></td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;">STA</td>
+<td style="text-align: center;"><span class="math inline">\(0.1010\)</span></td>
+<td style="text-align: center;"><span class="math inline">\(0.1042\)</span></td>
+<td style="text-align: center;"><span class="math inline">\(0.1068\)</span></td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">STSMC</td>
+<td style="text-align: center;"><span class="math inline">\(\mathbf{0.0943}\)</span></td>
+<td style="text-align: center;"><span class="math inline">\(\mathbf{0.0961}\)</span></td>
+<td style="text-align: center;"><span class="math inline">\(\mathbf{0.0974}\)</span></td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;">NTSMC</td>
+<td style="text-align: center;"><span class="math inline">\(0.0977\)</span></td>
+<td style="text-align: center;"><span class="math inline">\(0.0996\)</span></td>
+<td style="text-align: center;"><span class="math inline">\(0.1012\)</span></td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<p><span id="tab-rms-u2" label="Tab:RMS_U2"></span></p>
+<div id="tab-rms-tph2">
+<div class="tbl"><table>
+<caption>Table 21. Control input performance index <span class="math inline">\(\tau_{\phi2}\)</span></caption>
+<thead>
+<tr class="header">
+<th style="text-align: center;">Controller</th>
+<th style="text-align: center;"><span class="math inline">\(\text{min}(\tau_{\phi2}-RMS)\)</span></th>
+<th style="text-align: center;"><span class="math inline">\(\tau_{\phi2} -RMS\)</span></th>
+<th style="text-align: center;"><span class="math inline">\(\text{max}(\tau_{\phi2}-RMS)\)</span></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: center;">PID</td>
+<td style="text-align: center;"><span class="math inline">\(\mathbf{0.0003}\)</span></td>
+<td style="text-align: center;"><span class="math inline">\(\mathbf{0.00093}\)</span></td>
+<td style="text-align: center;"><span class="math inline">\(\mathbf{0.0020}\)</span></td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">TC</td>
+<td style="text-align: center;"><span class="math inline">\(0.0016\)</span></td>
+<td style="text-align: center;"><span class="math inline">\(0.0040\)</span></td>
+<td style="text-align: center;"><span class="math inline">\(0.0063\)</span></td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;">STA</td>
+<td style="text-align: center;"><span class="math inline">\(0.0029\)</span></td>
+<td style="text-align: center;"><span class="math inline">\(0.0052\)</span></td>
+<td style="text-align: center;"><span class="math inline">\(0.0072\)</span></td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">STSMC</td>
+<td style="text-align: center;"><span class="math inline">\(0.0023\)</span></td>
+<td style="text-align: center;"><span class="math inline">\(0.0049\)</span></td>
+<td style="text-align: center;"><span class="math inline">\(0.0082\)</span></td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;">NTSMC</td>
+<td style="text-align: center;"><span class="math inline">\(0.0011\)</span></td>
+<td style="text-align: center;"><span class="math inline">\(0.0031\)</span></td>
+<td style="text-align: center;"><span class="math inline">\(0.0057\)</span></td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<p><span id="tab-rms-tph2" label="Tab:RMS_TPH2"></span></p>
+<div id="tab-rms-tth2">
+<div class="tbl"><table>
+<caption>Table 22. Control input performance index <span class="math inline">\(\tau_{\phi2}\)</span></caption>
+<thead>
+<tr class="header">
+<th style="text-align: center;">Controller</th>
+<th style="text-align: center;"><span class="math inline">\(\text{min}(\tau_{\theta 2}-RMS)\)</span></th>
+<th style="text-align: center;"><span class="math inline">\(\tau_{\theta 2} -RMS\)</span></th>
+<th style="text-align: center;"><span class="math inline">\(\text{max}(\tau_{\theta 2}-RMS)\)</span></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: center;">PID</td>
+<td style="text-align: center;"><span class="math inline">\(\mathbf{0.0003}\)</span></td>
+<td style="text-align: center;"><span class="math inline">\(0.0033\)</span></td>
+<td style="text-align: center;"><span class="math inline">\(\mathbf{0.0020}\)</span></td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">TC</td>
+<td style="text-align: center;"><span class="math inline">\(0.0016\)</span></td>
+<td style="text-align: center;"><span class="math inline">\(0.0040\)</span></td>
+<td style="text-align: center;"><span class="math inline">\(0.0063\)</span></td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;">STA</td>
+<td style="text-align: center;"><span class="math inline">\(0.0029\)</span></td>
+<td style="text-align: center;"><span class="math inline">\(0.0052\)</span></td>
+<td style="text-align: center;"><span class="math inline">\(0.0072\)</span></td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">STSMC</td>
+<td style="text-align: center;"><span class="math inline">\(0.0023\)</span></td>
+<td style="text-align: center;"><span class="math inline">\(0.0049\)</span></td>
+<td style="text-align: center;"><span class="math inline">\(0.0082\)</span></td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;">NTSMC</td>
+<td style="text-align: center;"><span class="math inline">\(0.0011\)</span></td>
+<td style="text-align: center;"><span class="math inline">\(\mathbf{0.0031}\)</span></td>
+<td style="text-align: center;"><span class="math inline">\(0.0057\)</span></td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<p><span id="tab-rms-tth2" label="Tab:RMS_TTH2"></span></p>
+<div id="tab-rms-tps2">
+<div class="tbl"><table>
+<caption>Table 23. Control input performance index <span class="math inline">\(\tau_{\psi2}\)</span></caption>
+<thead>
+<tr class="header">
+<th style="text-align: center;">Controller</th>
+<th style="text-align: center;"><span class="math inline">\(\text{min}(\tau_{\psi2}-RMS)\)</span></th>
+<th style="text-align: center;"><span class="math inline">\(\tau_{\psi2} -RMS\)</span></th>
+<th style="text-align: center;"><span class="math inline">\(\text{max}(\tau_{\psi2}-RMS)\)</span></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: center;">PID</td>
+<td style="text-align: center;"><span class="math inline">\(0.0014\)</span></td>
+<td style="text-align: center;"><span class="math inline">\(0.00063\)</span></td>
+<td style="text-align: center;"><span class="math inline">\(\mathbf{0.0020}\)</span></td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">TC</td>
+<td style="text-align: center;"><span class="math inline">\(\mathbf{0.00017}\)</span></td>
+<td style="text-align: center;"><span class="math inline">\(0.0016\)</span></td>
+<td style="text-align: center;"><span class="math inline">\(0.0035\)</span></td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;">STA</td>
+<td style="text-align: center;"><span class="math inline">\(0.00029\)</span></td>
+<td style="text-align: center;"><span class="math inline">\(0.0023\)</span></td>
+<td style="text-align: center;"><span class="math inline">\(0.0041\)</span></td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">STSMC</td>
+<td style="text-align: center;"><span class="math inline">\(0.00028\)</span></td>
+<td style="text-align: center;"><span class="math inline">\(0.0018\)</span></td>
+<td style="text-align: center;"><span class="math inline">\(0.0030\)</span></td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;">NTSMC</td>
+<td style="text-align: center;"><span class="math inline">\(0.0006\)</span></td>
+<td style="text-align: center;"><span class="math inline">\(\mathbf{0.0015}\)</span></td>
+<td style="text-align: center;"><span class="math inline">\(0.0038\)</span></td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<p><span id="tab-rms-tps2" label="Tab:RMS_TPS2"></span></p>
+<h1 data-number="5" id="cap-conclusiones"><span class="header-section-number">5</span> Conclusions</h1>
+<p>This thesis provides a solution to address the formation problem of a group of nano quadrotors. The robust controller consists of a finite-time sliding-mode observer, PID controllers and continuous sliding-mode controllers. It should be noted that the observers were not used in the experimental validation. In addition, a platform was developed to perform experiments with multi-quadrotor systems.</p>
+<p>The experiments performed validated the following controllers PID, TC, STA, STSMC, and NTSMC, on a multi-agent system of nano quadrotors, considering three agents, a virtual leader and two follower agents using the Crazyflie nano quadrotors. To demonstrate the effectiveness of the controllers, ten experiments were performed and an average of the obtained results was computed.</p>
+<p>The trajectories of the agents in the coordinates <span class="math inline">\(x\)</span>, <span class="math inline">\(y\)</span> and <span class="math inline">\(z\)</span>, as well as the behavior of the yaw angle <span class="math inline">\(\psi\)</span>, indicate that the controllers are capable of carrying out the formation tasks.</p>
+<p>It is important to highlight that, although the controllers demonstrated similar behaviors among themselves, the variability in their performance can be influenced by several factors, such as the loss of information or the delay in sending data from the ground station to the agents.</p>
+<p>The main contributions of this work lie in the experimental validation of the controllers and the development of the multi-quadrotor platform.</p>
+<p>In the results of the experimental validation, it was observed that the STSMC controller showed a better performance compared to the other validated controllers. On the other hand, the NTSMC controller had the worst performance. It is important to mention that during the simulations observers were used, but in the validation they were not used. This difference in the implementation could have influenced the results and should be considered in the future to compare the performance of the controllers.</p>
+<h3 class="unnumbered" id="future-work">Future work</h3>
+<p>With the nano quadrotor platform already in operation, it is possible to start new research work with multi-agent system controllers (using vision, artificial intelligence, other robust controllers, etc.), including the implementation of the observers and the injection of external disturbances.</p>
+<h2 class="unnumbered" id="academic-production">Academic Production</h2>
+<h3 class="unnumbered" id="papers-submitted-to-national-conferences">Papers submitted to National Conferences</h3>
+<ul>
+<li><p><strong>Julio Cesar Rodríguez-Cervantes, Alejandro Dzul and Héctor Ríos</strong>, <em>“Formation Control Design for Multi-Quad-Rotors with Experimental Validation”</em>, Submitted to the Congreso Nacional de Control Automático 2023.</p></li>
+<li><p><strong>Julio Cesar Rodríguez-Cervantes, Alejandro Dzul and Héctor Ríos</strong>, <em>“Formation Control Design based on Sliding Modes for a Group of Quadrotors”</em>, Submitted to the Mexican Congress of Robotics COMRob 2023.</p></li>
+</ul>
+<h1 data-number="A" id="ape-mt"><span class="header-section-number">A</span> Multi-Quadrotor Platform</h1>
+<p>The ROS programming of the controllers is based on the works represented in the repositories <a href="https://github.com/whoenig/crazyflie_ros"><em>crazyflie_ros</em></a> <span class="citation" data-cites="crazyflieROS">[35]</span> and <a href="https://github.com/ros-drivers/vrpn_client_ros"><em>vrpn_client_ros</em></a>. The repository <em>crazyflie_ros</em> provides the connection foundations of the positioning system and the Crazyflie, as well as flight examples in regulation mode for a Crazyflie, among other applications. It also includes a PID position controller which runs from a ground station. The repository <em>vrpn_client_ros</em> contains the communication libraries with the VRPN positioning system, compatible with the Optitrack Motion Capture system.</p>
+<p>The original repositories had to be updated, since when using another VRPN positioning system, the established frames are different from the frames of the Optitrack motion capture system. In addition, the programming of the position controllers is performed on board the microprocessor of the nano quadrotor; another aspect to highlight is that since the code is fragmented into multiple programs, depending on the characteristics of the ground station, it slowed down the sending of the signals.</p>
+<p>Part of the work carried out was the modification of the libraries of the Crazyradio communication antenna, to send the desired trajectories with the structure of the proposed controller, <span class="math inline">\((x, y, z, \psi, \dot{x}, \dot{y}, \dot{z}, \dot{\psi}, \ddot{x}, \ddot{y}, \ddot{z}, \ddot{\psi})\)</span>, since by default it only has a limited group of setpoint input structures. In addition, all the programming was migrated to the Python language to have a standardization, and unnecessary codes were removed. Thanks to this modification, it was possible to perform the position control on board the microcontroller of the nano quadrotor, which allowed improving the communication with the ground station, achieving better communication. This was notably reflected in the experiments, since the noise generated by signal losses was considerably reduced; moreover, this modification extends the use of formation tasks with other types of positioning systems, thus obtaining improvements in this sense, since the original repositories are only subject to motion capture positioning systems via VRPN.</p>
+<p>It is important to highlight that a new repository was created, <a href="https://github.com/juliordzcer/crazyflie"><em>crazyflie</em></a>, which is modified for the execution of the experimental tests presented in this document. In addition, the installation steps necessary to run the presented experiments were added. Additionally, a second repository of the nano quadrotor firmware was created, <a href="https://github.com/juliordzcer/crazyflie-firmware/"><em>crazyflie-firmware</em></a>, which contains the attitude and position controllers presented. Both repositories can be accessed at the following links: <a href="https://github.com/juliordzcer/crazyflie-firmware/" class="uri">https://github.com/juliordzcer/crazyflie-firmware/</a> and <a href="https://github.com/juliordzcer/crazyflie" class="uri">https://github.com/juliordzcer/crazyflie</a>.</p>
+<p>The operation diagram of the platform is shown in Figure 18. The operation process of the platform begins with a main program, which is executed from a command window in Linux.</p>
+<div class="sourceCode" id="cb1" data-language="Python"><pre class="sourceCode python"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>roslaunch crazyflie_demo LiderVirtual.launch</span></code></pre></div>
+<p>The operation process is as follows:</p>
+<ol>
+<li><p>Configuration of the initial parameters:</p>
+<ul>
+<li><p>Configuration of the nano quadrotors: A connection name is assigned to each agent (for example, “crazyflie1” for agent 1 and “crazyflie2” for agent 2) and their initial positions and formation parameters are defined in the coordinates <span class="math inline">\(x\)</span>, <span class="math inline">\(y\)</span> and <span class="math inline">\(z\)</span>.</p></li>
+<li><p>Controller selection: One of the available controllers is chosen: the classical sliding-mode controller (SMC), the backstepping controller, TC, STA, NTSMC, STSMC and PID.</p></li>
+<li><p>Parameters of the desired trajectory: The radius of the trajectory and the height are defined.</p></li>
+</ul></li>
+<li><p>Start of the motion capture positioning program: It connects to the server located at IP address 192.168.2.10, which generates a server with the real-time positions of the agents. This program runs at a frequency of 50 Hz, but it is recommended to increase it to 100 Hz if only one agent is used.</p></li>
+<li><p>Initialization of the virtual leader: The virtual leader waits for a command from the joystick to start its trajectory. The virtual leader program, called LV.py, requires the initial positions and hosts the trajectory to be followed.</p></li>
+<li><p>Start of the connection with the follower agents: This process is the same for all follower agents and is generated by a group, which contains the programs to be executed for each agent.</p>
+<ul>
+<li><p>The program Crazyflie_add is executed, which establishes the connection between the ground station and the nano quadrotors, using the connection names assigned previously. This program has a waiting time of 5 seconds to ensure that the connection is successful.</p></li>
+<li><p>Once the connection is established, the joystick is connected to the group of programs for the emergency stop and initialization of the trajectories.</p></li>
+<li><p>The program Setpoint.py is executed, which knows the position of the leader and adds the desired formation vector, sending it to the nano quadrotor.</p></li>
+<li><p>The program VRPN.py is executed, responsible for sending the real-time positions of each agent.</p></li>
+</ul></li>
+</ol>
+<p>It is important to mention that once the connection with the agents is established, the programs interact with each other in real time.</p>
+<figure id="fig-ros-plat">
+<img src="img/DIAG.png" loading="lazy" alt="Figure">
+<figcaption>Figure 18. ROS platform.</figcaption>
+</figure>
+<h4 data-number="A.0.0.1" id="sec-mocap"><span class="header-section-number">A.0.0.1</span> Optitrack Motion Capture positioning system.</h4>
+<p>The Optitrack Motion Capture positioning system tracks and captures 3D movements. It uses reflective markers on the objects and infrared cameras to detect their position and attitude. The software processes the data in real time, and it transmits them to a private server through VRPN (acronym for <em>Virtual-Reality Peripheral Network</em>), which sends the positions and attitudes of the objects of interest <span class="citation" data-cites="optitrack">[36]</span>.</p>
+<p>To start the VRPN server of the Optitrack Motion Capture positioning system, the person must follow the following steps:</p>
+<ol>
+<li><p>The Motion Capture software is started and the option <em>Open Camera Calibration</em> is selected (see Figure 19).</p>
+<figure id="fig-mocap1">
+<img src="img/1.jpg" loading="lazy" />
+<figcaption>Figure 19. Motive Software</figcaption>
+</figure></li>
+<li><p>Select the most recent calibration file (see Figure 20).</p>
+<figure id="fig-mocap2">
+<img src="img/2.jpg" loading="lazy" />
+<figcaption>Figure 20. Calibration Selection.</figcaption>
+</figure></li>
+<li><p>Select the markers of the agents (see Figure 21). Once selected, the markers are represented as in Figure 22. It is important to verify that all the markers of the agent are selected.</p>
+<figure id="fig-mocap3">
+<img src="img/3.jpg" loading="lazy" />
+<figcaption>Figure 21. Marker selection</figcaption>
+</figure>
+<figure id="fig-mocap4">
+<img src="img/4.jpg" loading="lazy" />
+<figcaption>Figure 22. Selected markers</figcaption>
+</figure></li>
+<li><p>Right-click <em>Rigid Body</em> and then <em>Create From Selected Markers</em> (see Figure 23).</p>
+<figure id="fig-mocap5">
+<img src="img/5.jpg" loading="lazy" />
+<figcaption>Figure 23. Create a rigid body</figcaption>
+</figure></li>
+<li><p>The names of the rigid bodies are changed to <em>crazyflie1</em> and <em>crazyflie2</em>. If there are more agents, continue with <em>crazyflie3</em> and so on (see Figure 24).</p>
+<figure id="fig-mocap6">
+<img src="img/6.jpg" loading="lazy" />
+<figcaption>Figure 24. Rename the rigid bodies with the name of the agents</figcaption>
+</figure></li>
+<li><p>To start the server, select the option <em>Streaming Pane</em>, located in the upper left part, which opens a window on the right side of the screen (see Figure 25).</p>
+<figure id="fig-mocap7">
+<img src="img/7.jpg" loading="lazy" />
+<figcaption>Figure 25. Streaming Pane option</figcaption>
+</figure></li>
+<li><p>Finally, select the option <em>Broadcast Frame Data</em> located in <em>VRPN Streaming Engine</em> (see Figure 26).</p>
+<figure id="fig-mocap8">
+<img src="img/8.jpg" loading="lazy" />
+<figcaption>Figure 26. Start VRPN Server</figcaption>
+</figure></li>
+</ol>
+<p>Following these steps, the user will have started the VRPN server and will be ready to use the Optitrack Motion Capture positioning system.</p>
+<p>The position of the markers of each agent must be distributed differently and non-symmetrically. If the markers are positioned in the same way or symmetrically, the camera system may provide incorrect positioning. Therefore, it is essential to ensure that the markers are placed uniquely and non-symmetrically to obtain accurate and reliable measurements from the Motion Capture system. Figure 27 shows an example of the distribution of an agent</p>
+<figure id="fig-marcadores">
+<img src="img/marcadores.jpg" loading="lazy" />
+<figcaption>Figure 27. Marker distribution</figcaption>
+</figure>
+<h4 data-number="A.0.0.2" id="ape-ros"><span class="header-section-number">A.0.0.2</span> Ground station</h4>
+<p>To run the experiments, a computer with Ubuntu 20.04 and the ROS software is required; one of the strengths of ROS in the development of algorithms for robots is that it is an agnostic system, since it can be used with multiple programming languages (C++, Python and Java); it is widely used in the research and development of robots in various areas, such as mobile robotics, robotic arm manipulation, computer vision and industrial robotics. It also has a large community of users and developers who contribute additional packages and tools, which makes it a dynamic and constantly growing ecosystem <span class="citation" data-cites="ROS">[37]</span>.</p>
+<p>To use the experimental platform, knowledge of ROS implemented in Python and C++ is required, since the programs that generate the desired trajectories and send the position in real time to the nano quadrotor are implemented through Python and C++ with ROS.</p>
+<h4 data-number="A.0.0.3" id="ape-crazyflie"><span class="header-section-number">A.0.0.3</span> Crazyflie</h4>
+<p>The Crazyflie (see Figure 28) has gained popularity in the field of robotics and research due to its compact design and versatility. Thanks to its small size, it can maneuver in narrow and confined spaces, which makes it an ideal option for formation tasks and mapping tasks in reduced areas.</p>
+<p>In addition to its modular design, this gives it the ability to add additional sensors according to the tasks to be performed. Among them are proximity detection modules, high-resolution cameras, advanced inertial sensors and other devices that allow increasingly sophisticated research and projects to be carried out.</p>
+<p>The use of the Crazyflie in cooperative task research has proven to be highly beneficial. Being small and agile robots, they can collaborate efficiently in groups to address complex problems and perform collaborative tasks.</p>
+<figure id="fig-crazy">
+<img src="img/Crazyflie.jpg" loading="lazy" />
+<figcaption>Figure 28. Crazyflie</figcaption>
+</figure>
+<h2 data-number="A.1" id="rpm-a-newtons"><span class="header-section-number">A.1</span> RPM to Newtons</h2>
+<p>Since the input of the control signals of the Crazyflie quadrotor is in RPM units, and the controllers presented in this thesis are represented in Newtons units, experimental calculations were developed to establish a relationship between RPM and Newtons. This relationship is described in the research work titled “System Identification of the Crazyflie 2.0 Nano Quadrocopter” <span class="citation" data-cites="20.500.11850/214143">[34]</span>, where the identification of the parameters of the Crazyflie 2.0 nano quadrotor is carried out. The function that represents this relationship is given by: <span class="math display">\[f_i = 2.130295 \times 10^{-11} \cdot \text{cmd}^2_i + 1.032633 \times 10^{-6} \cdot \text{cmd}_i + 5.484560 \times 10^{-4} \tag{20}\]</span> where <span class="math inline">\(f_i\)</span> is the thrust generated by each motor <span class="math inline">\(i\)</span> and cmd<span class="math inline">\(_i\)</span> is the input sent to motor <span class="math inline">\(i\)</span>; the plot of this function is shown in Figure 29.</p>
+<figure id="fig-rpm2thrust">
+<img src="img/rpmtothrust.png" loading="lazy" alt="Figure">
+<figcaption>Figure 29. Plot of the RPM-Newtons relationship </figcaption>
+</figure>
+<h1 id="references">References</h1>
+<div id="refs" class="references csl-bib-body" role="list">
+<div id="ref-mcguire2019minimal" class="csl-entry" role="listitem">
+<div class="csl-left-margin">[1] </div><div class="csl-right-inline">K. McGuire, C. de Wagter, K. Tuyls, and H. J. Kappen, <span>“Minimal navigation solution for a swarm of tiny flying robots to explore an unknown environment,”</span> <em>Science Robotics</em>, vol. 4, no. 35, 2019, doi: <a href="https://doi.org/10.1126/scirobotics.aaw9710">10.1126/scirobotics.aaw9710</a>.</div>
+</div>
+<div id="ref-kingston2008decentralized" class="csl-entry" role="listitem">
+<div class="csl-left-margin">[2] </div><div class="csl-right-inline">D. Kingston, R. W. Beard, and R. S. Holt, <span>“Decentralized perimeter surveillance using a team of UAVs,”</span> <em>IEEE Transactions on Robotics</em>, vol. 24, no. 6, pp. 1394–1404, 2008.</div>
+</div>
+<div id="ref-senanayake2016search" class="csl-entry" role="listitem">
+<div class="csl-left-margin">[3] </div><div class="csl-right-inline">M. Senanayake, I. Senthooran, J. C. Barca, H. Chung, J. Kamruzzaman, and M. Murshed, <span>“Search and tracking algorithms for swarms of robots: A survey,”</span> <em>Robotics and Autonomous Systems</em>, vol. 75, pp. 422–434, 2016.</div>
+</div>
+<div id="ref-albani2017monitoring" class="csl-entry" role="listitem">
+<div class="csl-left-margin">[4] </div><div class="csl-right-inline">D. Albani, J. IJsselmuiden, R. Haken, and V. Trianni, <span>“Monitoring and mapping with robot swarms for agricultural applications,”</span> in <em>2017 14th IEEE international conference on advanced video and signal based surveillance (AVSS)</em>, IEEE, 2017, pp. 1–6.</div>
+</div>
+<div id="ref-maza2009multi" class="csl-entry" role="listitem">
+<div class="csl-left-margin">[5] </div><div class="csl-right-inline">I. Maza, K. Kondak, M. Bernard, and A. Ollero, <span>“Multi-UAV cooperation and control for load transportation and deployment,”</span> in <em>Selected papers from the 2nd international symposium on UAVs, reno, nevada, USA june 8–10, 2009</em>, Springer, 2009, pp. 417–449.</div>
+</div>
+<div id="ref-carrillo2013quad" class="csl-entry" role="listitem">
+<div class="csl-left-margin">[6] </div><div class="csl-right-inline">L. R. G. Carrillo, A. E. D. López, R. Lozano, and C. Pégard, <em>Quad rotorcraft control: Vision-based hovering and navigation</em>. in Advances in industrial control. Springer London, 2013. doi: <a href="https://doi.org/10.1007/978-1-4471-4399-4">10.1007/978-1-4471-4399-4</a>.</div>
+</div>
+<div id="ref-crazyswarm" class="csl-entry" role="listitem">
+<div class="csl-left-margin">[7] </div><div class="csl-right-inline">J. A. Preiss, W. Hönig, G. S. Sukhatme, and N. Ayanian, <span>“Crazyswarm: <span>A</span> large nano-quadcopter swarm,”</span> in <em><span>IEEE</span> international conference on robotics and automation (<span>ICRA</span>)</em>, 2017, pp. 3299–3304. doi: <a href="https://doi.org/10.1109/ICRA.2017.7989376">10.1109/ICRA.2017.7989376</a>.</div>
+</div>
+<div id="ref-9476797" class="csl-entry" role="listitem">
+<div class="csl-left-margin">[8] </div><div class="csl-right-inline">C. Katt, H. Castañeda, and P. Castillo, <span>“Formation-containment for a MAV fleet under perturbations via adaptive sliding mode approach,”</span> in <em>2021 international conference on unmanned aircraft systems (ICUAS)</em>, 2021, pp. 1530–1537. doi: <a href="https://doi.org/10.1109/ICUAS51884.2021.9476797">10.1109/ICUAS51884.2021.9476797</a>.</div>
+</div>
+<div id="ref-9856271" class="csl-entry" role="listitem">
+<div class="csl-left-margin">[9] </div><div class="csl-right-inline">O. Mechali, L. Xu, and X. Xie, <span>“Formation flight control of networked-delayed quadrotors for cooperative slung load transportation,”</span> in <em>2022 IEEE international conference on mechatronics and automation (ICMA)</em>, 2022, pp. 526–531. doi: <a href="https://doi.org/10.1109/ICMA54519.2022.9856271">10.1109/ICMA54519.2022.9856271</a>.</div>
+</div>
+<div id="ref-RAMEZANIDOORAKI2021103671" class="csl-entry" role="listitem">
+<div class="csl-left-margin">[10] </div><div class="csl-right-inline">A. Ramezani Dooraki and D.-J. Lee, <span>“An innovative bio-inspired flight controller for quad-rotor drones: Quad-rotor drone learning to fly using reinforcement learning,”</span> <em>Robotics and Autonomous Systems</em>, vol. 135, p. 103671, 2021.</div>
+</div>
+<div id="ref-YAN202335" class="csl-entry" role="listitem">
+<div class="csl-left-margin">[11] </div><div class="csl-right-inline">D. Yan, W. Zhang, H. Chen, and J. Shi, <span>“Robust control strategy for multi-UAVs system using MPC combined with kalman-consensus filter and disturbance observer,”</span> <em>ISA Transactions</em>, vol. 135, pp. 35–51, 2023.</div>
+</div>
+<div id="ref-9490672" class="csl-entry" role="listitem">
+<div class="csl-left-margin">[12] </div><div class="csl-right-inline">J. A. Vazquez Trejo <em>et al.</em>, <span>“Robust formation control based on leader-following consensus in multi-agent systems with faults in the information exchange: Application in a fleet of unmanned aerial vehicles,”</span> <em>IEEE Access</em>, vol. 9, pp. 104940–104949, 2021, doi: <a href="https://doi.org/10.1109/ACCESS.2021.3098303">10.1109/ACCESS.2021.3098303</a>.</div>
+</div>
+<div id="ref-SILVA2022121" class="csl-entry" role="listitem">
+<div class="csl-left-margin">[13] </div><div class="csl-right-inline">B. M. C. Silva, J. Y. Ishihara, and E. S. Tognetti, <span>“LMI-based consensus of linear multi-agent systems by reduced-order dynamic output feedback,”</span> <em>ISA Transactions</em>, vol. 129, pp. 121–129, 2022.</div>
+</div>
+<div id="ref-SU2023105608" class="csl-entry" role="listitem">
+<div class="csl-left-margin">[14] </div><div class="csl-right-inline">Y.-H. Su, P. Bhowmick, and A. Lanzon, <span>“A robust adaptive formation control methodology for networked multi-UAV systems with applications to cooperative payload transportation,”</span> <em>Control Engineering Practice</em>, vol. 138, p. 105608, 2023.</div>
+</div>
+<div id="ref-sharma2023geometric" class="csl-entry" role="listitem">
+<div class="csl-left-margin">[15] </div><div class="csl-right-inline">M. Sharma and S. Sundaram, <span>“A geometric control approach for multi-UAV cooperative payload transfer,”</span> <em>Nonlinear Dynamics</em>, vol. 111, no. 11, pp. 10077–10096, 2023.</div>
+</div>
+<div id="ref-7991329" class="csl-entry" role="listitem">
+<div class="csl-left-margin">[16] </div><div class="csl-right-inline">J. González-Sierra, H. Ríos, and A. Dzul, <span>“Leader-follower robust formation control for quad-rotors via continuous sliding-modes,”</span> in <em>2017 international conference on unmanned aircraft systems (ICUAS)</em>, 2017, pp. 1850–1857. doi: <a href="https://doi.org/10.1109/ICUAS.2017.7991329">10.1109/ICUAS.2017.7991329</a>.</div>
+</div>
+<div id="ref-ALDARMINI2022222" class="csl-entry" role="listitem">
+<div class="csl-left-margin">[17] </div><div class="csl-right-inline">S. Aldarmini, A. Vedyakov, and M. Kakanov, <span>“Formation control for multi-agent system with disturbances compensation,”</span> <em>IFAC-PapersOnLine</em>, vol. 55, no. 13, pp. 222–227, 2022.</div>
+</div>
+<div id="ref-9672641" class="csl-entry" role="listitem">
+<div class="csl-left-margin">[18] </div><div class="csl-right-inline">S. Ma and X. Zong, <span>“Multi-UAV cooperative formation flight control system for cascade active disturbance rejection control,”</span> in <em>2021 3rd international conference on electrical engineering and control technologies (CEECT)</em>, 2021, pp. 93–97. doi: <a href="https://doi.org/10.1109/CEECT53198.2021.9672641">10.1109/CEECT53198.2021.9672641</a>.</div>
+</div>
+<div id="ref-8865294" class="csl-entry" role="listitem">
+<div class="csl-left-margin">[19] </div><div class="csl-right-inline">J. Zhang, J. Yan, B. Xiao, P. Zhang, G. Yang, and M. Lv, <span>“Multi-UAV formation controller design with uncertain dynamics,”</span> in <em>2019 chinese control conference (CCC)</em>, 2019, pp. 4286–4290. doi: <a href="https://doi.org/10.23919/ChiCC.2019.8865294">10.23919/ChiCC.2019.8865294</a>.</div>
+</div>
+<div id="ref-CHEN2022107618" class="csl-entry" role="listitem">
+<div class="csl-left-margin">[20] </div><div class="csl-right-inline">L. Chen and H. Duan, <span>“Collision-free formation-containment control for a group of UAVs with unknown disturbances,”</span> <em>Aerospace Science and Technology</em>, vol. 126, p. 107618, 2022.</div>
+</div>
+<div id="ref-10097686" class="csl-entry" role="listitem">
+<div class="csl-left-margin">[21] </div><div class="csl-right-inline">L. F. C. Ccari and P. R. Yanyachi, <span>“A novel neural network-based robust adaptive formation control for cooperative transport of a payload using two underactuated quadcopters,”</span> <em>IEEE Access</em>, vol. 11, pp. 36015–36028, 2023, doi: <a href="https://doi.org/10.1109/ACCESS.2023.3265957">10.1109/ACCESS.2023.3265957</a>.</div>
+</div>
+<div id="ref-10055086" class="csl-entry" role="listitem">
+<div class="csl-left-margin">[22] </div><div class="csl-right-inline">Z. Xu, S. Xiong, Y. Lu, and L. Jiang, <span>“Robust tracking control of UAV formation with directed network time delay,”</span> in <em>2022 china automation congress (CAC)</em>, 2022, pp. 5508–5512. doi: <a href="https://doi.org/10.1109/CAC57257.2022.10055086">10.1109/CAC57257.2022.10055086</a>.</div>
+</div>
+<div id="ref-doi-10-1080-00207721-2019-1616128" class="csl-entry" role="listitem">
+<div class="csl-left-margin">[23] </div><div class="csl-right-inline">J. González-Sierra, H. Ríos, and A. Dzul, <span>“Quad-rotor robust time-varying formation control: A continuous sliding-mode control approach,”</span> <em>International Journal of Control</em>, vol. 93, no. 7, pp. 1659–1676, 2020, doi: <a href="https://doi.org/10.1080/00207179.2018.1526413">10.1080/00207179.2018.1526413</a>.</div>
+</div>
+<div id="ref-rios2018continuous" class="csl-entry" role="listitem">
+<div class="csl-left-margin">[24] </div><div class="csl-right-inline">H. Ríos, R. Falcón, O. A. González, and A. Dzul, <span>“Continuous sliding-mode control strategies for quadrotor robust tracking: Real-time application,”</span> <em>IEEE Transactions on Industrial Electronics</em>, vol. 66, no. 2, pp. 1264–1272, 2019, doi: <a href="https://doi.org/10.1109/TIE.2018.2831191">10.1109/TIE.2018.2831191</a>.</div>
+</div>
+<div id="ref-doi-10-1080-00207179308923053" class="csl-entry" role="listitem">
+<div class="csl-left-margin">[25] </div><div class="csl-right-inline">A. LEVANT, <span>“Sliding order and sliding accuracy in sliding mode control,”</span> <em>International Journal of Control</em>, vol. 58, no. 6, pp. 1247–1263, 1993, doi: <a href="https://doi.org/10.1080/00207179308923053">10.1080/00207179308923053</a>.</div>
+</div>
+<div id="ref-TORRESGONZALEZ2017119" class="csl-entry" role="listitem">
+<div class="csl-left-margin">[26] </div><div class="csl-right-inline">V. Torres-González, T. Sanchez, L. M. Fridman, and J. A. Moreno, <span>“Design of continuous twisting algorithm,”</span> <em>Automatica</em>, vol. 80, pp. 119–126, 2017.</div>
+</div>
+<div id="ref-fridman2015continuous" class="csl-entry" role="listitem">
+<div class="csl-left-margin">[27] </div><div class="csl-right-inline">L. Fridman, J. A. Moreno, B. Bandyopadhyay, S. Kamal, and A. Chalanga, <span>“Continuous nested algorithms: The fifth generation of sliding mode controllers,”</span> <em>Recent advances in sliding modes: From control to intelligent mechatronics</em>, pp. 5–35, 2015.</div>
+</div>
+<div id="ref-KAMAL2016308" class="csl-entry" role="listitem">
+<div class="csl-left-margin">[28] </div><div class="csl-right-inline">S. Kamal, J. A. Moreno, A. Chalanga, B. Bandyopadhyay, and L. M. Fridman, <span>“Continuous terminal sliding-mode controller,”</span> <em>Automatica</em>, vol. 69, pp. 308–314, 2016.</div>
+</div>
+<div id="ref-khalil2015nonlinear" class="csl-entry" role="listitem">
+<div class="csl-left-margin">[29] </div><div class="csl-right-inline">H. K. Khalil, <em>Nonlinear control</em>, vol. 406. Pearson New York, 2015.</div>
+</div>
+<div id="ref-polyakov2011nonlinear" class="csl-entry" role="listitem">
+<div class="csl-left-margin">[30] </div><div class="csl-right-inline">A. Polyakov, <span>“Nonlinear feedback design for fixed-time stabilization of linear control systems,”</span> <em>IEEE Transactions on Automatic Control</em>, vol. 57, no. 8, pp. 2106–2110, 2011.</div>
+</div>
+<div id="ref-bernuau2013" class="csl-entry" role="listitem">
+<div class="csl-left-margin">[31] </div><div class="csl-right-inline">E. Bernuau, A. Polyakov, D. Efimov, and W. Perruquetti, <span>“Verification of ISS, iISS and IOSS properties applying weighted homogeneity,”</span> <em>Systems &amp; Control Letters</em>, vol. 62, no. 12, pp. 1159–1167, 2013.</div>
+</div>
+<div id="ref-ren2008distributed" class="csl-entry" role="listitem">
+<div class="csl-left-margin">[32] </div><div class="csl-right-inline">W. Ren and R. W. Beard, <em>Distributed consensus in multi-vehicle cooperative control</em>, vol. 27. Springer, 2008.</div>
+</div>
+<div id="ref-SEEBER2017241" class="csl-entry" role="listitem">
+<div class="csl-left-margin">[33] </div><div class="csl-right-inline">R. Seeber and M. Horn, <span>“Stability proof for a well-established super-twisting parameter setting,”</span> <em>Automatica</em>, vol. 84, pp. 241–243, 2017.</div>
+</div>
+<div id="ref-20-500-11850-214143" class="csl-entry" role="listitem">
+<div class="csl-left-margin">[34] </div><div class="csl-right-inline">J. Förster, <span>“System identification of the crazyflie 2.0 nano quadrocopter,”</span> Bachelor Thesis, ETH Zurich; ETH Zurich, Zurich, 2015-08. doi: <a href="https://doi.org/10.3929/ethz-b-000214143">10.3929/ethz-b-000214143</a>.</div>
+</div>
+<div id="ref-crazyflieROS" class="csl-entry" role="listitem">
+<div class="csl-left-margin">[35] </div><div class="csl-right-inline">W. Hönig and N. Ayanian, <span>“Flying multiple UAVs using ROS,”</span> in <em>Robot operating system (ROS): The complete reference (volume 2)</em>, A. Koubaa, Ed., Springer International Publishing, 2017, pp. 83–118.</div>
+</div>
+<div id="ref-optitrack" class="csl-entry" role="listitem">
+<div class="csl-left-margin">[36] </div><div class="csl-right-inline"><span>“<span>OptiTrack Documentation</span>.”</span> <a href="https://docs.optitrack.com/" class="uri">https://docs.optitrack.com/</a>.</div>
+</div>
+<div id="ref-ROS" class="csl-entry" role="listitem">
+<div class="csl-left-margin">[37] </div><div class="csl-right-inline"><span>“ROS | an open-source robot operating system.”</span> <a href="https://www.ros.org/" class="uri">https://www.ros.org/</a>.</div>
+</div>
+</div>
+
+  </article>
+  <footer>English web version of the M.Sc. thesis (2023). Translated from the official Spanish document. &middot; <a href="../">Julio C. Rodríguez-Cervantes</a></footer>
+</main>
+</div>
+</body>
+</html>

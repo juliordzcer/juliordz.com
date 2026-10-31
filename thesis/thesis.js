@@ -1,7 +1,7 @@
 window.MathJax = {
   tex: {
     tags: 'none',
-    macros: { Bar: '\\bar', R: '\\mathbb{R}', sign: '\\operatorname{sign}', diago: '\\operatorname{diag}', sen: '\\operatorname{sen}',
+    macros: { bm: ['\\boldsymbol{#1}', 1], Bar: '\\bar', sig: ['\\lceil #1\\rfloor^{#2}', 2], norm: ['\\lVert #1\\rVert', 1], sgn: '\\operatorname{sign}', R: '\\mathbb{R}', sign: '\\operatorname{sign}', diago: '\\operatorname{diag}', sen: '\\operatorname{sen}',
               co: '\\operatorname{c}', se: '\\operatorname{s}', atan: '\\operatorname{atan}', tanhh: '\\operatorname{tanh}' }
   },
   svg: { fontCache: 'global' },

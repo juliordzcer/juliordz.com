@@ -288,6 +288,17 @@
   .pub-authors strong { color: var(--fg); }
   .pub-venue em { color: var(--fg); }
   .pub-links { margin-top: 0.45rem; }
+  .pub-demo {
+    display: block;
+    width: 100%;
+    max-width: 440px;
+    aspect-ratio: 16 / 9;
+    object-fit: contain;
+    background: #fff;
+    margin-top: 0.7rem;
+    border-radius: 6px;
+    border: 1px solid var(--border);
+  }
   @media (max-width: 560px) {
     .pub { grid-template-columns: 1fr; }
     .pub-thumb { width: 100%; }
@@ -411,6 +422,8 @@
           <a class="pill" href="https://ieeexplore.ieee.org/document/11735014" target="_blank" rel="noopener">IEEE Xplore</a>
           <a class="pill" href="https://www.youtube.com/watch?v=dzzxMoOREIw" target="_blank" rel="noopener">Video</a>
         </div>
+        <p class="pub-desc">Gazebo simulation with the Kalman and H-infinity filters on S&sup2;.</p>
+        <img class="pub-demo" src="images/simulations/cce2026.gif" alt="Trajectory of seven simulated quadrotors in Gazebo" loading="lazy">
       </div>
     </div>
 
@@ -424,7 +437,10 @@
           <a class="pill" href="papers/cce2025.pdf" target="_blank" rel="noopener">PDF</a>
           <a class="pill" href="https://ieeexplore.ieee.org/document/11272041" target="_blank" rel="noopener">IEEE Xplore</a>
           <a class="pill" href="https://www.youtube.com/watch?v=pix3_PgBlzo" target="_blank" rel="noopener">Video</a>
+          <a class="pill" href="videos/cce2025_91_drones.mp4" target="_blank" rel="noopener">Simulation</a>
         </div>
+        <p class="pub-desc">Gazebo simulation of the same bearing-only law with 91 ESP-drones.</p>
+        <img class="pub-demo" src="images/simulations/cce2025_91_drones.gif" alt="Pyramid of 91 simulated drones in Gazebo" loading="lazy">
       </div>
     </div>
 
@@ -437,7 +453,10 @@
         <div class="pub-links">
           <a class="pill" href="papers/cnca2023.pdf" target="_blank" rel="noopener">PDF</a>
           <a class="pill" href="https://www.youtube.com/watch?v=mZxGzYCmnuo" target="_blank" rel="noopener">Video</a>
+          <a class="pill" href="videos/cnca2023.mp4" target="_blank" rel="noopener">Simulation</a>
         </div>
+        <p class="pub-desc">Gazebo simulation of the two-drone experiment with ESP-drone models.</p>
+        <img class="pub-demo" src="images/simulations/cnca2023.gif" alt="Two simulated drones in formation in Gazebo" loading="lazy">
       </div>
     </div>
 
@@ -451,7 +470,10 @@
           <a class="pill" href="papers/comrob2023.pdf" target="_blank" rel="noopener">PDF</a>
           <a class="pill" href="https://www.researchgate.net/publication/374169936_Diseno_de_Control_de_Formacion_basado_en_Modos_Deslizantes_para_un_Grupo_de_Quad-Rotors" target="_blank" rel="noopener">ResearchGate</a>
           <a class="pill" href="https://www.youtube.com/watch?v=mZxGzYCmnuo" target="_blank" rel="noopener">Video</a>
+          <a class="pill" href="videos/comrob2023_101_drones.mp4" target="_blank" rel="noopener">Simulation</a>
         </div>
+        <p class="pub-desc">Gazebo simulation with 101 ESP-drones, drawn as spheres so that they can be seen.</p>
+        <img class="pub-demo" src="images/simulations/comrob2023_101_drones.gif" alt="101 simulated drones forming the word COMROB in Gazebo" loading="lazy">
       </div>
     </div>
 

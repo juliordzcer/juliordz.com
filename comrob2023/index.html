@@ -1,0 +1,794 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; img-src 'self'; style-src 'unsafe-inline'; script-src 'self' https://cdn.jsdelivr.net; font-src 'self'; connect-src 'none'; base-uri 'self'; form-action 'none'; upgrade-insecure-requests">
+<meta name="referrer" content="strict-origin-when-cross-origin">
+<title>Sliding Mode-Based Formation Control Design for a Group of Quadrotors</title>
+<meta name="description" content="This work designs continuous sliding mode controllers for a multi-agent system of quadrotor aerial vehicles. The multi-agent scheme is leader-centered. The control scheme accounts for disturbances. Simulations show the effectiveness of the designed controllers, and a comparative analysis determines ">
+<link rel="icon" href="../favicon.svg" type="image/svg+xml">
+<link rel="canonical" href="https://juliordz.com/comrob2023/">
+<meta name="citation_title" content="Diseño de Control de Formación basado en Modos Deslizantes para un Grupo de Quad-Rotors">
+<meta name="citation_author" content="Rodríguez-Cervantes, Julio Cesar">
+<meta name="citation_author" content="Dzul, Alejandro">
+<meta name="citation_author" content="Ríos, Héctor">
+<meta name="citation_publication_date" content="2023">
+<meta name="citation_pdf_url" content="https://juliordz.com/papers/comrob2023.pdf">
+<meta property="og:type" content="article">
+<meta property="og:url" content="https://juliordz.com/comrob2023/">
+<meta property="og:title" content="Sliding Mode-Based Formation Control Design for a Group of Quadrotors">
+<meta property="og:description" content="This work designs continuous sliding mode controllers for a multi-agent system of quadrotor aerial vehicles. The multi-agent scheme is leader-centered. The control scheme accounts for disturbances. Si">
+<script type="application/ld+json">
+{"@context": "https://schema.org", "@type": "ScholarlyArticle", "name": "Diseño de Control de Formación basado en Modos Deslizantes para un Grupo de Quad-Rotors", "alternateName": "Sliding Mode-Based Formation Control Design for a Group of Quadrotors", "inLanguage": "es", "datePublished": "2023", "author": [{"@type": "Person", "name": "Julio Cesar Rodríguez-Cervantes", "url": "https://juliordz.com/"}, {"@type": "Person", "name": "Alejandro Dzul"}, {"@type": "Person", "name": "Héctor Ríos"}]}
+</script>
+<style>
+  :root {
+    color-scheme: light dark;
+    --bg: #ffffff;
+    --fg: #1f2328;
+    --muted: #57606a;
+    --border: #d0d7de;
+    --link: #0a66c2;
+    --code-bg: #f6f8fa;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #0d1117;
+      --fg: #e6edf3;
+      --muted: #9198a1;
+      --border: #30363d;
+      --link: #4aa3ff;
+      --code-bg: #161b22;
+    }
+  }
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body {
+    background: var(--bg);
+    color: var(--fg);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    line-height: 1.6;
+    margin: 0;
+    padding: 2.5rem 1.25rem 4rem;
+  }
+  a { color: var(--link); }
+  .layout {
+    max-width: 1000px;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: 200px 1fr;
+    gap: 2.5rem;
+  }
+  nav.toc {
+    position: sticky;
+    top: 1.5rem;
+    align-self: start;
+    font-size: 0.9rem;
+  }
+  nav.toc .back { display: block; margin-bottom: 1rem; }
+  nav.toc ul { list-style: none; padding: 0; margin: 0; }
+  nav.toc li { margin: 0.2rem 0; }
+  nav.toc ul ul { padding-left: 0.9rem; }
+  nav.toc a { text-decoration: none; color: var(--muted); }
+  nav.toc a:hover { color: var(--link); }
+  main { min-width: 0; max-width: 720px; }
+  h1 { font-size: 1.6rem; margin: 0 0 0.25rem; }
+  .tagline { color: var(--muted); margin-top: 0; }
+  h2 {
+    font-size: 1.2rem;
+    margin: 2.5rem 0 0.75rem;
+    padding-bottom: 0.3rem;
+    border-bottom: 1px solid var(--border);
+  }
+  h3 { font-size: 1rem; margin: 1.5rem 0 0.5rem; }
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.92rem;
+    margin: 0.75rem 0;
+    display: block;
+    overflow-x: auto;
+  }
+  th, td {
+    text-align: left;
+    padding: 0.4rem 0.6rem;
+    border: 1px solid var(--border);
+    vertical-align: top;
+  }
+  th { background: var(--code-bg); }
+  code {
+    background: var(--code-bg);
+    padding: 0.1em 0.35em;
+    border-radius: 4px;
+    font-size: 0.88em;
+  }
+  pre {
+    background: var(--code-bg);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 0.9rem 1rem;
+    overflow-x: auto;
+    font-size: 0.85rem;
+    line-height: 1.45;
+  }
+  .badge {
+    display: inline-block;
+    font-size: 0.75rem;
+    font-weight: 600;
+    padding: 0.1em 0.55em;
+    border-radius: 999px;
+    border: 1px solid var(--border);
+    color: var(--muted);
+    vertical-align: middle;
+  }
+  .badge.done { color: #1a7f37; border-color: #1a7f37; }
+  .badge.wip { color: #9a6700; border-color: #9a6700; }
+  ul.status { list-style: none; padding-left: 0; }
+  ul.status li { margin: 0.3rem 0; }
+  .note { color: var(--muted); font-size: 0.9rem; }
+  footer { margin-top: 3rem; color: var(--muted); font-size: 0.85rem; }
+  @media (max-width: 760px) {
+    .layout { grid-template-columns: 1fr; gap: 1rem; }
+    nav.toc { position: static; border-bottom: 1px solid var(--border); padding-bottom: 1rem; }
+  }
+  :root { --accent: var(--link); }
+  .layout { max-width: 1080px; grid-template-columns: 230px 1fr; }
+  main { max-width: 780px; }
+  nav.toc { max-height: calc(100vh - 3rem); overflow-y: auto; }
+  nav.toc .toc-title { font-weight: 600; color: var(--fg); margin: 0 0 0.4rem; }
+  nav.toc ul ul { display: block; }
+  .toc-section-number { color: var(--muted); margin-right: 0.3em; }
+  .kicker { color: var(--muted); font-size: 0.85rem; text-transform: uppercase; letter-spacing: 0.04em; margin: 0 0 0.3rem; }
+  .paper-head h1 { font-size: 1.7rem; line-height: 1.25; }
+  .orig, .inst { color: var(--muted); margin: 0.3rem 0; font-size: 0.95rem; }
+  .authors { margin: 0.6rem 0 0.2rem; }
+  .pills { display: flex; flex-wrap: wrap; gap: 0.5rem; margin: 0.9rem 0 0; }
+  .pill { display: inline-block; font-size: 0.85rem; padding: 0.2rem 0.75rem; border: 1px solid var(--border); border-radius: 999px; text-decoration: none; }
+  .pill:hover { border-color: var(--link); }
+  figure { margin: 1.5rem 0; text-align: center; }
+  figure img { max-width: 100%; height: auto; border-radius: 4px; background: #fff; }
+  figcaption { font-size: 0.9rem; color: var(--muted); margin-top: 0.4rem; text-align: left; }
+  .hero img { width: 100%; max-width: 640px; }
+  .subfigs .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem; }
+  .subfigs .grid figure { margin: 0; }
+  .subfigs .grid figcaption { text-align: center; }
+  .cite-block { border: 1px solid var(--border); border-radius: 6px; margin: 0.75rem 0; overflow: hidden; }
+  .cite-head { display: flex; justify-content: space-between; align-items: center; padding: 0.35rem 0.75rem; background: var(--code-bg); border-bottom: 1px solid var(--border); font-size: 0.85rem; font-weight: 600; }
+  .cite-head button { font: inherit; font-weight: 500; font-size: 0.8rem; padding: 0.15rem 0.7rem; border: 1px solid var(--border); border-radius: 999px; background: var(--bg); color: var(--fg); cursor: pointer; }
+  .cite-head button:hover { border-color: var(--link); }
+  .cite-block p { margin: 0; padding: 0.75rem; font-size: 0.92rem; }
+  .cite-block pre { margin: 0; border: 0; border-radius: 0; white-space: pre-wrap; word-break: break-word; }
+  .thesis h1 { font-size: 1.45rem; margin: 3rem 0 0.75rem; padding-bottom: 0.3rem; border-bottom: 2px solid var(--border); }
+  .thesis h2 { font-size: 1.15rem; border-bottom: 0; padding-bottom: 0; margin-top: 2rem; }
+  .thesis h3 { font-size: 1rem; }
+  .thesis h1[id], .thesis h2[id], .thesis h3[id], section[id] { scroll-margin-top: 1rem; }
+  .thesis p { text-align: justify; hyphens: auto; }
+  .math.display { display: block; overflow-x: auto; overflow-y: hidden; margin: 0.6rem 0; }
+  mjx-container[display="true"] { max-width: 100%; overflow-x: auto; overflow-y: hidden; }
+  .tbl { overflow-x: auto; margin: 1rem 0; }
+  .tbl table { display: table; width: auto; margin: 0 auto; font-size: 0.85rem; }
+  .tbl caption { caption-side: top; font-size: 0.9rem; color: var(--muted); padding-bottom: 0.4rem; text-align: left; }
+  .tbl td, .tbl th { text-align: center; white-space: nowrap; }
+  .teorema, .definicion, .suposicion, .observacion { margin: 1rem 0; padding: 0.6rem 0.9rem; border-left: 3px solid var(--border); background: var(--code-bg); border-radius: 0 6px 6px 0; }
+  #refs { font-size: 0.88rem; }
+  .csl-entry { margin: 0.4rem 0; display: flex; gap: 0.5rem; }
+  .csl-left-margin { flex: none; min-width: 2.2rem; }
+  @media (max-width: 760px) {
+    .layout { grid-template-columns: 1fr; }
+    nav.toc { max-height: none; }
+    .subfigs .grid { grid-template-columns: 1fr; }
+    .thesis p { text-align: left; }
+  }
+  .subfigs .grid { max-width: 560px; margin: 0 auto; }
+  .thesis figure img { max-width: min(100%, 620px); }
+  .errata ul { font-size: 0.9rem; padding-left: 1.2rem; }
+  .errata li { margin: 0.25rem 0; }
+  .thesis figure img[src$="DF.png"], .thesis figure img[src$="DIAG.png"] { max-width: 100%; }
+  .supp-note { margin: 0.5rem 0 1.5rem; padding: 0.75rem 1rem; border: 1px solid var(--oiamber, #E69F00); border-left-width: 4px; border-radius: 6px; font-size: 0.92rem; }
+  .assumption, .lemma, .proposition, .theorem, .remark { margin: 1rem 0; padding: 0.6rem 0.9rem; border-left: 3px solid var(--border); background: var(--code-bg); border-radius: 0 6px 6px 0; }
+
+</style>
+<script src="../thesis/thesis.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/mathjax@3.2.2/es5/tex-svg.js"></script>
+</head>
+<body>
+<div class="layout">
+<nav class="toc" aria-label="Contents">
+  <a class="back" href="../">&larr; juliordz.com</a>
+  <p class="toc-title">Contents</p>
+  <ul>
+    <li><a href="#cite">How to cite</a></li>
+    <li><a href="#abstract">Abstract</a></li>
+    <li><a href="#errata">Corrections</a></li>
+  </ul>
+  <ul>
+<li><a href="#Sec: Introduccion" id="toc-Sec: Introduccion"><span class="toc-section-number">1</span> Introduction</a></li>
+<li><a href="#Sec: Planteamiento del problema" id="toc-Sec: Planteamiento del problema"><span class="toc-section-number">2</span> Problem statement</a></li>
+<li><a href="#Sec: Preliminares" id="toc-Sec: Preliminares"><span class="toc-section-number">3</span> Preliminaries</a></li>
+<li><a href="#Sec: Estrategia de control" id="toc-Sec: Estrategia de control"><span class="toc-section-number">4</span> Control strategy</a>
+<ul>
+<li><a href="#Sec: Observador" id="toc-Sec: Observador"><span class="toc-section-number">4.1</span> Finite-time sliding mode observer (FT-SMO)</a></li>
+<li><a href="#Sec: Identificacion de perturbaciones" id="toc-Sec: Identificacion de perturbaciones"><span class="toc-section-number">4.2</span> Disturbance identification</a></li>
+<li><a href="#control-design" id="toc-control-design"><span class="toc-section-number">4.3</span> Control design</a></li>
+</ul></li>
+<li><a href="#Sec: Resultados de Simulacion" id="toc-Sec: Resultados de Simulacion"><span class="toc-section-number">5</span> Simulation results</a></li>
+<li><a href="#Sec: Conclusiones" id="toc-Sec: Conclusiones"><span class="toc-section-number">6</span> Conclusions</a></li>
+</ul>
+</nav>
+<main>
+  <header class="paper-head">
+    <p class="kicker">Conference paper &middot; COMRob 2023</p>
+    <h1>Sliding Mode-Based Formation Control Design for a Group of Quadrotors</h1>
+    <p class="orig">Original title (Spanish): <em>Diseño de Control de Formación basado en Modos Deslizantes para un Grupo de Quad-Rotors</em></p>
+    <p class="authors"><strong>J. C. Rodríguez-Cervantes</strong>, A. Dzul, H. Ríos</p>
+    <p class="inst">XXV Congreso Mexicano de Robótica (COMRob), 2023</p>
+    <div class="pills">
+      <a class="pill" href="../papers/comrob2023.pdf" target="_blank" rel="noopener">PDF (Spanish, official)</a>
+      <a class="pill" href="https://github.com/juliordzcer/sliding-mode-formation" target="_blank" rel="noopener">Code</a>
+      <a class="pill" href="../videos/comrob2023_101_drones.mp4" target="_blank" rel="noopener">Simulation</a>
+      <a class="pill" href="https://www.youtube.com/watch?v=mZxGzYCmnuo" target="_blank" rel="noopener">Video</a>
+    </div>
+  </header>
+  <figure class="hero">
+    <a href="../videos/comrob2023_101_drones.mp4" target="_blank" rel="noopener"><img src="../images/simulations/comrob2023_101_drones.gif" width="640" height="218" alt="101 simulated drones forming the word COMROB"></a>
+    <figcaption>Gazebo simulation with 101 ESP-drones and the disturbances of the paper. The drones are drawn five times larger so that they can be seen.</figcaption>
+  </figure>
+
+  <section id="cite" class="cite">
+    <h2>How to cite</h2>
+    <p class="note">The official paper is in Spanish; this page is an English translation of its content.</p>
+    <div class="cite-block">
+      <div class="cite-head"><span>APA</span><button type="button" data-copy="apa">Copy</button></div>
+      <p id="apa">Rodríguez-Cervantes, J. C., Dzul, A., &amp; Ríos, H. (2023). <em>Diseño de Control de Formación basado en Modos Deslizantes para un Grupo de Quad-Rotors</em>. XXV Congreso Mexicano de Robótica (COMRob), Xalapa, México.</p>
+    </div>
+    <div class="cite-block">
+      <div class="cite-head"><span>BibTeX</span><button type="button" data-copy="bib">Copy</button></div>
+      <pre id="bib">@inproceedings{rodriguez2023formacion,
+  author    = {Rodríguez-Cervantes, J. C. and Dzul, A. and Ríos, H.},
+  title     = {Diseño de Control de Formación basado en Modos Deslizantes para un Grupo de {Quad-Rotors}},
+  booktitle = {XXV Congreso Mexicano de Robótica (COMRob)},
+  address   = {Xalapa, México},
+  year      = {2023}
+}</pre>
+    </div>
+  </section>
+
+  <section id="errata" class="errata">
+    <h2>Corrections to the official document</h2>
+    <p class="note">This English version fixes the following typographical errors found in the official PDF.</p>
+    <ul>
+      <li>The third component of \(\boldsymbol{w}_{\eta i}\) is \(\dot\phi_i\dot\theta_i\), and \(\boldsymbol{G}_i\in\mathbb{R}^3\).</li>
+      <li>Definition of the formation graph: edges and labels are defined for \(i\neq j\).</li>
+      <li>\(\nu_{yi}=u_{mi}(\cos\phi_{\star i}\sin\theta_{\star i}\sin\psi_{di}-\sin\phi_{\star i}\cos\psi_{di})\) and \(\nu_{zi}=u_{mi}\cos\phi_{\star i}\cos\theta_{\star i}-g\). The thrust and the desired angles only follow from these forms.</li>
+      <li>NTSMC: \(s_{li}=e_{li}+k_{l0i}\lceil\varepsilon_{li}\rfloor^{3/2}\). Gain tables: \(k_{l1i}\propto\zeta^{1/2}\), \(k_{l2i}\propto\zeta\) (TC) and \(k_{l2i}\propto\zeta\) (NTSMC).</li>
+      <li>The desired height uses \(\tanh\): \(z_d=1+\tanh((t-5)-2.5)\).</li>
+      <li>\(f_{RMS}(t)=\big(\tfrac{1}{\Delta T}\int_{t-\Delta T}^{t}\lVert f(\sigma)\rVert^2d\sigma\big)^{1/2}\).</li>
+      <li>Results tables: the bold values mark the lowest value of each column (TC in \(e_{\psi i}\); PID in \(\tau_{\theta i}\) and \(\tau_{\psi i}\)). The values themselves are those of the official paper.</li>
+    </ul>
+  </section>
+
+  <section id="abstract">
+    <h2>Abstract</h2>
+    <p>This work designs continuous sliding mode controllers for a multi-agent system of quadrotor aerial vehicles. The multi-agent scheme is leader-centered. The control scheme accounts for disturbances. Simulations show the effectiveness of the designed controllers, and a comparative analysis determines which controller performs best.</p>
+  </section>
+
+  <article class="thesis">
+<h1 data-number="1" id="Sec: Introduccion"><span class="header-section-number">1</span> Introduction</h1>
+<p>Over the last two decades, research on cooperative control of multi-agent systems has attracted great interest. The reason is the many potential applications in civil and military areas <span class="citation" data-cites="ren2008distributed"><a href="#ref-ren2008distributed" role="doc-biblioref">[1]</a></span>. Examples include creating geometric figures in a controlled environment <span class="citation" data-cites="crazyswarm"><a href="#ref-crazyswarm" role="doc-biblioref">[2]</a></span>, cooperative transport (see <em>e.g.</em>, <span class="citation" data-cites="maza2009multi"><a href="#ref-maza2009multi" role="doc-biblioref">[3]</a></span> and <span class="citation" data-cites="9856271"><a href="#ref-9856271" role="doc-biblioref">[4]</a></span>), mapping, and localization <span class="citation" data-cites="mcguire2019minimal"><a href="#ref-mcguire2019minimal" role="doc-biblioref">[5]</a></span>.</p>
+<p>The goal of cooperative multi-agent control is to design a control law that accounts for the robot dynamics and the interaction topology among them, in order to reach the group objectives. Several robots working together on a task can provide robustness to failures and reduce the cost of highly complex tasks, among other benefits.</p>
+<p>The literature offers several cooperative control strategies for quadrotors. Formation control is a fundamental problem in the cooperative control of multi-agent systems. In formation control, the goal is for all robots to reach and keep a predefined geometric configuration. In <span class="citation" data-cites="crazyswarm"><a href="#ref-crazyswarm" role="doc-biblioref">[2]</a></span>, a swarm of nano quadrotors flies in formation indoors, and a method is proposed to track multiple quadrotors with identifiers. In <span class="citation" data-cites="9856271"><a href="#ref-9856271" role="doc-biblioref">[4]</a></span>, a fixed-time stable formation control is considered for a team of quadrotors that cooperatively transport a suspended load under a leader-follower scheme. This control scheme includes an observer that compensates the disturbances affecting the position dynamics.</p>
+<p>In <span class="citation" data-cites="hrabia_lützenberger_albayrak_2018"><a href="#ref-hrabia_lützenberger_albayrak_2018" role="doc-biblioref">[6]</a></span>, the challenge of developing complex systems that operate in uncertain environments is addressed. That work gives an overview of state-of-the-art solutions in emergent systems, self-organization, self-adaptation, and robotics. In <span class="citation" data-cites="sharma2023geometric"><a href="#ref-sharma2023geometric" role="doc-biblioref">[7]</a></span>, a geometric controller is proposed for load transfer using quadrotors. In <span class="citation" data-cites="7991329"><a href="#ref-7991329" role="doc-biblioref">[8]</a></span>, a robust controller is designed for a set of quadrotors forming a geometric pattern. The proposed control strategy is based on sliding mode techniques. It robustly regulates the positions and corresponding angles of the quadrotors under a class of disturbances.</p>
+<p>In <span class="citation" data-cites="KAPNOPOULOS2022107725"><a href="#ref-KAPNOPOULOS2022107725" role="doc-biblioref">[9]</a></span>, a trajectory tracking control scheme for quadrotors is presented. The method combines model predictive control and cooperative particle swarm optimization. Two distinct swarms tune the position and orientation parameters. They work collaboratively to improve trajectory tracking performance.</p>
+<p>Robust controller design is a topic of interest for quadrotor formation tasks. In <span class="citation" data-cites="doi:10.1080/00207721.2019.1616128"><a href="#ref-doi:10.1080/00207721.2019.1616128" role="doc-biblioref">[10]</a></span>, a formation control for a time-varying geometric pattern is presented. The authors use a cascade (attitude-position) control strategy based on sliding modes. The controller design uses a linearization of the virtual controllers, which generate the reference signals for roll, pitch, and total thrust. On the other hand, <span class="citation" data-cites="rios2018continuous"><a href="#ref-rios2018continuous" role="doc-biblioref">[11]</a></span> presents trajectory tracking for a quadrotor, also with a cascade sliding mode control strategy. In this case, the controller design does not linearize the virtual controllers. This means that the result in <span class="citation" data-cites="doi:10.1080/00207721.2019.1616128"><a href="#ref-doi:10.1080/00207721.2019.1616128" role="doc-biblioref">[10]</a></span> is local, <em>i.e.</em>, valid for small angles, while <span class="citation" data-cites="rios2018continuous"><a href="#ref-rios2018continuous" role="doc-biblioref">[11]</a></span> has no such restriction.</p>
+<p>Motivated by these works, this paper extends the idea of <span class="citation" data-cites="rios2018continuous"><a href="#ref-rios2018continuous" role="doc-biblioref">[11]</a></span> to design robust controllers for quadrotor formation tasks. It uses PID controllers and continuous sliding mode controllers (Super-Twisting <span class="citation" data-cites="doi:10.1080/00207179308923053"><a href="#ref-doi:10.1080/00207179308923053" role="doc-biblioref">[12]</a></span>, Twisting <span class="citation" data-cites="TORRESGONZALEZ2017119"><a href="#ref-TORRESGONZALEZ2017119" role="doc-biblioref">[13]</a></span>, singular terminal <span class="citation" data-cites="fridman2015continuous"><a href="#ref-fridman2015continuous" role="doc-biblioref">[14]</a></span> and non-singular terminal <span class="citation" data-cites="KAMAL2016308"><a href="#ref-KAMAL2016308" role="doc-biblioref">[15]</a></span>). The virtual controllers are not linearized. A comparative study of the different controllers is also carried out with a performance index.</p>
+<p>The paper is organized as follows. Section II states the problem. The preliminary concepts are described in Section III. The formation control design is described in Section IV. The simulation results are shown in Section V. Finally, the conclusions are presented in Section VI.</p>
+<p><em>Notation</em>: The following notation is also used. <span class="math inline">\(\| \cdot \|\)</span> denotes the Euclidean norm in <span class="math inline">\(\mathbb{R}^{n}\)</span>. For a Lebesgue measurable function <span class="math inline">\(w \in \mathbb{R}_{+} \rightarrow \mathbb{R}^{m}\)</span>, the norm is defined as <span class="math inline">\(\| w \|_{[t_{0},t_{1})} = ess \mathrm{sup}_{t \in [t_{0},t_{1})}\| w(t) \|\)</span>, and then <span class="math inline">\(\| w \|_{\infty} = \| w \|_{[0, + \infty )}\)</span>. The set of <span class="math inline">\(w(t)\)</span> with the property <span class="math inline">\(\| w \|_{\infty} &lt; + \infty\)</span> is denoted by <span class="math inline">\(\mathcal{L}_{\infty}\)</span>, and <span class="math inline">\(\mathcal{L}_{D} = \{w \in \mathcal{L}_{\infty} : \| w \|_{\infty} \leq D\}\)</span> for <span class="math inline">\(D&gt;0\)</span>. The function <span class="math inline">\(\lceil a \rfloor ^{\gamma} := |a|^{\gamma} \mathrm{sign}(a)\)</span> for any <span class="math inline">\(a \in \mathbb{R}\)</span> and <span class="math inline">\(\gamma \in \mathbb{R}_{\geq 0}\)</span>.</p>
+<h1 data-number="2" id="Sec: Planteamiento del problema"><span class="header-section-number">2</span> Problem statement</h1>
+<p>Consider a system of <span class="math inline">\(n\)</span> quadrotors, where the <span class="math inline">\(i\)</span>-th one has the following simplified dynamics (see Figure 1, and <span class="citation" data-cites="carrillo2013quad"><a href="#ref-carrillo2013quad" role="doc-biblioref">[16]</a></span> for modeling details):</p>
+<p><span class="math display">\begin{align}
+        \boldsymbol{\dot{\xi}}_{1i}  &amp;= \boldsymbol{\xi}_{2i} , \tag{1a}\\
+        \boldsymbol{\dot{\xi}}_{2i}  &amp;= \boldsymbol{g}_{\boldsymbol{\xi} i}(\boldsymbol{\eta}_{1i})u_{mi}-\boldsymbol{G}_{i} - \boldsymbol{\Lambda}_{\boldsymbol{\xi} i}\boldsymbol{\xi}_{2i} + \boldsymbol{d}_{\xi i}, \tag{1b}\\
+        \boldsymbol{\dot{\eta}}_{1i} &amp;= \boldsymbol{\eta}_{2i}, \tag{1c}\\
+        \boldsymbol{\dot{\eta}}_{2i} &amp;= \boldsymbol{J}_i\boldsymbol{\tau}_i + \boldsymbol{\Xi}_i \boldsymbol{w}_{\boldsymbol{\eta} i}(\boldsymbol{\eta}_{2i}) - \boldsymbol{\Lambda}_{\boldsymbol{\eta} i}\boldsymbol{\eta}_{2i} + \boldsymbol{d}_{\eta i}, \tag{1d}
+\end{align}</span></p>
+<p>with <span class="math inline">\(i =1,2,...,n =\overline{1,n}\)</span>, where <span class="math inline">\(\boldsymbol{\xi}_{1i} := [x_i \quad y_i \quad z_i]^{\top}~ \in \mathbb{R}^3\)</span>, <span class="math inline">\(\boldsymbol{\xi}_{2i} := [\dot{x_{i}} \quad \dot{y_{i}} \quad \dot{z_{i}}]^{\top}~ \in \mathbb{R}^3\)</span>, <span class="math inline">\(\boldsymbol{\eta}_{1i} := [\phi_{i} \quad \theta_{i} \quad \psi_{i}]^{\top}~ \in \mathbb{R}^3\)</span>, <span class="math inline">\(\boldsymbol{\eta}_{2i} := [\dot{\phi_{i}} \quad \dot{\theta_{i}},~\dot{\psi_{i}}]^{\top}~ \in \mathbb{R}^3\)</span>, <span class="math inline">\(\boldsymbol{d}_{\xi_{i}} := [d_{x_{i}} \quad d_{y_{i}} \quad d_{z_{i}}]^{\top}~ \in \mathbb{R}^3\)</span> and <span class="math inline">\(\boldsymbol{d}_{\eta_i} := [d_{\phi_i} \quad d_{\theta_i} \quad d_{\psi_i}]^{\top}~ \in \mathbb{R}^3\)</span>. The terms <span class="math inline">\(x_{i}, y_{i} \in \mathbb{R}\)</span> denote the coordinates in the horizontal plane, and <span class="math inline">\(z_{i} \in \mathbb{R}\)</span> describes the vertical position. The terms <span class="math inline">\(\phi_{i}, \theta_{i}\)</span> and <span class="math inline">\(\psi_{i} \in \mathbb{R}\)</span> represent the tilt angles about the <span class="math inline">\(X\)</span> axis (roll), the <span class="math inline">\(Y\)</span> axis (pitch), and the <span class="math inline">\(Z\)</span> axis (yaw), respectively. In addition, <span class="math inline">\(\boldsymbol{G}_{i} := [0 \quad 0 \quad g]^{\top} \in \mathbb{R}^3\)</span>, <span class="math inline">\(\boldsymbol{J}_{i} := \operatorname{diag}(J_{xi}^{-1},~ J_{yi}^{-1},~J_{zi}^{-1}) \in \mathbb{R}^{3\times 3}\)</span> and <span class="math inline">\(\boldsymbol{\tau}_i := [\tau_{\phi_{i}} \quad \tau_{\theta_{i}} \quad \tau_{\psi_{i}}]^{\top} \in \mathbb{R}^3\)</span> correspond to the gravity vector, the inertia matrix, and the torque vector. Here <span class="math inline">\(g\)</span> is the gravitational acceleration, <span class="math inline">\(J_{x_{i}}\)</span>, <span class="math inline">\(J_{y_{i}}\)</span> and <span class="math inline">\(J_{z_{i}}\)</span> are the moments of inertia about the <span class="math inline">\(X\)</span>, <span class="math inline">\(Y\)</span> and <span class="math inline">\(Z\)</span> axes, and <span class="math inline">\(\tau_{\phi_{i}}\)</span>, <span class="math inline">\(\tau_{\theta_{i}}\)</span> and <span class="math inline">\(\tau_{\psi_{i}} \in \mathbb{R}\)</span> are the roll, pitch and yaw torques, respectively. The term <span class="math inline">\(u_{m_{i}} := {u_{i}}/{m_{i}}\)</span>, where <span class="math inline">\(u_i \in \mathbb{R}\)</span> is the thrust along <span class="math inline">\(Z\)</span> and <span class="math inline">\(m_i \in \mathbb{R}^+\)</span> is the mass of each quadrotor. The matrices <span class="math inline">\(\boldsymbol{\Lambda}_{\xi i} := \operatorname{diag}{(a_{x i},a_{y i},a_{z i})} \in \mathbb{R}^{3\times 3}\)</span>, <span class="math inline">\(\boldsymbol{\Lambda}_{\eta i} := \operatorname{diag}{(a_{\phi i},a_{\theta i},a_{\psi i})} \in \mathbb{R}^{3\times 3}\)</span> and <span class="math inline">\(\boldsymbol{\Xi} i := \operatorname{diag}{(b_{\phi i}, b_{\theta i}, b_{\psi i})} \in \mathbb{R}^{3\times 3}\)</span> are given by the aerodynamic damping coefficients <span class="math inline">\(a_{x i}\)</span>, <span class="math inline">\(a_{y i}\)</span> and <span class="math inline">\(a_{z i}\)</span>, the rotational drag coefficients <span class="math inline">\(a_{\phi i}\)</span>, <span class="math inline">\(a_{\theta i}\)</span> and <span class="math inline">\(a_{\psi i}\)</span>, and the inertia coefficients <span class="math inline">\(b_{\phi i} := ({J_{y i} - J_{z i}})/{J_{x i}}\)</span>, <span class="math inline">\(b_{\theta i} := ({J_{z i} - J_{x i}})/{J_{y i}}\)</span> and <span class="math inline">\(b_{\psi i} := ({J_{x i} - J_{y i}})/{J_{z i}}\)</span>. The functions <span class="math inline">\(\boldsymbol{g}_{\boldsymbol{\boldsymbol{\xi}} i}  : \mathbb{R}^3 \rightarrow \mathbb{R}^3\)</span> and <span class="math inline">\(\boldsymbol{w}_{\boldsymbol{\eta} i} : \mathbb{R}^3 \rightarrow \mathbb{R}^3\)</span> are defined as follows: <span class="math inline">\(\boldsymbol{g}_{\boldsymbol{\xi i}}(\boldsymbol{\eta}_1 i) := [\cos\phi_{i} \sin\theta_{i} \cos\psi_{i} + \sin\phi_{i} \sin\psi_{i}  \quad \cos\phi_{i} \sin\theta_{i} \sin\psi_{i} - \sin\phi_{i} \cos\psi_{i} \quad  \cos\phi_{i} \cos\theta_{i} ]^{\top}\)</span> and <span class="math inline">\(\boldsymbol{w}_{\boldsymbol{\eta} i}(\boldsymbol{\eta}_{2 i}):=[\dot{\theta}_{i}\dot{\psi}_{i} \quad \dot{\phi}_{i}\dot{\psi}_{i} \quad \dot{\phi}_{i}\dot{\theta}_{i} ]^{\top}\)</span>. The terms <span class="math inline">\(d_{x}\)</span>, <span class="math inline">\(d_{y}\)</span>, <span class="math inline">\(d_{z}\)</span>, <span class="math inline">\(d_{\phi_i}\)</span>, <span class="math inline">\(d_{\theta_i}\)</span> and <span class="math inline">\(d_{\psi_i} ~ \in \mathbb{R}\)</span> represent the disturbances due to uncertainties and external perturbations, <em>e.g.</em>, unmodeled dynamics and wind gusts.</p>
+<div class="suposicion">
+<p><span id="Sup:2" label="Sup:2"></span> <em>The disturbances are uniformly bounded and Lipschitz continuous, i.e., <span class="math inline">\(d_{x i} \in \mathcal{L}_{D_{x i}}\)</span>, <span class="math inline">\(d_{y i} \in \mathcal{L}_{D_{y i}}\)</span>, <span class="math inline">\(d_{z i} \in \mathcal{L}_{D_{z i}}\)</span>, <span class="math inline">\(\dot{d}_{x i} \in \mathcal{L}_{\bar{D}_{x i}}\)</span>, <span class="math inline">\(\dot{d}_{y i} \in \mathcal{L}_{\bar{D}_{y i}}\)</span>, <span class="math inline">\(\dot{d}_{z i} \in \mathcal{L}_{\bar{D}_{z i}}\)</span>, <span class="math inline">\(d_{\phi i} \in \mathcal{L}_{D_{\phi i}}\)</span>, <span class="math inline">\(d_{\theta i} \in \mathcal{L}_{D_{\theta i}}\)</span>, <span class="math inline">\(d_{\psi i} \in \mathcal{L}_{D_{\psi i}}\)</span>, <span class="math inline">\(\dot{d}_{\phi i} \in \mathcal{L}_{\bar{D}_{\phi i}}\)</span>, <span class="math inline">\(\dot{d}_{\theta i} \in \mathcal{L}_{\bar{D}_{\theta i}}\)</span>, <span class="math inline">\(\dot{d}_{\psi i} \in \mathcal{L}_{\bar{D}_{\psi i}}\)</span>, with positive constants <span class="math inline">\(D_{x i}\)</span>, <span class="math inline">\(D_{y i}\)</span>, <span class="math inline">\(D_{z i}\)</span>, <span class="math inline">\(D_{\phi i}\)</span>, <span class="math inline">\(D_{\theta i}\)</span>, <span class="math inline">\(D_{\psi i}\)</span>, <span class="math inline">\(\bar{D}_{x i}\)</span>, <span class="math inline">\(\bar{D}_{y i}\)</span>, <span class="math inline">\(\bar{D}_{z i}\)</span>, <span class="math inline">\(\bar{D}_{\phi i}\)</span>, <span class="math inline">\(\bar{D}_{\theta i}\)</span>, <span class="math inline">\(\bar{D}_{\psi i}\)</span>.</em></p>
+</div>
+<p>Note that disturbances such as wind gusts can be modeled as sinusoidal signals with various frequencies. This makes them bounded and, therefore, Lipschitz continuous.</p>
+<p>This paper designs controllers that combine Continuous Sliding Mode Control (SMC) and PID controllers. They solve the formation problem for a group of quadrotors with a leader-centered multi-agent scheme. In addition, a comparative analysis of the different controllers is carried out with simulation results, in order to identify the control scheme with the best performance.</p>
+<figure id="Fig: Representacion Quad">
+<img src="img/Fig1.png" />
+<figcaption>Schematic representation of the quadrotor</figcaption>
+</figure>
+<h1 data-number="3" id="Sec: Preliminares"><span class="header-section-number">3</span> Preliminaries</h1>
+<p>Consider the following time-varying differential equation, represented as <span class="citation" data-cites="khalil2015nonlinear"><a href="#ref-khalil2015nonlinear" role="doc-biblioref">[17]</a></span>: <span class="math display">\[\frac{{dx(t)}}{{dt}} = f(t, x(t)), \quad t \geq t_0, \quad t_0 \in \mathbb{R}, \tag{2}\]</span> where <span class="math inline">\(x(t) \in \mathbb{R}^n\)</span> is the state, <span class="math inline">\(f: \mathbb{R}_{\geq 0} \times \mathbb{R}^n \rightarrow \mathbb{R}^n\)</span> is continuous with respect to <span class="math inline">\(x\)</span> and measurable with respect to <span class="math inline">\(t\)</span>, and <span class="math inline">\(f(t, 0) = 0\)</span>. The solution of (2) for an initial condition <span class="math inline">\(x_0 \in \mathbb{R}^n\)</span> at time <span class="math inline">\(t_0 \in \mathbb{R}\)</span> is denoted by <span class="math inline">\(x(t, t_0, x_0)\)</span>, and it is defined on some time interval <span class="math inline">\([t_0, t_0 + T)\)</span>, where <span class="math inline">\(0 \leq T &lt; \infty\)</span>. Let <span class="math inline">\(\Omega\)</span> be an open subset of <span class="math inline">\(\mathbb{R}^n\)</span> such that <span class="math inline">\(0 \in \Omega\)</span>.</p>
+<div class="definicion">
+<p><span id="Def:2" label="Def:2"></span> <em><span class="citation" data-cites="ren2008distributed"><a href="#ref-ren2008distributed" role="doc-biblioref">[1]</a></span>. A formation graph <span class="math inline">\(\mathcal{G}={\{N,E,C\}}\)</span> consists of a set of nodes <span class="math inline">\(N = \{R_1, \ldots, R_n\}\)</span>, which correspond to each agent; a set of edges <span class="math inline">\(E = \{(R_j R_i) \in N \times N , i \neq j\}\)</span>, which indicates that agent <span class="math inline">\(R_i\)</span> receives information from agent <span class="math inline">\(R_j\)</span>; and a set of labels <span class="math inline">\(C = \{C_{j i} \in \mathbb{R}^3 ,|, (R_j R_i) \in N \times N, i \neq j\}\)</span>, which represents a desired relative position vector of agent <span class="math inline">\(R_i\)</span> with respect to agent <span class="math inline">\(R_j\)</span>. In addition, let <span class="math inline">\(N_i \subset N\)</span> be the set of detectable positions of agent <span class="math inline">\(R_i\)</span>.</em></p>
+</div>
+<p>The following statements are introduced:</p>
+<ul>
+<li><p>Agent <span class="math inline">\(R_{n}\)</span> is the leader agent, and the other agents are followers.</p></li>
+<li><p>If <span class="math inline">\(N_{n} = \emptyset\)</span>, the leader agent receives no information from any other agent.</p></li>
+<li><p>The desired formation vectors <span class="math inline">\(C_{j i}\)</span> are time-invariant, that is, <span class="math inline">\(C_{j i} = [c_{j i x} \quad c_{j i y} \quad c_{j i z}]^\top\)</span>.</p></li>
+<li><p>The desired trajectory for the leader agent <span class="math inline">\(R_{n}\)</span> is defined as <span class="math inline">\(\boldsymbol{\xi}_{d} = [x_{d} \quad y_{d} \quad z_{d}]^T\)</span> and <span class="math inline">\(\boldsymbol{\eta}_d = [\phi_{\star_n} \quad \theta_{\star_n} \quad \psi_d]\)</span>, where <span class="math inline">\(x_d\)</span>, <span class="math inline">\(y_d\)</span>, <span class="math inline">\(z_d\)</span> and <span class="math inline">\(\psi_d \in \mathcal{C}^\infty\)</span> are some desired trajectories to follow, while <span class="math inline">\(\phi_{\star_n}\)</span> and <span class="math inline">\(\theta_{\star_n}\)</span> are reference signals generated with virtual controls (they will be designed later). The desired trajectory is continuous and bounded.</p></li>
+</ul>
+<div class="suposicion">
+<p><span id="Sup: 1" label="Sup: 1"></span> <em>The leader is the only agent that knows the desired trajectory.</em></p>
+</div>
+<div class="suposicion">
+<p><span id="Sup: 2" label="Sup: 2"></span> <em>In the graph under study, the leader has a directed spanning tree, that is, there are directed paths from the leader to all the other agents.</em></p>
+</div>
+<div class="observacion">
+<p><span id="Obs: 1" label="Obs: 1"></span> <em>Assumption 3 indicates that no agent is left isolated. This ensures that the agents converge to the desired formation using the minimum amount of information that the agents need to know.</em></p>
+</div>
+<h1 data-number="4" id="Sec: Estrategia de control"><span class="header-section-number">4</span> Control strategy</h1>
+<p>This section presents a control strategy based on three PID controllers and three continuous sliding mode controllers with different control laws (PID, TC, STA, STSMC, NTSMC), together with six finite-time sliding mode observers <span class="citation" data-cites="rios2018continuous"><a href="#ref-rios2018continuous" role="doc-biblioref">[11]</a></span>. The proposed formation control design addresses a group of <span class="math inline">\(n\)</span> quadrotors, and it considers the formation graph shown in Figure 2.</p>
+<figure id="Fig: Grafo">
+<img src="img/R2a.png" />
+<figcaption>Leader-centered formation graph.</figcaption>
+</figure>
+<h2 data-number="4.1" id="Sec: Observador"><span class="header-section-number">4.1</span> Finite-time sliding mode observer (FT-SMO)</h2>
+<p>Consider system (1) and the following observer (based on <span class="citation" data-cites="rios2018continuous"><a href="#ref-rios2018continuous" role="doc-biblioref">[11]</a></span>):</p>
+<div class="small">
+<p><span class="math display">\begin{align}
+            \boldsymbol{\dot{\hat{\xi}}}_{1 i} &amp;= \boldsymbol{\hat{\boldsymbol{\xi}}}_{2 i} + \hat{\boldsymbol{K}}_{1 i} \boldsymbol{\varphi}_{1 i}(\hat{\boldsymbol{e}}_{\boldsymbol{\xi} i}) , \tag{3a}\\
+            \boldsymbol{\dot{\hat{\xi}}}_{2 i} &amp;= \boldsymbol{g}_{\boldsymbol{\xi} i}(\boldsymbol{\eta}_{1 i})u_{m i} - \boldsymbol{G}_{i} - \boldsymbol{\Lambda}_{\boldsymbol{\xi} i} \boldsymbol{\xi}_{2 i}  + \boldsymbol{\hat{\xi}}_{3 i}  + \boldsymbol{\hat{\boldsymbol{K}}}_{2 i} \boldsymbol{\varphi}_{2 i}(\boldsymbol{\hat{\boldsymbol{e}}}_{\boldsymbol{\xi} i}),\\
+            \boldsymbol{\dot{\hat{\xi}}}_{3 i} &amp;= \hat{\boldsymbol{K}}_{3 i} \boldsymbol{\varphi}_{3 i}(\hat{\boldsymbol{e}}_{\boldsymbol{\xi}i})   , \tag{3b}\\
+            \boldsymbol{\dot{\hat{\eta}}}_{1 i} &amp;=\boldsymbol{\hat{\eta}}_{2 i} + \hat{\boldsymbol{K}}_{4 i} \boldsymbol{\varphi}_{1 i}(\hat{\boldsymbol{e}}_{\boldsymbol{\eta} i})  , \tag{3c}\\
+            \boldsymbol{\dot{\hat{\eta}}}_{2 i} &amp;= \boldsymbol{J}_i\boldsymbol{\tau}_i+\boldsymbol{\Xi}_i \boldsymbol{w}_{i}(\boldsymbol{\eta}_{2i}) - \boldsymbol{\Lambda}_{\boldsymbol{\eta} i}\boldsymbol{\eta}_{2i} + \boldsymbol{\hat{\eta}}_{3i}  +\boldsymbol{\hat{\boldsymbol{K}}}_{5 i} \boldsymbol{\varphi}_{2 i}(\boldsymbol{\hat{\boldsymbol{e}}}_{\boldsymbol{\eta}i})  , \tag{3d}\\
+            \boldsymbol{\dot{\hat{\eta}}}_{3 i} &amp;= \hat{\boldsymbol{K}}_{6 i} \boldsymbol{\varphi}_{3 i}(\hat{\boldsymbol{e}}_{\boldsymbol{\eta} i})  , \tag{3e}
+\end{align}</span></p>
+</div>
+<p>where <span class="math inline">\(\hat{\boldsymbol{e}}_{\boldsymbol{\xi} i}:=\boldsymbol{\xi}_{1i}-\boldsymbol{\hat{\xi}}_{1i} \in \mathbb{R}^3\)</span> and <span class="math inline">\(\hat{\boldsymbol{e}}_{\boldsymbol{\eta} i}:=\boldsymbol{\eta}_{1i}-\boldsymbol{\hat{\eta}}_{1i} \in \mathbb{R}^3\)</span> are the output errors. The nonlinear output injections <span class="math inline">\(\boldsymbol{\varphi}_{1 i}\)</span>, <span class="math inline">\(\boldsymbol{\varphi}_{2 i}\)</span>, <span class="math inline">\(\boldsymbol{\varphi}_{3 i} : \mathbb{R}^3 \rightarrow \mathbb{R}^3\)</span> are given by <span class="math display">\[\boldsymbol{\varphi}_{1 i}(\boldsymbol{s}) := \lceil \boldsymbol{s} \rfloor ^{\frac{2}{3}}, \quad \boldsymbol{\varphi}_{2}(\boldsymbol{s}) := \lceil \boldsymbol{s} \rfloor ^{\frac{1}{3}}, \quad \boldsymbol{\varphi}_{3}(\boldsymbol{s}) := \lceil \boldsymbol{s} \rfloor ^{0}\]</span> with <span class="math inline">\(\lceil \boldsymbol{s} \rfloor ^{\gamma}:=[ \lceil s_{1} \rfloor ^{\gamma} \quad \lceil s_{2} \rfloor ^{\gamma} \quad \lceil s_{3} \rfloor ^{\gamma} ]^\top\)</span>, and a diagonal gain matrix <span class="math inline">\(\boldsymbol{\hat{K}}_{ji}= \operatorname{diag}{(k_{j1i},k_{j2i},k_{j3i})}\)</span> with <span class="math inline">\(j =\overline{1,6}\)</span>. The estimation state error is defined as <span class="math inline">\(\hat{\boldsymbol{e}}:= [\hat{\boldsymbol{e}}_{\boldsymbol{\xi} i}^\top \quad \hat{\boldsymbol{\varepsilon}}_{\boldsymbol{\xi} i}^\top \quad \hat{\boldsymbol{e}}_{\boldsymbol{\eta} i}^\top \quad \hat{\boldsymbol{\varepsilon}}_{\boldsymbol{\eta} i}^\top]^T\)</span>, where <span class="math inline">\(\hat{\boldsymbol{\varepsilon}}_{\boldsymbol{\xi} i} := \boldsymbol{\xi}_{2i} -\boldsymbol{\hat{\xi}}_{2i}\)</span> and <span class="math inline">\(\hat{\boldsymbol{\varepsilon}}_{\boldsymbol{\eta} i} := \boldsymbol{\eta}_{2i} -\boldsymbol{\hat{\eta}}_{2i}\)</span> are the linear and angular velocity errors, respectively.</p>
+<p>Based on <span class="citation" data-cites="rios2018continuous"><a href="#ref-rios2018continuous" role="doc-biblioref">[11]</a></span>, if observer (3) is applied to system (1), and the gains are selected as: <span class="math display">\[\begin{tabular}{c c c}
+            $\hat{k}_{11i} = 2\bar{D}_{x}^{\frac{1}{3}}$,  &amp; $\hat{k}_{12i} = 1.5\bar{D}_{x}^{\frac{1}{2}}$, &amp; $\hat{k}_{13i} = 1.1\bar{D}_{x}$,\\
+            $\hat{k}_{21i} = 2\bar{D}_{y}^{\frac{1}{3}}$,  &amp; $\hat{k}_{22i} = 1.5\bar{D}_{y}^{\frac{1}{2}}$, &amp; $\hat{k}_{23i} = 1.1\bar{D}_{y}$,\\
+            $\hat{k}_{31i} = 2\bar{D}_{z}^{\frac{1}{3}}$,  &amp; $\hat{k}_{32i} = 1.5\bar{D}_{z}^{\frac{1}{2}}$, &amp; $\hat{k}_{33i} = 1.1\bar{D}_{z}$,\\
+            $\hat{k}_{41i} = 2\bar{D}_{\phi}^{\frac{1}{3}}$,  &amp; $\hat{k}_{42i} = 1.5\bar{D}_{\phi}^{\frac{1}{2}}$, &amp; $\hat{k}_{43i} = 1.1\bar{D}_{\phi},$\\
+            $\hat{k}_{51i} = 2\bar{D}_{\theta}^{\frac{1}{3}}$,  &amp; $\hat{k}_{52i} = 1.5\bar{D}_{\theta}^{\frac{1}{2}}$, &amp; $\hat{k}_{53i} = 1.1\bar{D}_{\theta},$\\
+            $\hat{k}_{61i} = 2\bar{D}_{\psi}^{\frac{1}{3}}$,  &amp; $\hat{k}_{62i} = 1.5\bar{D}_{\psi}^{\frac{1}{2}}$, &amp; $\hat{k}_{63i} = 1.1\bar{D}_{\psi},$
+        \end{tabular}\]</span></p>
+<p>then <span class="math inline">\(\hat{\boldsymbol{e}}=0\)</span> is Uniformly Finite-Time Stable (UFTS).</p>
+<h2 data-number="4.2" id="Sec: Identificacion de perturbaciones"><span class="header-section-number">4.2</span> Disturbance identification</h2>
+<p>Define <span class="math inline">\(\hat{\boldsymbol{\epsilon}}_{\boldsymbol{\xi} i} := \boldsymbol{d}_{\xi i}(t) - \hat{\boldsymbol{\xi}}_{3 i}\)</span> and <span class="math inline">\(\hat{\boldsymbol{\epsilon}}_{\boldsymbol{\eta} i} := \boldsymbol{d}_{\eta i}(t) - \hat{\boldsymbol{\eta}}_{3 i}\)</span>. The corresponding error dynamics can then be written as <span class="math display">\[\begin{tabular}{c c}
+        $\dot{\hat{\boldsymbol{e}}}_{\boldsymbol{\xi} i} = \hat{\boldsymbol{\varepsilon}}_{\boldsymbol{\xi} i} - \boldsymbol{\hat{K}}_{1 i} \boldsymbol{\varphi}_{1 i} (\boldsymbol{\hat{e}}_{\boldsymbol{\xi} i}) $, &amp; $\dot{\hat{\boldsymbol{e}}}_{\boldsymbol{\eta} i} = \boldsymbol{\hat{\varepsilon}}_{\boldsymbol{\eta} i} - \boldsymbol{\hat{K}}_{4 i} \boldsymbol{\varphi}_{1 i} (\boldsymbol{\hat{e}}_{\boldsymbol{\eta} i}) $, \\
+        $\dot{\hat{\boldsymbol{\varepsilon}}}_{\boldsymbol{\xi} i} = \boldsymbol{\hat{\epsilon}}_{\boldsymbol{\xi} i} - \boldsymbol{\hat{K}}_{2i} \boldsymbol{\varphi}_{2 i} (\boldsymbol{\hat{e}}_{\boldsymbol{\xi} i}) $, &amp; $\dot{\hat{\boldsymbol{\varepsilon}}}_{\boldsymbol{\eta} i} = \boldsymbol{\hat{\epsilon}}_{\boldsymbol{\eta} i} - \boldsymbol{\hat{K}}_{5i} \boldsymbol{\varphi}_{2 i} (\boldsymbol{\hat{e}}_{\boldsymbol{\eta} i}) $, \\
+        $\dot{\hat{\boldsymbol{\epsilon}}}_{\boldsymbol{\xi} i} = \boldsymbol{\dot{d}}_{\xi i} - \boldsymbol{\hat{K}}_{3i} \boldsymbol{\varphi}_{3 i} (\boldsymbol{\hat{e}}_{\boldsymbol{\xi} i}) $, &amp; $\dot{\hat{\boldsymbol{\epsilon}}}_{\boldsymbol{\eta} i} = \boldsymbol{\dot{d}}_{\eta i} - \boldsymbol{\hat{K}}_{6i} \boldsymbol{\varphi}_{3 i} (\boldsymbol{\hat{e}}_{\boldsymbol{\eta} i}). $
+    \end{tabular}\]</span></p>
+<p>This error dynamics is UFTS. It implies that <span class="math inline">\(\hat{\boldsymbol{\xi}}_{1 i} = \boldsymbol{\xi}_{1 i}\)</span>, <span class="math inline">\(\hat{\boldsymbol{\xi}}_{2 i} = \boldsymbol{\xi}_{2 i}\)</span>, <span class="math inline">\(\hat{\boldsymbol{\xi}}_{3 i} = \boldsymbol{d}_{\xi}\)</span>, <span class="math inline">\(\hat{\boldsymbol{\eta}}_{1 i} = \boldsymbol{\eta}_{1 i}\)</span>, <span class="math inline">\(\hat{\boldsymbol{\eta}}_{2 i} = \boldsymbol{\eta}_{2 i}\)</span>, <span class="math inline">\(\hat{\boldsymbol{\eta}}_{3 i} = \boldsymbol{d}_{\eta}\)</span>, for all <span class="math inline">\(t\geq T_0 &gt;0\)</span>. If Assumption 1 holds, then the FT-SMO given by (3) provides the following disturbance identifications for all <span class="math inline">\(t \geq T_0\)</span></p>
+<p><span class="math display">\begin{align}
+        \hat{\boldsymbol{\xi}}_{3i} &amp;= [\hat{\xi}_{x3i} \quad \hat{\xi}_{y3i} \quad \hat{\xi}_{z3i}]^\top = [d_{x}(t) \quad d_{y}(t) \quad d_{z}(t)]^\top , \tag{4a}\\
+        \hat{\boldsymbol{\eta}}_{3i} &amp;= [\hat{\eta}_{x3i} \quad \hat{\eta}_{y3i} \quad \hat{\eta}_{z3i}]^\top= [d_{\phi}(t) \quad d_{\theta}(t) \quad d_{\psi}(t)]^\top. \tag{4b}
+\end{align}</span></p>
+<p>These identification terms can strengthen any kind of continuous controller strategy.</p>
+<h2 data-number="4.3" id="control-design"><span class="header-section-number">4.3</span> Control design</h2>
+<p>Based on Definitions 2 and 3, and the leader-centered formation graph, the formation errors for agents <span class="math inline">\(j=\overline{1,n-1}\)</span> are given as follows <span class="math display">\[\begin{gathered}
+    \boldsymbol{e}_{\boldsymbol{\xi} j} = \boldsymbol{\xi}_{1 j} - \boldsymbol{\xi}_{1 n} - C_{n,j}, \quad \boldsymbol{\varepsilon}_{\boldsymbol{\xi} j} = \hat{\boldsymbol{\xi}}_{2 j} - \boldsymbol{\xi}_{2 n}, \\
+    \boldsymbol{e}_{\boldsymbol{\eta} j} = \boldsymbol{\eta}_{1 j} - \boldsymbol{\eta}_{d j}, \quad \boldsymbol{\varepsilon}_{\boldsymbol{\eta} j} = \hat{\boldsymbol{\eta}}_{2 j} - \dot{\boldsymbol{\eta}}_{d j},
+\end{gathered}\]</span> where <span class="math inline">\(C_{n,j}\in\mathbb{R}^{3}\)</span> is the formation vector with respect to the leader and <span class="math inline">\(\boldsymbol{\eta}_{d j}=[\phi_{\star j} \quad \theta_{\star j} \quad \psi_{n}]^{\top}\in\mathbb{R}^{3}\)</span>, with <span class="math inline">\(\phi_{\star j}\)</span> and <span class="math inline">\(\theta_{\star j}\)</span> as reference signals designed later.</p>
+<p>On the other hand, the tracking error of the leader agent <span class="math inline">\(n\)</span> is given as <span class="math display">\[\begin{gathered}
+    \boldsymbol{e}_{\boldsymbol{\xi} n} = \boldsymbol{\xi}_{1 n} - \boldsymbol{\xi}_{d}, \quad \boldsymbol{\varepsilon}_{\boldsymbol{\xi} n} = \hat{\boldsymbol{\xi}}_{2 n} - \dot{\boldsymbol{\xi}}_{d},\\
+    \boldsymbol{e}_{\boldsymbol{\eta} n} = \boldsymbol{\eta}_{1 n} - \boldsymbol{\eta}_{d}, \quad \boldsymbol{\varepsilon}_{\boldsymbol{\eta} n} = \hat{\boldsymbol{\eta}}_{2 n} - \dot{\boldsymbol{\eta}}_{d},
+\end{gathered}\]</span> where <span class="math inline">\(\boldsymbol{\eta}_{d}=[\phi_{\star n} \quad \theta_{\star n} \quad \psi_{d}]^{\top}\in\mathbb{R}^{3}\)</span>, with the references <span class="math inline">\(\phi_{\star n}\)</span> and <span class="math inline">\(\theta_{\star n}\)</span> also designed later.</p>
+<p>Quadrotors are underactuated (four inputs for 6 degrees of freedom). Two degrees of freedom cannot be “controlled” independently. These usually correspond to pitch and roll, which are designed as reference signals, denoted <span class="math inline">\(\phi_{\star_i}\)</span>, <span class="math inline">\(\theta_{\star_i}\)</span>.</p>
+<p>A virtual controller <span class="math inline">\(\nu_i := [\nu_{xi} \quad \nu_{yi} \quad \nu_{zi}]^T\)</span> is thus introduced into the position error dynamics, and the formation error dynamics take the following form:</p>
+<p><span class="math display">\begin{align}
+        \dot{\boldsymbol{e}}_{\boldsymbol{\xi} i} &amp;= \boldsymbol{\varepsilon}_{\boldsymbol{\xi} i}, \tag{5a}\\
+        \dot{\boldsymbol{\varepsilon}}_{\boldsymbol{\xi} i} &amp;= \nu_{i} + \boldsymbol{w}_{\boldsymbol{\xi} i}(\boldsymbol{\eta}_{1 i}, u_{mi}, \nu_i)  - \boldsymbol{\Lambda}_{\boldsymbol{\xi} i}\boldsymbol{\xi}_{2 i} + \boldsymbol{d}_{\xi i} - \ddot{\boldsymbol{\xi}}_{d i} , \tag{5b}\\
+        \dot{\boldsymbol{e}}_{\boldsymbol{\eta} i} &amp;= \boldsymbol{\varepsilon}_{\boldsymbol{\eta} i}, \tag{5c}\\
+        \dot{\boldsymbol{\varepsilon}}_{\boldsymbol{\eta} i} &amp;= \boldsymbol{J}_{i}\boldsymbol{\tau}_{i} + \boldsymbol{\Xi}_{i} \boldsymbol{w}_{\boldsymbol{\eta} i}(\boldsymbol{\eta}_{2 i}) - \boldsymbol{\Lambda}_{\boldsymbol{\eta} i} \boldsymbol{\eta_{2 i}} + \boldsymbol{d}_{\eta i} - \ddot{\boldsymbol{\eta}}_{d i}, \tag{5d}
+\end{align}</span></p>
+<p>where <span class="math inline">\(\boldsymbol{\omega}_{\boldsymbol{\xi} i}(\boldsymbol{\eta}_{1 i},u_{m i},\nu_{i}) = \boldsymbol{g}_{\boldsymbol{\xi} i}(\boldsymbol{\eta}_{1 i})u_{m i} - \boldsymbol{G}_{i} - \nu_{i}\)</span>. The virtual control <span class="math inline">\(\nu_i\)</span> can then be selected as:</p>
+<p><span class="math display">\begin{align}
+        \nu_{x i} &amp;= u_{m i} (\cos{\phi_{\star i}}\sin{\theta_{\star i}}\cos{\psi_{di}} + \sin{\phi_{\star i}}\sin{\psi_{di}}), \tag{6a}\\
+        \nu_{y i} &amp;= u_{m i} (\cos{\phi_{\star i}}\sin{\theta_{\star i}}\sin{\psi_{di}} - \sin{\phi_{\star i}}\cos{\psi_{di}}), \tag{6b}\\
+        \nu_{z i} &amp;= u_{m i} (\cos{\phi_{\star i}}\cos{\theta_{\star i}}) - g, \tag{6c}
+\end{align}</span></p>
+<p>where <span class="math inline">\(i = \overline{1,n}\)</span>, <span class="math inline">\(\psi_{di} = \psi_{n}\)</span>, except for <span class="math inline">\(i=n\)</span>, where <span class="math inline">\(\psi_{n} = \psi_{d}\)</span>. The reference signals for each agent in (6) are given by:</p>
+<p><span class="math display">\begin{align}
+        u_i&amp;=m_i \sqrt{\nu_{x i}^2 + \nu_{y i}^2 +(\nu_{z i}+g)^2}, \tag{7a}\\
+        \phi_{\star i} &amp;= \arcsin{(u_{m_i}^{-1}(\nu_{x i}\sin{\psi_{di}}-\nu_{y i}\cos{\psi_{di}}))}, \tag{7b}\\
+        \theta_{\star i} &amp;= \arctan{((\nu_{z i}+g)^{-1}(\nu_{x i}\cos{\psi_{di}}+\nu_{y i}\sin{\psi_{di}}))}. \tag{7c}
+\end{align}</span></p>
+<p>The signals obtained in (7) help the system achieve the desired flight. The virtual control <span class="math inline">\(\nu_i\)</span> and the torque <span class="math inline">\(\boldsymbol{\tau}_{i}\)</span> have the following form</p>
+<p><span class="math display">\begin{align}
+        \nu_i &amp;= \bar{\nu_i} + \boldsymbol{\Lambda}_{\boldsymbol{\xi} i}\boldsymbol{\xi}_{2i} + \ddot{\boldsymbol{\xi}}_{di} - \hat{{\boldsymbol{\xi}}}_{3i} , \tag{8a}\\
+        \boldsymbol{\tau}_{i} &amp;=  \boldsymbol{J}_{i}^{-1}(\bar{\tau}_i - \boldsymbol{\Xi} \boldsymbol{w}_{\boldsymbol{\eta} i}(\boldsymbol{\eta}_{2 i}) + \boldsymbol{\Lambda}_{\boldsymbol{\eta} i} \boldsymbol{\eta}_{2 i} + \ddot{\boldsymbol{\eta}}_{d i} - \hat{\boldsymbol{\eta}}_{3 i}). \tag{8b}
+\end{align}</span></p>
+<p>The virtual controllers <span class="math inline">\(\bar{\nu}_i = [\bar{\nu}_{xi} \quad \bar{\nu}_{yi} \quad \bar{\nu}_{zi}]^\top\)</span> are designed as PIDs, given by:</p>
+<p><span class="math display">\begin{align}
+    \bar{\nu}_{xi} &amp;= k_{0xi} \epsilon_{xi} + k_{1xi} e_{xi} + k_{2xi} \varepsilon_{xi}, \tag{9a}\\
+    \bar{\nu}_{yi} &amp;= k_{0yi} \epsilon_{yi} + k_{1yi} e_{yi} + k_{2yi} \varepsilon_{yi}, \tag{9b}\\
+    \bar{\nu}_{zi} &amp;= k_{0zi} \epsilon_{zi} + k_{1zi} e_{zi} + k_{2zi} \varepsilon_{zi}, \tag{9c}
+\end{align}</span></p>
+<p>where <span class="math inline">\(\boldsymbol{e}_{\boldsymbol{\xi} i}=[e_{xi} \quad e_{yi} \quad e_{zi}]^{\top}\)</span>, <span class="math inline">\(\boldsymbol{\varepsilon}_{\boldsymbol{\xi} i} = [\varepsilon_{xi} \quad \varepsilon_{yi} \quad \varepsilon_{zi}]^{\top}\)</span>, <span class="math inline">\(\boldsymbol{\epsilon}_{\boldsymbol{\xi} i} = \int_{0}^{t} \boldsymbol{e}_{\boldsymbol{\xi} i}(\tau)d\tau=[\epsilon_{xi}\ \epsilon_{yi}\ \epsilon_{zi}]^{\top}\)</span>, and <span class="math inline">\(k_{jxi}\)</span>, <span class="math inline">\(k_{jyi}\)</span>, <span class="math inline">\(k_{jzi}\)</span>, with <span class="math inline">\(i= \overline{1,n}\)</span> and <span class="math inline">\(j = \overline{0,2}\)</span>, have the following structure:</p>
+<div class="small">
+<p><span class="math display">\[\label{eq: matriz 1}
+    \begin{bmatrix}
+        0 &amp; 1 &amp; 0 \\
+        0 &amp; 0 &amp; 1 \\
+        k_{0xi} &amp; k_{1xi} &amp; k_{2xi}
+    \end{bmatrix},
+    \begin{bmatrix}
+        0 &amp; 1 &amp; 0 \\
+        0 &amp; 0 &amp; 1 \\
+        k_{0yi} &amp; k_{1yi} &amp; k_{2yi}
+    \end{bmatrix},
+    \begin{bmatrix}
+        0 &amp; 1 &amp; 0 \\
+        0 &amp; 0 &amp; 1 \\
+        k_{0zi} &amp; k_{1zi} &amp; k_{2zi}
+    \end{bmatrix},\]</span></p>
+</div>
+<p>which are Hurwitz. The torques <span class="math inline">\(\bar{\tau}= [\bar{\tau}_{\phi i} \quad \bar{\tau}_{\theta i} \quad \bar{\tau}_{\psi i}]^\top\)</span> are designed with the following controllers</p>
+<ul>
+<li><p>PID: <span class="math display">\[\begin{split}
+            \Bar{\tau}_{l i} &amp;= k_{0li} \epsilon_{l i} + k_{1l i} e_{l i} + k_{2l i} \varepsilon_{l i},
+        \end{split} \tag{10}\]</span> the gains <span class="math inline">\(k_{jli}\)</span>, with <span class="math inline">\(i= \overline{1,n}\)</span> and <span class="math inline">\(j= \overline{0,2}\)</span>, have the following form: <span class="math display">\[\begin{bmatrix}
+            0 &amp; 1 &amp; 0 \\
+            0 &amp; 0 &amp; 1 \\
+            k_{0li} &amp; k_{1li} &amp; k_{2li}
+        \end{bmatrix},\]</span><span id="eq: matriz 2" label="eq: matriz 2"></span></p>
+<p>with <span class="math inline">\(l= \phi, \theta, \psi\)</span>, and with values assigned so that the matrix is Hurwitz.</p></li>
+<li><p>Super-Twisting Algorithm (STA) <span class="citation" data-cites="doi:10.1080/00207179308923053"><a href="#ref-doi:10.1080/00207179308923053" role="doc-biblioref">[12]</a></span>: <span class="math display">\[\begin{split}
+            s_{li} &amp;= \varepsilon_{li} + k_{l0i} e_{li},\\
+            \Bar{\tau}_{li} &amp;= v_{li} - k_{l1i} \lceil s_{li} \rfloor ^{\frac{1}{2}},\\
+            \dot{v}_i &amp; = -k_{l2i} \lceil s_{li} \rfloor ^0,
+        \end{split} \tag{11}\]</span> where a possible gain selection is in Table I (see <span class="citation" data-cites="SEEBER2017241"><a href="#ref-SEEBER2017241" role="doc-biblioref">[18]</a></span> for more details).</p></li>
+<li><p>Continuous Twisting Control (TC) <span class="citation" data-cites="TORRESGONZALEZ2017119"><a href="#ref-TORRESGONZALEZ2017119" role="doc-biblioref">[13]</a></span>: <span class="math display">\[\begin{split}
+            \Bar{\tau}_{li} &amp;= v_{i} - k_{l0i} \lceil e_{li} \rfloor ^{\frac{1}{3}} - k_{l1i} \lceil \varepsilon_{li} \rfloor ^{\frac{1}{2}}, \\
+            \dot{v}_{i} &amp; = -k_{l2i} \lceil e_{li} \rfloor ^0  -k_{l3i} \lceil \varepsilon_{li} \rfloor ^0,
+        \end{split} \tag{12}\]</span> where a possible gain selection is in Table II.</p></li>
+<li><p>Continuous Singular Terminal Sliding Mode Control (STSMC) <span class="citation" data-cites="fridman2015continuous"><a href="#ref-fridman2015continuous" role="doc-biblioref">[14]</a></span>: <span class="math display">\[\begin{split}
+            s_{li} &amp;= \varepsilon_{li} + k_{l0i} \lceil e_{li} \rfloor ^{\frac{2}{3}},\\
+            \Bar{\tau}_{li} &amp;= v_{i} - k_{l1i} \lceil s_{li} \rfloor ^{\frac{1}{2}}, \\
+            \dot{v}_{i} &amp; = -k_{l2i} \lceil s_{li} \rfloor ^0,
+        \end{split} \tag{13}\]</span> where a possible gain selection is in Table I.</p></li>
+<li><p>Continuous Non-Singular Terminal Sliding Mode Control (NTSMC) <span class="citation" data-cites="KAMAL2016308"><a href="#ref-KAMAL2016308" role="doc-biblioref">[15]</a></span> : <span class="math display">\[\begin{split}
+        s_{li} &amp;= e_{li} + k_{l0i} \lceil \varepsilon_{li} \rfloor ^{\frac{3}{2}}\\
+        \Bar{\tau}_{li} &amp;= v_{i} - k_{l1i} \lceil s_{li} \rfloor ^{\frac{1}{3}} \\
+        \dot{v}_{i} &amp; = -k_{l2i} \lceil s_{li} \rfloor ^0
+    \end{split} \tag{14}\]</span> where a possible gain selection is in Table III</p></li>
+</ul>
+<div id="Tab. STA y STSMC">
+<table>
+<caption>Gain selection for the STA and STSMC</caption>
+<thead>
+<tr class="header">
+<th style="text-align: center;"></th>
+<th style="text-align: center;"><span class="math inline">\(k_{l0i}\)</span></th>
+<th style="text-align: center;"><span class="math inline">\(k_{l1i}\)</span></th>
+<th style="text-align: center;"><span class="math inline">\(k_{l2i}\)</span></th>
+<th style="text-align: center;"><span class="math inline">\(\zeta\)</span></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: center;">1</td>
+<td style="text-align: center;"><span class="math inline">\(&gt;0\)</span></td>
+<td style="text-align: center;"><span class="math inline">\(1.5 \zeta^{\frac{1}{2}}\)</span></td>
+<td style="text-align: center;"><span class="math inline">\(1.1 \zeta\)</span></td>
+<td style="text-align: center;"><span class="math inline">\(&gt;0\)</span></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p><span id="Tab. STA y STSMC" label="Tab. STA y STSMC"></span></p>
+<div id="Tab. TC">
+<table>
+<caption>Gain selection for the TC</caption>
+<thead>
+<tr class="header">
+<th style="text-align: center;"></th>
+<th style="text-align: center;"><span class="math inline">\(k_{l0i}\)</span></th>
+<th style="text-align: center;"><span class="math inline">\(k_{l1i}\)</span></th>
+<th style="text-align: center;"><span class="math inline">\(k_{l2i}\)</span></th>
+<th style="text-align: center;"><span class="math inline">\(k_{l3i}\)</span></th>
+<th style="text-align: center;"><span class="math inline">\(\zeta\)</span></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: center;">1</td>
+<td style="text-align: center;"><span class="math inline">\(25\zeta^{\frac{2}{3}}\)</span></td>
+<td style="text-align: center;"><span class="math inline">\(15\zeta^{\frac{1}{2}}\)</span></td>
+<td style="text-align: center;"><span class="math inline">\(2.3\zeta\)</span></td>
+<td style="text-align: center;"><span class="math inline">\(1.1\zeta\)</span></td>
+<td style="text-align: center;"><span class="math inline">\(&gt;0\)</span></td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">2</td>
+<td style="text-align: center;"><span class="math inline">\(19\zeta^{\frac{2}{3}}\)</span></td>
+<td style="text-align: center;"><span class="math inline">\(10\zeta^{\frac{1}{2}}\)</span></td>
+<td style="text-align: center;"><span class="math inline">\(2.3\zeta\)</span></td>
+<td style="text-align: center;"><span class="math inline">\(1.1\zeta\)</span></td>
+<td style="text-align: center;"><span class="math inline">\(&gt;0\)</span></td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;">3</td>
+<td style="text-align: center;"><span class="math inline">\(13\zeta^{\frac{2}{3}}\)</span></td>
+<td style="text-align: center;"><span class="math inline">\(7.5\zeta^{\frac{1}{2}}\)</span></td>
+<td style="text-align: center;"><span class="math inline">\(2.3\zeta\)</span></td>
+<td style="text-align: center;"><span class="math inline">\(1.1\zeta\)</span></td>
+<td style="text-align: center;"><span class="math inline">\(&gt;0\)</span></td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">4</td>
+<td style="text-align: center;"><span class="math inline">\(7\zeta^{\frac{2}{3}}\)</span></td>
+<td style="text-align: center;"><span class="math inline">\(5\zeta^{\frac{1}{2}}\)</span></td>
+<td style="text-align: center;"><span class="math inline">\(2.3\zeta\)</span></td>
+<td style="text-align: center;"><span class="math inline">\(1.1\zeta\)</span></td>
+<td style="text-align: center;"><span class="math inline">\(&gt;0\)</span></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p><span id="Tab. TC" label="Tab. TC"></span></p>
+<div id="Tab. NTSMC">
+<table>
+<caption>Gain selection for the NTSMC</caption>
+<thead>
+<tr class="header">
+<th style="text-align: center;"></th>
+<th style="text-align: center;"><span class="math inline">\(k_{l0i}\)</span></th>
+<th style="text-align: center;"><span class="math inline">\(k_{l1i}\)</span></th>
+<th style="text-align: center;"><span class="math inline">\(k_{l2i}\)</span></th>
+<th style="text-align: center;"><span class="math inline">\(\zeta\)</span></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: center;">1</td>
+<td style="text-align: center;"><span class="math inline">\(20  \zeta^{-\frac{1}{2}}\)</span></td>
+<td style="text-align: center;"><span class="math inline">\(4.4\zeta^{\frac{2}{3}}\)</span></td>
+<td style="text-align: center;"><span class="math inline">\(2.5\zeta\)</span></td>
+<td style="text-align: center;"><span class="math inline">\(&gt;0\)</span></td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">2</td>
+<td style="text-align: center;"><span class="math inline">\(28.7\zeta^{-\frac{1}{2}}\)</span></td>
+<td style="text-align: center;"><span class="math inline">\(4.5\zeta^{\frac{2}{3}}\)</span></td>
+<td style="text-align: center;"><span class="math inline">\(2  \zeta^{\frac{1}{2}}\)</span></td>
+<td style="text-align: center;"><span class="math inline">\(&gt;0\)</span></td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;">3</td>
+<td style="text-align: center;"><span class="math inline">\(7.7 \zeta^{-\frac{1}{2}}\)</span></td>
+<td style="text-align: center;"><span class="math inline">\(7.5\zeta^{\frac{2}{3}}\)</span></td>
+<td style="text-align: center;"><span class="math inline">\(2  \zeta^{\frac{1}{2}}\)</span></td>
+<td style="text-align: center;"><span class="math inline">\(&gt;0\)</span></td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">4</td>
+<td style="text-align: center;"><span class="math inline">\(\zeta^{-\frac{1}{2}}\)</span></td>
+<td style="text-align: center;"><span class="math inline">\(16\zeta^{\frac{2}{3}}\)</span></td>
+<td style="text-align: center;"><span class="math inline">\(7  \zeta^{\frac{1}{2}}\)</span></td>
+<td style="text-align: center;"><span class="math inline">\(&gt;0\)</span></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p><span id="Tab. NTSMC" label="Tab. NTSMC"></span></p>
+<p>Applying controllers (7a), (8a) and 9, it can be proved that the formation error dynamics (5a)-(5b) is Input-to-State Stable with respect to <span class="math inline">\(e_{\eta i}\)</span> (see <span class="citation" data-cites="rios2018continuous"><a href="#ref-rios2018continuous" role="doc-biblioref">[11]</a></span> for more details). On the other hand, applying controllers (7b), (7c), (8b), and any of the controllers (12), (13) or (14), it can be proved that <span class="math inline">\((e_{\eta i},\varepsilon_{\eta i})^\top = (0,0)^\top\)</span> is UFTS. When controllers (10) or (11) are applied, <span class="math inline">\((e_{\eta i},\varepsilon_{\eta i})^\top = (0,0)^\top\)</span> is UES (see <span class="citation" data-cites="rios2018continuous"><a href="#ref-rios2018continuous" role="doc-biblioref">[11]</a></span> for more details).</p>
+<p>Finally, as a consequence of the results above, the trajectories of the formation error dynamics (5) converge to zero uniformly and exponentially <span class="citation" data-cites="rios2018continuous"><a href="#ref-rios2018continuous" role="doc-biblioref">[11]</a></span>.</p>
+<h1 data-number="5" id="Sec: Resultados de Simulacion"><span class="header-section-number">5</span> Simulation results</h1>
+<p>The simulations use the following disturbances: <span class="math inline">\(d_x = (0.3\sin(0.4t))\)</span>, <span class="math inline">\(d_y =(0.3\cos(0.4t))\)</span>, <span class="math inline">\(d_z = (-0.5 + 0.1\sin(0.4t) - 0.1\sin(0.6t) + 0.1\cos(0.8t))\)</span>, <span class="math inline">\(d_\phi=(-0.5+0.2\sin(0.4t)-0.2\sin(0.6t) + 0.2\cos(0.6t))\)</span>, <span class="math inline">\(d_\theta = (-0.5 + 0.2\cos(0.8t) - 0.2\sin(0.4t) + 0.2\cos(0.8t))\)</span>, <span class="math inline">\(d_\psi = (-0.5 + 0.2\cos(0.8t) - 0.2\sin(0.6t) + 0.2\cos(0.8t))\)</span>.</p>
+<p>There are 5 agents (<span class="math inline">\(n=5\)</span>). The rotational drag coefficients are <span class="math inline">\(a_{mi}=1.52\times10^{-7}\)</span> [Ns/rad], with <span class="math inline">\(m = \phi, \theta, \psi\)</span>. The aerodynamic damping coefficients are <span class="math inline">\(a_{\alpha i}=2.47\times10^{-7}\)</span> [Ns/kgm], with <span class="math inline">\(\alpha = x, y,z\)</span>. The moments of inertia of the agents are <span class="math inline">\(J_{xi}=9.827\times10^{-5}\)</span> [kg<span class="math inline">\(\cdot\)</span> m<span class="math inline">\(^2\)</span>], <span class="math inline">\(J_{yi}=8.185\times10^{-5}\)</span> [kg<span class="math inline">\(\cdot\)</span> m<span class="math inline">\(^2\)</span>], <span class="math inline">\(J_{zi}=9.613\times10^{-5}\)</span> [kg<span class="math inline">\(\cdot\)</span> m<span class="math inline">\(^2\)</span>]. The mass of the agents is <span class="math inline">\(m_i= 0.032\)</span> [kg]. The desired trajectories of the leader (<span class="math inline">\(R_5\)</span>) are given by: <span class="math inline">\(x_d =(\arctan(15)+\arctan(t-15))\cos(\frac{\pi}{5}t)\)</span>, <span class="math inline">\(y_d =(\arctan(15)+\operatorname{atan}(t-15))\sin(\frac{\pi}{5}t)\)</span>, <span class="math inline">\(z_d =(1+\tanh((t-5)-2.5))\)</span>, <span class="math inline">\(\psi_d = 0\)</span>. The formation vectors are <span class="math inline">\(C_{51} = [ 1 \quad 1 \quad 0]^\top\)</span>, <span class="math inline">\(C_{52} = [-1 \quad 1 \quad 0]^\top\)</span>, <span class="math inline">\(C_{53} = [ 1 \quad -1 \quad 0]^\top\)</span>, <span class="math inline">\(C_{54} = [-1 \quad -1 \quad 0]^\top\)</span>. The selected controller gains are shown in Table VI. The observer gains are <span class="math inline">\(\boldsymbol{\hat{K}}_{1 i} = 4.0716I_{3\times 3}\)</span>, <span class="math inline">\(\boldsymbol{\hat{K}}_{2 i} = 2.3717I_{3 \times 3}\)</span>, <span class="math inline">\(\boldsymbol{\hat{K}}_{3 i} = 2.75I_{3 \times 3}\)</span>, <span class="math inline">\(\boldsymbol{\hat{K}}_{4 i} = 4.3267I_{3 \times 3}\)</span>, <span class="math inline">\(\boldsymbol{\hat{K}}_{5 i} =2.5981I_{3 \times 3}\)</span>, and <span class="math inline">\(\boldsymbol{\hat{K}}_{6 i} = 3.3I_{3 \times 3}\)</span>, for all <span class="math inline">\(i = \overline{1,n}\)</span>.</p>
+<p>Figure 3 shows the agent trajectories, where agent <span class="math inline">\(R_5\)</span> is the leader. To illustrate the controller performance, the following performance index is proposed: <span class="math display">\[f_{RMS}(t) = \bigg( \frac{1}{\Delta T} \int_{t-\Delta T}^{t} \| f(\sigma)\|^2 d\sigma \bigg)^{\frac{1}{2}} \tag{15}\]</span> where <span class="math inline">\(f_{RMS}: \mathbb{R}\rightarrow\mathbb{R}_{\geq 0}\)</span> represents the root mean square of the function <span class="math inline">\(f: \mathbb{R}\rightarrow\mathbb{R}^n\)</span>. The performance indices of the average formation errors in (<span class="math inline">\(x_i,y_i,z_i,\psi_i\)</span>) are shown in Figure 4, and those of the control signals (<span class="math inline">\(u_{i},\tau_{\phi i}, \tau_{\theta i} ,\tau_{\psi i}\)</span>) in Figure 5, with <span class="math inline">\(\Delta T =2\)</span>. Tables IV and V show the average performance index of the error and control signals. For the errors, the NTSMC controller has the best performance. For the inputs, the STA controller is the best.</p>
+<div id="Tab. RMS POS">
+<table>
+<caption>Performance index of the errors in (<span class="math inline">\(x_i, y_i, z_i, \psi_i\)</span>)</caption>
+<thead>
+<tr class="header">
+<th style="text-align: center;"></th>
+<th style="text-align: center;"><span class="math inline">\(e_{x i}-RMS\)</span></th>
+<th style="text-align: center;"><span class="math inline">\(e_{y i}-RMS\)</span></th>
+<th style="text-align: center;"><span class="math inline">\(e_{z i}-RMS\)</span></th>
+<th style="text-align: center;"><span class="math inline">\(e_{\psi i}-RMS\)</span></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: center;">PID</td>
+<td style="text-align: center;"><span class="math inline">\(4.062 \times 10^{-4}\)</span></td>
+<td style="text-align: center;"><span class="math inline">\(0.001\)</span></td>
+<td style="text-align: center;"><span class="math inline">\(8.461 \times 10^{-4}\)</span></td>
+<td style="text-align: center;"><span class="math inline">\(3.777 \times 10^{-5}\)</span></td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">TC</td>
+<td style="text-align: center;"><span class="math inline">\(1.662 \times 10^{-4}\)</span></td>
+<td style="text-align: center;"><span class="math inline">\(6.648 \times 10^{-4}\)</span></td>
+<td style="text-align: center;"><span class="math inline">\(8.484 \times 10^{-4}\)</span></td>
+<td style="text-align: center;"><span class="math inline">\(\mathbf{3.406 \times 10^{-7}}\)</span></td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;">STA</td>
+<td style="text-align: center;"><span class="math inline">\(4.358 \times 10^{-4}\)</span></td>
+<td style="text-align: center;"><span class="math inline">\(5.997 \times 10^{-4}\)</span></td>
+<td style="text-align: center;"><span class="math inline">\(8.485 \times 10^{-4}\)</span></td>
+<td style="text-align: center;"><span class="math inline">\(1.946 \times 10^{-6}\)</span></td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">STSMC</td>
+<td style="text-align: center;"><span class="math inline">\(3.691 \times 10^{-4}\)</span></td>
+<td style="text-align: center;"><span class="math inline">\(0.001\)</span></td>
+<td style="text-align: center;"><span class="math inline">\(8.484 \times 10^{-4}\)</span></td>
+<td style="text-align: center;"><span class="math inline">\(4.045 \times 10^{-5}\)</span></td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;">NTSMC</td>
+<td style="text-align: center;"><span class="math inline">\(\mathbf{1.029 \times 10^{-4}}\)</span></td>
+<td style="text-align: center;"><span class="math inline">\(\mathbf{2.684 \times 10^{-4}}\)</span></td>
+<td style="text-align: center;"><span class="math inline">\(\mathbf{2.684 \times 10^{-4}}\)</span></td>
+<td style="text-align: center;"><span class="math inline">\(5.182 \times 10^{-6}\)</span></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p><span id="Tab. RMS POS" label="Tab. RMS POS"></span></p>
+<div id="Tab. RMS SC">
+<table>
+<caption>Performance index of the control inputs (<span class="math inline">\(u_{i},\tau_{\phi i}, \tau_{\theta i}, \tau_{\psi i}\)</span>)</caption>
+<thead>
+<tr class="header">
+<th style="text-align: center;"></th>
+<th style="text-align: center;"><span class="math inline">\(u_{ i}-RMS\)</span></th>
+<th style="text-align: center;"><span class="math inline">\(\tau_{\phi i}-RMS\)</span></th>
+<th style="text-align: center;"><span class="math inline">\(\tau_{\theta i}-RMS\)</span></th>
+<th style="text-align: center;"><span class="math inline">\(\tau_{\psi i}-RMS\)</span></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: center;">PID</td>
+<td style="text-align: center;">0.329</td>
+<td style="text-align: center;"><span class="math inline">\(1.829 \times 10^{-4}\)</span></td>
+<td style="text-align: center;"><span class="math inline">\(\mathbf{5.921 \times 10^{-5}}\)</span></td>
+<td style="text-align: center;"><span class="math inline">\(\mathbf{5.775 \times 10^{-5}}\)</span></td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">TC</td>
+<td style="text-align: center;">0.329</td>
+<td style="text-align: center;"><span class="math inline">\(2.957 \times 10^{-4}\)</span></td>
+<td style="text-align: center;"><span class="math inline">\(2.458 \times 10^{-4}\)</span></td>
+<td style="text-align: center;"><span class="math inline">\(1.111 \times 10^{-4}\)</span></td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;">STA</td>
+<td style="text-align: center;">0.329</td>
+<td style="text-align: center;"><span class="math inline">\(\mathbf{1.149 \times 10^{-4}}\)</span></td>
+<td style="text-align: center;"><span class="math inline">\(8.903 \times 10^{-5}\)</span></td>
+<td style="text-align: center;"><span class="math inline">\(5.776 \times 10^{-5}\)</span></td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">STSMC</td>
+<td style="text-align: center;">0.329</td>
+<td style="text-align: center;"><span class="math inline">\(1.291 \times 10^{-4}\)</span></td>
+<td style="text-align: center;"><span class="math inline">\(1.073 \times 10^{-4}\)</span></td>
+<td style="text-align: center;"><span class="math inline">\(5.802 \times 10^{-5}\)</span></td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;">NTSMC</td>
+<td style="text-align: center;">0.329</td>
+<td style="text-align: center;">0.003</td>
+<td style="text-align: center;">0.002</td>
+<td style="text-align: center;">0.001</td>
+</tr>
+</tbody>
+</table>
+</div>
+<p><span id="Tab. RMS SC" label="Tab. RMS SC"></span></p>
+<div class="center">
+<div class="tabular">
+<p><span> c c c c c c c </span> &amp;<br />
+&amp; <span class="math inline">\(k_{0xi}\)</span> &amp;<span class="math inline">\(k_{0yi}\)</span> &amp; <span class="math inline">\(k_{0zi}\)</span> &amp; <span class="math inline">\(k_{\phi0i}\)</span> &amp; <span class="math inline">\(k_{\theta0i}\)</span> &amp; <span class="math inline">\(k_{\psi0i}\)</span><br />
+PID &amp; <span class="math inline">\(5\)</span> &amp;<span class="math inline">\(5\)</span> &amp; <span class="math inline">\(20\)</span> &amp; <span class="math inline">\(18\)</span> &amp; <span class="math inline">\(18\)</span> &amp; <span class="math inline">\(20\)</span><br />
+STA &amp; <span class="math inline">\(5\)</span> &amp;<span class="math inline">\(5\)</span> &amp; <span class="math inline">\(20\)</span> &amp; <span class="math inline">\(12\)</span> &amp; <span class="math inline">\(12\)</span> &amp; <span class="math inline">\(2.8\)</span><br />
+TC &amp; <span class="math inline">\(5\)</span> &amp;<span class="math inline">\(5\)</span> &amp; <span class="math inline">\(20\)</span> &amp; <span class="math inline">\(44.3147\)</span>&amp; <span class="math inline">\(44.3147\)</span>&amp; <span class="math inline">\(29.0099\)</span><br />
+STSMC &amp; <span class="math inline">\(5\)</span> &amp;<span class="math inline">\(5\)</span> &amp; <span class="math inline">\(20\)</span> &amp; <span class="math inline">\(2.6\)</span> &amp; <span class="math inline">\(2.6\)</span> &amp; <span class="math inline">\(2.1\)</span><br />
+NTSMC &amp; <span class="math inline">\(5\)</span> &amp;<span class="math inline">\(5\)</span> &amp; <span class="math inline">\(20\)</span> &amp; <span class="math inline">\(0.1051\)</span> &amp; <span class="math inline">\(0.1051\)</span> &amp; <span class="math inline">\(0.1054\)</span><br />
+&amp;<br />
+&amp; <span class="math inline">\(k_{1xi}\)</span> &amp;<span class="math inline">\(k_{1yi}\)</span> &amp; <span class="math inline">\(k_{1zi}\)</span> &amp; <span class="math inline">\(k_{\phi1i}\)</span> &amp; <span class="math inline">\(k_{\theta1i}\)</span> &amp; <span class="math inline">\(k_{\psi1i}\)</span><br />
+PID &amp; <span class="math inline">\(28.5\)</span> &amp; <span class="math inline">\(28.5\)</span> &amp; <span class="math inline">\(155.2\)</span> &amp; <span class="math inline">\(180\)</span> &amp; <span class="math inline">\(180\)</span> &amp; <span class="math inline">\(200\)</span><br />
+STA &amp; <span class="math inline">\(28.5\)</span> &amp; <span class="math inline">\(28.5\)</span> &amp; <span class="math inline">\(155.2\)</span> &amp; <span class="math inline">\(12.0934\)</span>&amp; <span class="math inline">\(12.0934\)</span>&amp; <span class="math inline">\(0.5293\)</span><br />
+TC &amp; <span class="math inline">\(28.5\)</span> &amp; <span class="math inline">\(28.5\)</span> &amp; <span class="math inline">\(155.2\)</span> &amp; <span class="math inline">\(23.0434\)</span>&amp; <span class="math inline">\(23.0434\)</span>&amp; <span class="math inline">\(16.7705\)</span><br />
+STSMC &amp; <span class="math inline">\(28.5\)</span> &amp; <span class="math inline">\(28.5\)</span> &amp; <span class="math inline">\(155.2\)</span> &amp; <span class="math inline">\(10.1181\)</span>&amp; <span class="math inline">\(10.1181\)</span>&amp; <span class="math inline">\(4.3732\)</span><br />
+NTSMC &amp; <span class="math inline">\(28.5\)</span> &amp; <span class="math inline">\(28.5\)</span> &amp; <span class="math inline">\(155.2\)</span> &amp; <span class="math inline">\(322.6356\)</span>&amp; <span class="math inline">\(322.6356\)</span>&amp; <span class="math inline">\(321.3278\)</span><br />
+&amp;<br />
+&amp; <span class="math inline">\(k_{2xi}\)</span> &amp;<span class="math inline">\(k_{2yi}\)</span> &amp; <span class="math inline">\(k_{2zi}\)</span> &amp; <span class="math inline">\(k_{\phi2i}\)</span> &amp; <span class="math inline">\(k_{\theta2i}\)</span> &amp; <span class="math inline">\(k_{\psi2i}\)</span><br />
+PID &amp; <span class="math inline">\(5.5\)</span> &amp;<span class="math inline">\(5.5\)</span> &amp; <span class="math inline">\(10\)</span> &amp; <span class="math inline">\(10\)</span> &amp; <span class="math inline">\(10\)</span> &amp; <span class="math inline">\(10\)</span><br />
+STA &amp; <span class="math inline">\(5.5\)</span> &amp;<span class="math inline">\(5.5\)</span> &amp; <span class="math inline">\(10\)</span> &amp; <span class="math inline">\(71.50\)</span> &amp; <span class="math inline">\(71.50\)</span> &amp; <span class="math inline">\(0.1370\)</span><br />
+TC &amp; <span class="math inline">\(5.5\)</span> &amp;<span class="math inline">\(5.5\)</span> &amp; <span class="math inline">\(10\)</span> &amp; <span class="math inline">\(5.4280\)</span> &amp; <span class="math inline">\(5.4280\)</span> &amp; <span class="math inline">\(2.8750\)</span><br />
+STSMC &amp; <span class="math inline">\(5.5\)</span> &amp;<span class="math inline">\(5.5\)</span> &amp; <span class="math inline">\(10\)</span> &amp; <span class="math inline">\(50.05\)</span>&amp; <span class="math inline">\(50.05\)</span>&amp; <span class="math inline">\(9.350\)</span><br />
+NTSMC &amp; <span class="math inline">\(5.5\)</span> &amp;<span class="math inline">\(5.5\)</span> &amp; <span class="math inline">\(10\)</span> &amp; <span class="math inline">\(633.8\)</span> &amp; <span class="math inline">\(633.8\)</span> &amp; <span class="math inline">\(630\)</span><br />
+&amp;<br />
+&amp; <span class="math inline">\(k_{3xi}\)</span> &amp;<span class="math inline">\(k_{3yi}\)</span> &amp; <span class="math inline">\(k_{3zi}\)</span> &amp; <span class="math inline">\(k_{\phi3i}\)</span> &amp; <span class="math inline">\(k_{\theta3i}\)</span> &amp; <span class="math inline">\(k_{\psi3i}\)</span><br />
+PID &amp; <span class="math inline">\(-\)</span> &amp;<span class="math inline">\(-\)</span> &amp; <span class="math inline">\(-\)</span> &amp; <span class="math inline">\(-\)</span> &amp; <span class="math inline">\(-\)</span> &amp; <span class="math inline">\(-\)</span><br />
+STA &amp; <span class="math inline">\(-\)</span> &amp;<span class="math inline">\(-\)</span> &amp; <span class="math inline">\(-\)</span> &amp; <span class="math inline">\(-\)</span> &amp; <span class="math inline">\(-\)</span> &amp; <span class="math inline">\(-\)</span><br />
+TC &amp; <span class="math inline">\(-\)</span> &amp;<span class="math inline">\(-\)</span> &amp; <span class="math inline">\(-\)</span> &amp; <span class="math inline">\(2.5960\)</span> &amp; <span class="math inline">\(2.5960\)</span> &amp; <span class="math inline">\(1.3750\)</span><br />
+STSMC &amp; <span class="math inline">\(-\)</span> &amp;<span class="math inline">\(-\)</span> &amp; <span class="math inline">\(-\)</span> &amp; <span class="math inline">\(-\)</span> &amp; <span class="math inline">\(-\)</span> &amp; <span class="math inline">\(-\)</span><br />
+NTSMC &amp; <span class="math inline">\(-\)</span> &amp;<span class="math inline">\(-\)</span> &amp; <span class="math inline">\(-\)</span> &amp; <span class="math inline">\(-\)</span> &amp; <span class="math inline">\(-\)</span> &amp; <span class="math inline">\(-\)</span><br />
+</p>
+</div>
+<p><span id="Tab: Ganancias" label="Tab: Ganancias"></span></p>
+</div>
+<figure id="Fig: POS">
+<img src="img/Pos.png" />
+<figcaption>Agent trajectories.</figcaption>
+</figure>
+<figure id="Fig: Error">
+<img src="img/ERMS1.png" />
+<figcaption>Index of the agents’ position errors.</figcaption>
+</figure>
+<figure id="Fig: Senales de control">
+<img src="img/SCRMS1.png" />
+<figcaption>Index of the agents’ control signals.</figcaption>
+</figure>
+<h1 data-number="6" id="Sec: Conclusiones"><span class="header-section-number">6</span> Conclusions</h1>
+<p>This work designed continuous sliding mode controllers (TC, STA, STSMC, NTSMC), plus a PID, for the formation of a group of <span class="math inline">\(n\)</span> quadrotors. It also presented a comparative analysis of these controllers. The controller structure uses a sliding mode observer (FT-SMO), which estimates the disturbances considered in the multi-agent system model. The scheme is implemented as leader-centered. Thanks to the robustness of the controllers, all of them showed acceptable performance despite the disturbances. After the comparative analysis, the Non-Singular Terminal controller (NTSMC) showed the best performance in the formation errors. At the level of the control signals, the Super-Twisting controller (STA) has the best performance.</p>
+<h1 id="references">References</h1>
+<div id="refs" class="references csl-bib-body" role="list">
+<div id="ref-ren2008distributed" class="csl-entry" role="listitem">
+<div class="csl-left-margin">[1] </div><div class="csl-right-inline">W. Ren and R. W. Beard, <em>Distributed consensus in multi-vehicle cooperative control</em>, vol. 27. Springer, 2008.</div>
+</div>
+<div id="ref-crazyswarm" class="csl-entry" role="listitem">
+<div class="csl-left-margin">[2] </div><div class="csl-right-inline">J. A. Preiss, W. Hönig, G. S. Sukhatme, and N. Ayanian, <span>“Crazyswarm: <span>A</span> large nano-quadcopter swarm,”</span> in <em><span>IEEE</span> international conference on robotics and automation (<span>ICRA</span>)</em>, 2017, pp. 3299–3304. doi: <a href="https://doi.org/10.1109/ICRA.2017.7989376">10.1109/ICRA.2017.7989376</a>.</div>
+</div>
+<div id="ref-maza2009multi" class="csl-entry" role="listitem">
+<div class="csl-left-margin">[3] </div><div class="csl-right-inline">I. Maza, K. Kondak, M. Bernard, and A. Ollero, <span>“Multi-UAV cooperation and control for load transportation and deployment,”</span> in <em>Selected papers from the 2nd international symposium on UAVs, reno, nevada, USA june 8–10, 2009</em>, Springer, 2009, pp. 417–449.</div>
+</div>
+<div id="ref-9856271" class="csl-entry" role="listitem">
+<div class="csl-left-margin">[4] </div><div class="csl-right-inline">O. Mechali, L. Xu, and X. Xie, <span>“Formation flight control of networked-delayed quadrotors for cooperative slung load transportation,”</span> in <em>2022 IEEE international conference on mechatronics and automation (ICMA)</em>, 2022, pp. 526–531. doi: <a href="https://doi.org/10.1109/ICMA54519.2022.9856271">10.1109/ICMA54519.2022.9856271</a>.</div>
+</div>
+<div id="ref-mcguire2019minimal" class="csl-entry" role="listitem">
+<div class="csl-left-margin">[5] </div><div class="csl-right-inline">K. McGuire, C. de Wagter, K. Tuyls, and H. J. Kappen, <span>“Minimal navigation solution for a swarm of tiny flying robots to explore an unknown environment,”</span> <em>Science Robotics</em>, vol. 4, no. 35, 2019, doi: <a href="https://doi.org/10.1126/scirobotics.aaw9710">10.1126/scirobotics.aaw9710</a>.</div>
+</div>
+<div id="ref-hrabia_lützenberger_albayrak_2018" class="csl-entry" role="listitem">
+<div class="csl-left-margin">[6] </div><div class="csl-right-inline">C.-E. Hrabia, M. Lützenberger, and S. Albayrak, <span>“Towards adaptive multi-robot systems: Self-organization and self-adaptation,”</span> <em>The Knowledge Engineering Review</em>, vol. 33, p. e16, 2018, doi: <a href="https://doi.org/10.1017/S0269888918000176">10.1017/S0269888918000176</a>.</div>
+</div>
+<div id="ref-sharma2023geometric" class="csl-entry" role="listitem">
+<div class="csl-left-margin">[7] </div><div class="csl-right-inline">M. Sharma and S. Sundaram, <span>“A geometric control approach for multi-UAV cooperative payload transfer,”</span> <em>Nonlinear Dynamics</em>, vol. 111, no. 11, pp. 10077–10096, 2023.</div>
+</div>
+<div id="ref-7991329" class="csl-entry" role="listitem">
+<div class="csl-left-margin">[8] </div><div class="csl-right-inline">J. González-Sierra, H. Ríos, and A. Dzul, <span>“Leader-follower robust formation control for quad-rotors via continuous sliding-modes,”</span> in <em>2017 international conference on unmanned aircraft systems (ICUAS)</em>, 2017, pp. 1850–1857. doi: <a href="https://doi.org/10.1109/ICUAS.2017.7991329">10.1109/ICUAS.2017.7991329</a>.</div>
+</div>
+<div id="ref-KAPNOPOULOS2022107725" class="csl-entry" role="listitem">
+<div class="csl-left-margin">[9] </div><div class="csl-right-inline">A. Kapnopoulos and A. Alexandridis, <span>“A cooperative particle swarm optimization approach for tuning an MPC-based quadrotor trajectory tracking scheme,”</span> <em>Aerospace Science and Technology</em>, vol. 127, p. 107725, 2022.</div>
+</div>
+<div id="ref-doi:10.1080/00207721.2019.1616128" class="csl-entry" role="listitem">
+<div class="csl-left-margin">[10] </div><div class="csl-right-inline">J. González-Sierra, H. Ríos, and A. Dzul, <span>“Quad-rotor robust time-varying formation control: A continuous sliding-mode control approach,”</span> <em>International Journal of Control</em>, vol. 93, no. 7, pp. 1659–1676, 2020, doi: <a href="https://doi.org/10.1080/00207179.2018.1526413">10.1080/00207179.2018.1526413</a>.</div>
+</div>
+<div id="ref-rios2018continuous" class="csl-entry" role="listitem">
+<div class="csl-left-margin">[11] </div><div class="csl-right-inline">H. Ríos, R. Falcón, O. A. González, and A. Dzul, <span>“Continuous sliding-mode control strategies for quadrotor robust tracking: Real-time application,”</span> <em>IEEE Transactions on Industrial Electronics</em>, vol. 66, no. 2, pp. 1264–1272, 2019, doi: <a href="https://doi.org/10.1109/TIE.2018.2831191">10.1109/TIE.2018.2831191</a>.</div>
+</div>
+<div id="ref-doi:10.1080/00207179308923053" class="csl-entry" role="listitem">
+<div class="csl-left-margin">[12] </div><div class="csl-right-inline">A. LEVANT, <span>“Sliding order and sliding accuracy in sliding mode control,”</span> <em>International Journal of Control</em>, vol. 58, no. 6, pp. 1247–1263, 1993, doi: <a href="https://doi.org/10.1080/00207179308923053">10.1080/00207179308923053</a>.</div>
+</div>
+<div id="ref-TORRESGONZALEZ2017119" class="csl-entry" role="listitem">
+<div class="csl-left-margin">[13] </div><div class="csl-right-inline">V. Torres-González, T. Sanchez, L. M. Fridman, and J. A. Moreno, <span>“Design of continuous twisting algorithm,”</span> <em>Automatica</em>, vol. 80, pp. 119–126, 2017.</div>
+</div>
+<div id="ref-fridman2015continuous" class="csl-entry" role="listitem">
+<div class="csl-left-margin">[14] </div><div class="csl-right-inline">L. Fridman, J. A. Moreno, B. Bandyopadhyay, S. Kamal, and A. Chalanga, <span>“Continuous nested algorithms: The fifth generation of sliding mode controllers,”</span> <em>Recent advances in sliding modes: From control to intelligent mechatronics</em>, pp. 5–35, 2015.</div>
+</div>
+<div id="ref-KAMAL2016308" class="csl-entry" role="listitem">
+<div class="csl-left-margin">[15] </div><div class="csl-right-inline">S. Kamal, J. A. Moreno, A. Chalanga, B. Bandyopadhyay, and L. M. Fridman, <span>“Continuous terminal sliding-mode controller,”</span> <em>Automatica</em>, vol. 69, pp. 308–314, 2016.</div>
+</div>
+<div id="ref-carrillo2013quad" class="csl-entry" role="listitem">
+<div class="csl-left-margin">[16] </div><div class="csl-right-inline">L. R. G. Carrillo, A. E. D. López, R. Lozano, and C. Pégard, <em>Quad rotorcraft control: Vision-based hovering and navigation</em>. in Advances in industrial control. Springer London, 2013. doi: <a href="https://doi.org/10.1007/978-1-4471-4399-4">10.1007/978-1-4471-4399-4</a>.</div>
+</div>
+<div id="ref-khalil2015nonlinear" class="csl-entry" role="listitem">
+<div class="csl-left-margin">[17] </div><div class="csl-right-inline">H. K. Khalil, <em>Nonlinear control</em>, vol. 406. Pearson New York, 2015.</div>
+</div>
+<div id="ref-SEEBER2017241" class="csl-entry" role="listitem">
+<div class="csl-left-margin">[18] </div><div class="csl-right-inline">R. Seeber and M. Horn, <span>“Stability proof for a well-established super-twisting parameter setting,”</span> <em>Automatica</em>, vol. 84, pp. 241–243, 2017.</div>
+</div>
+</div>
+  </article>
+  <footer>English web version of the COMRob 2023 paper. Translated from the official Spanish document. &middot; <a href="../">Julio C. Rodríguez-Cervantes</a></footer>
+</main>
+</div>
+</body>
+</html>

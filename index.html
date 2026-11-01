@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta http-equiv="Content-Security-Policy" content="default-src 'none'; img-src 'self'; style-src 'unsafe-inline'; font-src 'self'; base-uri 'self'; form-action 'none'; upgrade-insecure-requests">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; img-src 'self'; media-src 'self'; style-src 'unsafe-inline'; font-src 'self'; base-uri 'self'; form-action 'none'; upgrade-insecure-requests">
 <meta name="referrer" content="strict-origin-when-cross-origin">
 <title>Julio Cesar Rodriguez Cervantes</title>
 <meta name="description" content="PhD Student in Electrical Engineering — CINVESTAV Guadalajara. Multi-UAV systems, bearing-only formation control, state estimation on S².">
@@ -288,18 +288,28 @@
   .pub-authors strong { color: var(--fg); }
   .pub-venue em { color: var(--fg); }
   .pub-links { margin-top: 0.45rem; }
-  .pub-demo {
+  .sim-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1rem;
+    margin-top: 1rem;
+  }
+  .sim-card video {
     display: block;
     width: 100%;
-    max-width: 440px;
     aspect-ratio: 16 / 9;
-    object-fit: contain;
+    object-fit: cover;
     background: #fff;
-    margin-top: 0.7rem;
     border-radius: 6px;
     border: 1px solid var(--border);
   }
+  .sim-card h3 { font-size: 0.95rem; margin: 0.6rem 0 0.15rem; }
+  .sim-card p { font-size: 0.85rem; color: var(--muted); margin: 0 0 0.45rem; }
+  @media (max-width: 760px) {
+    .sim-grid { grid-template-columns: 1fr; }
+  }
   @media (max-width: 560px) {
+    .avatar { width: 96px; height: 96px; }
     .pub { grid-template-columns: 1fr; }
     .pub-thumb { width: 100%; }
     .project-media { grid-template-columns: 1fr; }
@@ -352,6 +362,7 @@
 <nav class="site-nav" aria-label="Sections">
   <ul>
     <li><a href="#publications">Publications</a></li>
+    <li><a href="#simulations">Simulations</a></li>
     <li><a href="#projects">Projects</a></li>
     <li><a href="#experience">Experience</a></li>
     <li><a href="#education">Education</a></li>
@@ -369,7 +380,6 @@
       <h1>Julio Cesar Rodriguez Cervantes</h1>
       <p class="tagline">
         PhD Student in Electrical Engineering &middot; CINVESTAV Guadalajara<br/>
-        Lecturer at UVM and UNIVER<br/>
         <em>Multi-UAV systems &middot; Bearing-only formation control &middot; State estimation on&nbsp;S&sup2;</em>
       </p>
       <p class="socials">
@@ -390,9 +400,6 @@
     <p>
       My research focuses on <strong>cooperative control of multi-UAV systems</strong> using only bearing measurements &mdash; no GPS, no distance sensors. Using robust nonlinear control techniques, I design formation controllers and state estimators that operate directly on the unit sphere S&sup2;, enabling scalable drone swarms for GPS-denied environments.
     </p>
-    <p class="interests">
-      <strong>Research interests:</strong> bearing-only formation control and estimation for multi-agent systems &middot; robust nonlinear control techniques &middot; applications to unmanned aerial systems (UAVs).
-    </p>
   </section>
 
   <hr/>
@@ -400,10 +407,9 @@
   <section id="news">
     <h2>News</h2>
     <ul class="news">
-      <li><time datetime="2026-10">Oct 2026</time><span>Joined UNIVER as Adjunct Professor (Automation and Control).</span></li>
+      <li><time datetime="2026-10">Oct 2026</time><span>Released the open-source Gazebo simulations of four papers.</span></li>
       <li><time datetime="2026-09">Sep 2026</time><span>Paper &ldquo;Bearing Estimation on S&sup2; via Tangent-Space Measurements for UAV Formation Control&rdquo; presented at CCE 2026.</span></li>
       <li><time datetime="2026-03">Mar 2026</time><span>Invited talk at the Workshop on Robotics and Motion Planning, CIMAT.</span></li>
-      <li><time datetime="2025-08">Aug 2025</time><span>Joined Universidad del Valle de México as Adjunct Professor.</span></li>
     </ul>
   </section>
 
@@ -416,15 +422,13 @@
       <div>
         <div class="pub-title">Bearing Estimation on S&sup2; via Tangent-Space Measurements for UAV Formation Control</div>
         <p class="pub-authors"><strong>J. C. Rodríguez</strong>, H. M. Becerra, J. Ruiz León</p>
-        <p class="pub-venue"><em>2026 23rd International Conference on Electrical Engineering, Computing Science and Automatic Control (CCE)</em>, pp. 1&ndash;6</p>
+        <p class="pub-venue"><em>CCE 2026</em>, pp. 1&ndash;6</p>
         <div class="pub-links">
           <a class="pill" href="papers/cce2026.pdf" target="_blank" rel="noopener">PDF</a>
           <a class="pill" href="https://ieeexplore.ieee.org/document/11735014" target="_blank" rel="noopener">IEEE Xplore</a>
           <a class="pill" href="https://www.youtube.com/watch?v=dzzxMoOREIw" target="_blank" rel="noopener">Video</a>
-          <a class="pill" href="https://github.com/juliordzcer/cce2026-bearing-estimators" target="_blank" rel="noopener">Code</a>
+          <a class="pill" href="https://github.com/juliordzcer/bearing-estimators" target="_blank" rel="noopener">Code</a>
         </div>
-        <p class="pub-desc">Gazebo simulation with the Kalman and H-infinity filters on S&sup2;.</p>
-        <img class="pub-demo" src="images/simulations/cce2026.gif" alt="Trajectory of seven simulated quadrotors in Gazebo" loading="lazy">
       </div>
     </div>
 
@@ -433,16 +437,13 @@
       <div>
         <div class="pub-title">Bearing-Only Super-Twisting Control for Multi-Quadrotor Formations</div>
         <p class="pub-authors">F. G. López Ruiz, <strong>J. C. Rodríguez</strong>, H. M. Becerra, J. Ruiz León</p>
-        <p class="pub-venue"><em>2025 22nd International Conference on Electrical Engineering, Computing Science and Automatic Control (CCE)</em>, pp. 1&ndash;6</p>
+        <p class="pub-venue"><em>CCE 2025</em>, pp. 1&ndash;6</p>
         <div class="pub-links">
           <a class="pill" href="papers/cce2025.pdf" target="_blank" rel="noopener">PDF</a>
           <a class="pill" href="https://ieeexplore.ieee.org/document/11272041" target="_blank" rel="noopener">IEEE Xplore</a>
           <a class="pill" href="https://www.youtube.com/watch?v=pix3_PgBlzo" target="_blank" rel="noopener">Video</a>
-          <a class="pill" href="videos/cce2025_91_drones.mp4" target="_blank" rel="noopener">Simulation</a>
-          <a class="pill" href="https://github.com/juliordzcer/cce2025-bearing-only-sta" target="_blank" rel="noopener">Code</a>
+          <a class="pill" href="https://github.com/juliordzcer/bearing-only-super-twisting" target="_blank" rel="noopener">Code</a>
         </div>
-        <p class="pub-desc">Gazebo simulation of the same bearing-only law with 91 ESP-drones.</p>
-        <img class="pub-demo" src="images/simulations/cce2025_91_drones.gif" alt="Pyramid of 91 simulated drones in Gazebo" loading="lazy">
       </div>
     </div>
 
@@ -451,15 +452,13 @@
       <div>
         <div class="pub-title">Formation Control Design for Multi-Quad-Rotors with Experimental Validation</div>
         <p class="pub-authors"><strong>J. C. Rodríguez-Cervantes</strong>, A. Dzul, H. Ríos</p>
-        <p class="pub-venue"><em>Congreso Nacional de Control Automático (CNCA), AMCA</em>, Acapulco, Guerrero, México, 2023</p>
+        <p class="pub-venue"><em>CNCA 2023</em>, AMCA, Acapulco, México</p>
         <div class="pub-links">
           <a class="pill" href="papers/cnca2023.pdf" target="_blank" rel="noopener">PDF</a>
+          <a class="pill" href="cnca2023/">English</a>
           <a class="pill" href="https://www.youtube.com/watch?v=mZxGzYCmnuo" target="_blank" rel="noopener">Video</a>
-          <a class="pill" href="videos/cnca2023.mp4" target="_blank" rel="noopener">Simulation</a>
-          <a class="pill" href="https://github.com/juliordzcer/comrob2023-sliding-mode-formation" target="_blank" rel="noopener">Code</a>
+          <a class="pill" href="https://github.com/juliordzcer/sliding-mode-formation" target="_blank" rel="noopener">Code</a>
         </div>
-        <p class="pub-desc">Gazebo simulation of the two-drone experiment with ESP-drone models.</p>
-        <img class="pub-demo" src="images/simulations/cnca2023.gif" alt="Two simulated drones in formation in Gazebo" loading="lazy">
       </div>
     </div>
 
@@ -468,16 +467,14 @@
       <div>
         <div class="pub-title">Diseño de Control de Formación basado en Modos Deslizantes para un Grupo de Quad-Rotors</div>
         <p class="pub-authors"><strong>J. C. Rodríguez-Cervantes</strong>, A. Dzul, H. Ríos</p>
-        <p class="pub-venue"><em>XXV Congreso Mexicano de Robótica (COMRob)</em>, 2023</p>
+        <p class="pub-venue"><em>COMRob 2023</em>, Xalapa, México</p>
         <div class="pub-links">
           <a class="pill" href="papers/comrob2023.pdf" target="_blank" rel="noopener">PDF</a>
+          <a class="pill" href="comrob2023/">English</a>
           <a class="pill" href="https://www.researchgate.net/publication/374169936_Diseno_de_Control_de_Formacion_basado_en_Modos_Deslizantes_para_un_Grupo_de_Quad-Rotors" target="_blank" rel="noopener">ResearchGate</a>
           <a class="pill" href="https://www.youtube.com/watch?v=mZxGzYCmnuo" target="_blank" rel="noopener">Video</a>
-          <a class="pill" href="videos/comrob2023_101_drones.mp4" target="_blank" rel="noopener">Simulation</a>
-          <a class="pill" href="https://github.com/juliordzcer/comrob2023-sliding-mode-formation" target="_blank" rel="noopener">Code</a>
+          <a class="pill" href="https://github.com/juliordzcer/sliding-mode-formation" target="_blank" rel="noopener">Code</a>
         </div>
-        <p class="pub-desc">Gazebo simulation with 101 ESP-drones, drawn five times larger so that they can be seen.</p>
-        <img class="pub-demo" src="images/simulations/comrob2023_101_drones.gif" alt="101 simulated drones forming the word COMROB in Gazebo" loading="lazy">
       </div>
     </div>
 
@@ -506,6 +503,41 @@
         <div class="pub-links">
           <a class="pill" href="papers/comrob2021.pdf" target="_blank" rel="noopener">PDF</a>
           <a class="pill" href="https://ieeexplore.ieee.org/document/9628721" target="_blank" rel="noopener">IEEE Xplore</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <hr/>
+
+  <section id="simulations">
+    <h2>Simulations</h2>
+    <div class="sim-grid">
+      <div class="sim-card">
+        <video src="videos/clips/comrob2023.mp4" poster="images/simulations/comrob2023.jpg" autoplay muted loop playsinline preload="metadata" aria-label="101 simulated drones forming the word COMROB"></video>
+        <h3>101 drones forming letters</h3>
+        <p>Sliding mode formation control in Gazebo. Drones drawn five times larger.</p>
+        <div class="pub-links">
+          <a class="pill" href="videos/comrob2023_101_drones.mp4" target="_blank" rel="noopener">Full video</a>
+          <a class="pill" href="https://github.com/juliordzcer/sliding-mode-formation" target="_blank" rel="noopener">Code</a>
+        </div>
+      </div>
+      <div class="sim-card">
+        <video src="videos/clips/cce2025.mp4" poster="images/simulations/cce2025.jpg" autoplay muted loop playsinline preload="metadata" aria-label="Pyramid of 91 simulated drones"></video>
+        <h3>Pyramid of 91 drones</h3>
+        <p>Bearing-only Super-Twisting control, with two leaders.</p>
+        <div class="pub-links">
+          <a class="pill" href="videos/cce2025_91_drones.mp4" target="_blank" rel="noopener">Full video</a>
+          <a class="pill" href="https://github.com/juliordzcer/bearing-only-super-twisting" target="_blank" rel="noopener">Code</a>
+        </div>
+      </div>
+      <div class="sim-card">
+        <video src="videos/clips/cnca2023.mp4" poster="images/simulations/cnca2023.jpg" autoplay muted loop playsinline preload="metadata" aria-label="Two simulated drones in formation"></video>
+        <h3>Leader and follower</h3>
+        <p>Continuous Twisting control of the two-drone experiment.</p>
+        <div class="pub-links">
+          <a class="pill" href="videos/cnca2023.mp4" target="_blank" rel="noopener">Full video</a>
+          <a class="pill" href="https://github.com/juliordzcer/sliding-mode-formation" target="_blank" rel="noopener">Code</a>
         </div>
       </div>
     </div>

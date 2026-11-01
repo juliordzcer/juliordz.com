@@ -1,0 +1,480 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; img-src 'self'; style-src 'unsafe-inline'; script-src 'self' https://cdn.jsdelivr.net; font-src 'self'; connect-src 'none'; base-uri 'self'; form-action 'none'; upgrade-insecure-requests">
+<meta name="referrer" content="strict-origin-when-cross-origin">
+<title>Formation Control Design for Multi-Quad-Rotors with Experimental Validation</title>
+<meta name="description" content="This paper deals with the design of a controller that guarantees the formation of multiple flying vehicles, specifically Quad-Rotor vehicles. The proposed controller is based on PID control laws and Continuous Sliding Modes (Continuous Twisting Algorithms). In order to show the feasibility and perfo">
+<link rel="icon" href="../favicon.svg" type="image/svg+xml">
+<link rel="canonical" href="https://juliordz.com/cnca2023/">
+<meta name="citation_title" content="Formation Control Design for Multi-Quad-Rotors with Experimental Validation">
+<meta name="citation_author" content="Rodríguez-Cervantes, Julio Cesar">
+<meta name="citation_author" content="Dzul, Alejandro">
+<meta name="citation_author" content="Ríos, Héctor">
+<meta name="citation_publication_date" content="2023">
+<meta name="citation_pdf_url" content="https://juliordz.com/papers/cnca2023.pdf">
+<meta property="og:type" content="article">
+<meta property="og:url" content="https://juliordz.com/cnca2023/">
+<meta property="og:title" content="Formation Control Design for Multi-Quad-Rotors with Experimental Validation">
+<meta property="og:description" content="This paper deals with the design of a controller that guarantees the formation of multiple flying vehicles, specifically Quad-Rotor vehicles. The proposed controller is based on PID control laws and C">
+<script type="application/ld+json">
+{"@context": "https://schema.org", "@type": "ScholarlyArticle", "name": "Formation Control Design for Multi-Quad-Rotors with Experimental Validation", "alternateName": "Formation Control Design for Multi-Quad-Rotors with Experimental Validation", "inLanguage": "es", "datePublished": "2023", "author": [{"@type": "Person", "name": "Julio Cesar Rodríguez-Cervantes", "url": "https://juliordz.com/"}, {"@type": "Person", "name": "Alejandro Dzul"}, {"@type": "Person", "name": "Héctor Ríos"}]}
+</script>
+<style>
+  :root {
+    color-scheme: light dark;
+    --bg: #ffffff;
+    --fg: #1f2328;
+    --muted: #57606a;
+    --border: #d0d7de;
+    --link: #0a66c2;
+    --code-bg: #f6f8fa;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #0d1117;
+      --fg: #e6edf3;
+      --muted: #9198a1;
+      --border: #30363d;
+      --link: #4aa3ff;
+      --code-bg: #161b22;
+    }
+  }
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body {
+    background: var(--bg);
+    color: var(--fg);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    line-height: 1.6;
+    margin: 0;
+    padding: 2.5rem 1.25rem 4rem;
+  }
+  a { color: var(--link); }
+  .layout {
+    max-width: 1000px;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: 200px 1fr;
+    gap: 2.5rem;
+  }
+  nav.toc {
+    position: sticky;
+    top: 1.5rem;
+    align-self: start;
+    font-size: 0.9rem;
+  }
+  nav.toc .back { display: block; margin-bottom: 1rem; }
+  nav.toc ul { list-style: none; padding: 0; margin: 0; }
+  nav.toc li { margin: 0.2rem 0; }
+  nav.toc ul ul { padding-left: 0.9rem; }
+  nav.toc a { text-decoration: none; color: var(--muted); }
+  nav.toc a:hover { color: var(--link); }
+  main { min-width: 0; max-width: 720px; }
+  h1 { font-size: 1.6rem; margin: 0 0 0.25rem; }
+  .tagline { color: var(--muted); margin-top: 0; }
+  h2 {
+    font-size: 1.2rem;
+    margin: 2.5rem 0 0.75rem;
+    padding-bottom: 0.3rem;
+    border-bottom: 1px solid var(--border);
+  }
+  h3 { font-size: 1rem; margin: 1.5rem 0 0.5rem; }
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.92rem;
+    margin: 0.75rem 0;
+    display: block;
+    overflow-x: auto;
+  }
+  th, td {
+    text-align: left;
+    padding: 0.4rem 0.6rem;
+    border: 1px solid var(--border);
+    vertical-align: top;
+  }
+  th { background: var(--code-bg); }
+  code {
+    background: var(--code-bg);
+    padding: 0.1em 0.35em;
+    border-radius: 4px;
+    font-size: 0.88em;
+  }
+  pre {
+    background: var(--code-bg);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 0.9rem 1rem;
+    overflow-x: auto;
+    font-size: 0.85rem;
+    line-height: 1.45;
+  }
+  .badge {
+    display: inline-block;
+    font-size: 0.75rem;
+    font-weight: 600;
+    padding: 0.1em 0.55em;
+    border-radius: 999px;
+    border: 1px solid var(--border);
+    color: var(--muted);
+    vertical-align: middle;
+  }
+  .badge.done { color: #1a7f37; border-color: #1a7f37; }
+  .badge.wip { color: #9a6700; border-color: #9a6700; }
+  ul.status { list-style: none; padding-left: 0; }
+  ul.status li { margin: 0.3rem 0; }
+  .note { color: var(--muted); font-size: 0.9rem; }
+  footer { margin-top: 3rem; color: var(--muted); font-size: 0.85rem; }
+  @media (max-width: 760px) {
+    .layout { grid-template-columns: 1fr; gap: 1rem; }
+    nav.toc { position: static; border-bottom: 1px solid var(--border); padding-bottom: 1rem; }
+  }
+  :root { --accent: var(--link); }
+  .layout { max-width: 1080px; grid-template-columns: 230px 1fr; }
+  main { max-width: 780px; }
+  nav.toc { max-height: calc(100vh - 3rem); overflow-y: auto; }
+  nav.toc .toc-title { font-weight: 600; color: var(--fg); margin: 0 0 0.4rem; }
+  nav.toc ul ul { display: block; }
+  .toc-section-number { color: var(--muted); margin-right: 0.3em; }
+  .kicker { color: var(--muted); font-size: 0.85rem; text-transform: uppercase; letter-spacing: 0.04em; margin: 0 0 0.3rem; }
+  .paper-head h1 { font-size: 1.7rem; line-height: 1.25; }
+  .orig, .inst { color: var(--muted); margin: 0.3rem 0; font-size: 0.95rem; }
+  .authors { margin: 0.6rem 0 0.2rem; }
+  .pills { display: flex; flex-wrap: wrap; gap: 0.5rem; margin: 0.9rem 0 0; }
+  .pill { display: inline-block; font-size: 0.85rem; padding: 0.2rem 0.75rem; border: 1px solid var(--border); border-radius: 999px; text-decoration: none; }
+  .pill:hover { border-color: var(--link); }
+  figure { margin: 1.5rem 0; text-align: center; }
+  figure img { max-width: 100%; height: auto; border-radius: 4px; background: #fff; }
+  figcaption { font-size: 0.9rem; color: var(--muted); margin-top: 0.4rem; text-align: left; }
+  .hero img { width: 100%; max-width: 640px; }
+  .subfigs .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem; }
+  .subfigs .grid figure { margin: 0; }
+  .subfigs .grid figcaption { text-align: center; }
+  .cite-block { border: 1px solid var(--border); border-radius: 6px; margin: 0.75rem 0; overflow: hidden; }
+  .cite-head { display: flex; justify-content: space-between; align-items: center; padding: 0.35rem 0.75rem; background: var(--code-bg); border-bottom: 1px solid var(--border); font-size: 0.85rem; font-weight: 600; }
+  .cite-head button { font: inherit; font-weight: 500; font-size: 0.8rem; padding: 0.15rem 0.7rem; border: 1px solid var(--border); border-radius: 999px; background: var(--bg); color: var(--fg); cursor: pointer; }
+  .cite-head button:hover { border-color: var(--link); }
+  .cite-block p { margin: 0; padding: 0.75rem; font-size: 0.92rem; }
+  .cite-block pre { margin: 0; border: 0; border-radius: 0; white-space: pre-wrap; word-break: break-word; }
+  .thesis h1 { font-size: 1.45rem; margin: 3rem 0 0.75rem; padding-bottom: 0.3rem; border-bottom: 2px solid var(--border); }
+  .thesis h2 { font-size: 1.15rem; border-bottom: 0; padding-bottom: 0; margin-top: 2rem; }
+  .thesis h3 { font-size: 1rem; }
+  .thesis h1[id], .thesis h2[id], .thesis h3[id], section[id] { scroll-margin-top: 1rem; }
+  .thesis p { text-align: justify; hyphens: auto; }
+  .math.display { display: block; overflow-x: auto; overflow-y: hidden; margin: 0.6rem 0; }
+  mjx-container[display="true"] { max-width: 100%; overflow-x: auto; overflow-y: hidden; }
+  .tbl { overflow-x: auto; margin: 1rem 0; }
+  .tbl table { display: table; width: auto; margin: 0 auto; font-size: 0.85rem; }
+  .tbl caption { caption-side: top; font-size: 0.9rem; color: var(--muted); padding-bottom: 0.4rem; text-align: left; }
+  .tbl td, .tbl th { text-align: center; white-space: nowrap; }
+  .teorema, .definicion, .suposicion, .observacion { margin: 1rem 0; padding: 0.6rem 0.9rem; border-left: 3px solid var(--border); background: var(--code-bg); border-radius: 0 6px 6px 0; }
+  #refs { font-size: 0.88rem; }
+  .csl-entry { margin: 0.4rem 0; display: flex; gap: 0.5rem; }
+  .csl-left-margin { flex: none; min-width: 2.2rem; }
+  @media (max-width: 760px) {
+    .layout { grid-template-columns: 1fr; }
+    nav.toc { max-height: none; }
+    .subfigs .grid { grid-template-columns: 1fr; }
+    .thesis p { text-align: left; }
+  }
+  .subfigs .grid { max-width: 560px; margin: 0 auto; }
+  .thesis figure img { max-width: min(100%, 620px); }
+  .errata ul { font-size: 0.9rem; padding-left: 1.2rem; }
+  .errata li { margin: 0.25rem 0; }
+  .thesis figure img[src$="DF.png"], .thesis figure img[src$="DIAG.png"] { max-width: 100%; }
+  .supp-note { margin: 0.5rem 0 1.5rem; padding: 0.75rem 1rem; border: 1px solid var(--oiamber, #E69F00); border-left-width: 4px; border-radius: 6px; font-size: 0.92rem; }
+  .assumption, .lemma, .proposition, .theorem, .remark { margin: 1rem 0; padding: 0.6rem 0.9rem; border-left: 3px solid var(--border); background: var(--code-bg); border-radius: 0 6px 6px 0; }
+
+</style>
+<script src="../thesis/thesis.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/mathjax@3.2.2/es5/tex-svg.js"></script>
+</head>
+<body>
+<div class="layout">
+<nav class="toc" aria-label="Contents">
+  <a class="back" href="../">&larr; juliordz.com</a>
+  <p class="toc-title">Contents</p>
+  <ul>
+    <li><a href="#cite">How to cite</a></li>
+    <li><a href="#abstract">Abstract</a></li>
+    <li><a href="#errata">Corrections</a></li>
+  </ul>
+  <ul>
+<li><a href="#introduction" id="toc-introduction"><span class="toc-section-number">1</span> Introduction</a></li>
+<li><a href="#SeccionPlanteamiento" id="toc-SeccionPlanteamiento"><span class="toc-section-number">2</span> Problem statement</a></li>
+<li><a href="#sec_preliminares" id="toc-sec_preliminares"><span class="toc-section-number">3</span> Preliminaries</a></li>
+<li><a href="#sec_control" id="toc-sec_control"><span class="toc-section-number">4</span> Control strategy</a></li>
+<li><a href="#sec_experimentos" id="toc-sec_experimentos"><span class="toc-section-number">5</span> Experimental validation</a></li>
+<li><a href="#sec_conclusiones" id="toc-sec_conclusiones"><span class="toc-section-number">6</span> Conclusion</a></li>
+</ul>
+</nav>
+<main>
+  <header class="paper-head">
+    <p class="kicker">Conference paper &middot; CNCA 2023</p>
+    <h1>Formation Control Design for Multi-Quad-Rotors with Experimental Validation</h1>
+    
+    <p class="authors"><strong>J. C. Rodríguez-Cervantes</strong>, A. Dzul, H. Ríos</p>
+    <p class="inst">Congreso Nacional de Control Automático (CNCA), AMCA, Acapulco, Guerrero, México, 2023</p>
+    <div class="pills">
+      <a class="pill" href="../papers/cnca2023.pdf" target="_blank" rel="noopener">PDF (Spanish, official)</a>
+      <a class="pill" href="https://github.com/juliordzcer/sliding-mode-formation" target="_blank" rel="noopener">Code</a>
+      <a class="pill" href="../videos/cnca2023.mp4" target="_blank" rel="noopener">Simulation</a>
+      <a class="pill" href="https://www.youtube.com/watch?v=mZxGzYCmnuo" target="_blank" rel="noopener">Video</a>
+    </div>
+  </header>
+  <figure class="hero">
+    <a href="../videos/cnca2023.mp4" target="_blank" rel="noopener"><img src="../images/simulations/cnca2023.gif" width="480" height="270" alt="Two simulated drones in formation"></a>
+    <figcaption>Gazebo simulation of the two-drone experiment with ESP-drone models.</figcaption>
+  </figure>
+
+  <section id="cite" class="cite">
+    <h2>How to cite</h2>
+    <p class="note">The body of the official paper is in Spanish; this page is an English translation of its content.</p>
+    <div class="cite-block">
+      <div class="cite-head"><span>APA</span><button type="button" data-copy="apa">Copy</button></div>
+      <p id="apa">Rodríguez-Cervantes, J. C., Dzul, A., &amp; Ríos, H. (2023). <em>Formation Control Design for Multi-Quad-Rotors with Experimental Validation</em>. Congreso Nacional de Control Automático (CNCA), AMCA, Acapulco, Guerrero, México.</p>
+    </div>
+    <div class="cite-block">
+      <div class="cite-head"><span>BibTeX</span><button type="button" data-copy="bib">Copy</button></div>
+      <pre id="bib">@inproceedings{rodriguez2023formation,
+  author    = {Rodríguez-Cervantes, J. C. and Dzul, A. and Ríos, H.},
+  title     = {Formation Control Design for Multi-Quad-Rotors with Experimental Validation},
+  booktitle = {Congreso Nacional de Control Automático (CNCA), AMCA},
+  address   = {Acapulco, Guerrero, México},
+  year      = {2023}
+}</pre>
+    </div>
+  </section>
+
+  <section id="errata" class="errata">
+    <h2>Corrections to the official document</h2>
+    <p class="note">This English version fixes the following typographical errors found in the official PDF.</p>
+    <ul>
+      <li>The third component of \(w_{\eta}\) is \(\dot\phi_i\dot\theta_i\).</li>
+      <li>Definition of the formation graph: edges and labels are defined for \(i\neq j\).</li>
+      <li>\(\nu_{y_i}=u_{m_i}(\cos\phi_{\star_i}\sin\theta_{\star_i}\sin\Psi_i-\sin\phi_{\star_i}\cos\Psi_i)\) and \(\nu_{z_i}=u_{m_i}\cos\phi_{\star_i}\cos\theta_{\star_i}-g\). The thrust and the desired angles only follow from these forms.</li>
+      <li>The integral term of \(\nu_{z_i}\) uses \(\epsilon_{z_i}\).</li>
+      <li>Parameters: \(g=9.8\) m/s\(^2\), \(m_i=0.032\) kg, inertias in kg m\(^2\), and \(\varphi=15\) s. The official document does not give the height \(h\) of the trajectory.</li>
+    </ul>
+  </section>
+
+  <section id="abstract">
+    <h2>Abstract</h2>
+    <p>This paper deals with the design of a controller that guarantees the formation of multiple flying vehicles, specifically Quad-Rotor vehicles. The proposed controller is based on PID control laws and Continuous Sliding Modes (Continuous Twisting Algorithms). In order to show the feasibility and performance of the controller, experimental results were carried out using the Crazeflie Quad-Rotors.</p>
+  </section>
+
+  <article class="thesis">
+<h1 data-number="1" id="introduction"><span class="header-section-number">1</span> Introduction</h1>
+<p>Over the last two decades, research interest in cooperative control for multi-agent systems has grown exponentially in both the automatic control and robotics communities. The reason is the many potential applications in civil and military areas <span class="citation" data-cites="ren2008distributed"><a href="#ref-ren2008distributed" role="doc-biblioref">[1]</a></span>. Examples include mapping and localization <span class="citation" data-cites="mcguire2019minimal"><a href="#ref-mcguire2019minimal" role="doc-biblioref">[2]</a></span>, target surveillance <span class="citation" data-cites="kingston2008decentralized"><a href="#ref-kingston2008decentralized" role="doc-biblioref">[3]</a></span>, search and rescue <span class="citation" data-cites="senanayake2016search"><a href="#ref-senanayake2016search" role="doc-biblioref">[4]</a></span>, smart agriculture <span class="citation" data-cites="albani2017monitoring"><a href="#ref-albani2017monitoring" role="doc-biblioref">[5]</a></span>, and cooperative transport <span class="citation" data-cites="maza2009multi"><a href="#ref-maza2009multi" role="doc-biblioref">[6]</a></span>.</p>
+<p>The goal of cooperative control is to design a control law that accounts for the dynamics of the robots (agents) and the interaction topology among them, in order to accomplish the desired group task. Compared with a single robot, several robots working cooperatively on a group task provide robustness against individual failures. They also improve operational effectiveness and reduce costs, among other benefits <span class="citation" data-cites="li2017cooperative"><a href="#ref-li2017cooperative" role="doc-biblioref">[7]</a></span>. This work analyzes the design of formation control for quadrotors.</p>
+<p>In this context, there is a wide body of literature on control strategies to stabilize quadrotors and make them track trajectories. Several studies have proposed approaches and techniques to optimize their performance and responsiveness. Formation control is a fundamental technique in the cooperative control of multi-agent systems. Its objective is for all robots to reach and keep a predefined geometric configuration <span class="citation" data-cites="ren2007information"><a href="#ref-ren2007information" role="doc-biblioref">[8]</a></span>. The work <span class="citation" data-cites="turpin2012trajectory"><a href="#ref-turpin2012trajectory" role="doc-biblioref">[9]</a></span> studied formation control for quadrotors and proposed a trajectory planning algorithm for aggressive formation flight. In <span class="citation" data-cites="dong2014time"><a href="#ref-dong2014time" role="doc-biblioref">[10]</a></span>, a consensus-based controller was proposed to address the time-varying formation problem for multiple quadrotors.</p>
+<p>The work <span class="citation" data-cites="damien2009unmanned"><a href="#ref-damien2009unmanned" role="doc-biblioref">[11]</a></span> proposes a robust controller based on a sliding mode disturbance observer to achieve formation flight. However, this approach is limited to triangular configurations, which restricts the realization of some geometric patterns. In <span class="citation" data-cites="gonzalez2016reciprocal"><a href="#ref-gonzalez2016reciprocal" role="doc-biblioref">[12]</a></span>, a multi-agent control approach is proposed to form geometric patterns while avoiding obstacles and collisions through repulsive vector fields.</p>
+<p>These studies show a variety of approaches and techniques to address the control and formation of UAVs, considering factors such as obstacle avoidance and external disturbances. Each of them advances research in this field and offers interesting perspectives for developing more robust and efficient control systems. However, very few show experimental results.</p>
+<p>This work seeks trajectory tracking for a group of quadrotors that adopt a desired geometric pattern. It uses an approach based on sliding mode techniques, <span class="citation" data-cites="doi:10.1080/00207721.2019.1616128"><a href="#ref-doi:10.1080/00207721.2019.1616128" role="doc-biblioref">[13]</a></span> and <span class="citation" data-cites="rios2018continuous"><a href="#ref-rios2018continuous" role="doc-biblioref">[14]</a></span>, which allows robust trajectory tracking by controlling the position and orientation of each quadrotor. The approach is validated experimentally.</p>
+<p>The paper is organized as follows: Section 2 presents the problem statement, and Section 3 shows some concepts needed to develop the controller. Section 4 describes the selection of the virtual controllers for the reference signals, as well as the control strategy. The experimental validation of this proposal is in Section 5. Finally, the conclusions are presented in Section 6.</p>
+<h1 data-number="2" id="SeccionPlanteamiento"><span class="header-section-number">2</span> Problem statement</h1>
+<figure id="Figquad">
+<img src="img/z.png" />
+<figcaption>Schematic representation of the quadrotor</figcaption>
+</figure>
+<p>Consider a group of <span class="math inline">\(n\)</span> quadrotors. The simplified dynamics of each one (see Figure 1, and <span class="citation" data-cites="carrillo2013quad"><a href="#ref-carrillo2013quad" role="doc-biblioref">[15]</a></span> for modeling details) are given by:</p>
+<p><span class="math display">\begin{align}
+    \dot{\xi}_{1i}  &amp;= \xi_{2i} , \tag{1a}\\
+    \dot{\xi}_{2i}  &amp;=g_{\xi}(\eta_{1i})u_{mi}-G, \tag{1b}\\
+    \dot{\eta}_{1i} &amp;= \eta_{2i}, \tag{1c}\\
+    \dot{\eta}_{2i} &amp;= J_i\tau_i+\Xi_{i} w_{\eta}(\eta_{2i}), \tag{1d}
+\end{align}</span></p>
+<p>where <span class="math inline">\(i = 1,2,\ldots,n = \overline{1,n}\)</span>, with <span class="math inline">\(n\)</span> the number of quadrotors in the formation. <span class="math inline">\(\xi_{1i} := [x_i \quad y_i \quad z_i]^{\top}~ \in \mathbb{R}^3\)</span>, <span class="math inline">\(\xi_{2i} := [\dot{x_i} \quad \dot{y_i} \quad \dot{z_i}]^{\top}~ \in \mathbb{R}^3\)</span>, <span class="math inline">\(\eta_{1i} := [\phi_i \quad \theta_i \quad \psi_i]^{\top}~ \in \mathbb{R}^3\)</span>, <span class="math inline">\(\eta_{2i} := [\dot{\phi_i} \quad \dot{\theta_i} \quad \dot{\psi_i}]^{\top}~ \in \mathbb{R}^3\)</span>. The variables <span class="math inline">\(x_i, y_i \in \mathbb{R}\)</span> are the coordinates in the horizontal plane, <span class="math inline">\(z_i \in \mathbb{R}\)</span> is the vertical position, and <span class="math inline">\(\phi_i, \theta_i, \psi_i \in \mathbb{R}\)</span> are the tilt angle about the X axis (roll), the tilt angle about the Y axis (pitch), and the rotation angle about the Z axis (yaw), respectively. The terms <span class="math inline">\(G := [0 \quad 0 \quad g]^{\top} \in ~\mathbb{R}^3\)</span>, <span class="math inline">\(J_{i} := \operatorname{diag}(J_{xi}^{-1}, J_{yi}^{-1}, J_{zi}^{-1}) \in \mathbb{R}^{3\times 3}\)</span> and <span class="math inline">\(\tau_{i} := [\tau_{\phi_i} \quad \tau_{\theta_i} \quad \tau_{\psi_i}]^{\top} \in ~\mathbb{R}^3\)</span> are the gravity vector, the inertia matrix and the torque vector. Here <span class="math inline">\(g\)</span> is the gravitational acceleration, <span class="math inline">\(J_{x_i}\)</span>, <span class="math inline">\(J_{y_i}\)</span> and <span class="math inline">\(J_{z_i}\)</span> are the moments of inertia along the <span class="math inline">\(X\)</span>, <span class="math inline">\(Y\)</span> and <span class="math inline">\(Z\)</span> axes, and <span class="math inline">\(\tau_{\phi_i}\)</span>, <span class="math inline">\(\tau_{\theta_i}\)</span> and <span class="math inline">\(\tau_{\psi_i} \in \mathbb{R}\)</span> are the roll, pitch and yaw torques, respectively. The term <span class="math inline">\(u_{m_i} := {u_i}/{m_i}\)</span>, where <span class="math inline">\(u_i \in \mathbb{R}\)</span> is the total thrust and <span class="math inline">\(m_i \in \mathbb{R}^+\)</span> is the mass of each quadrotor. The matrix <span class="math inline">\(\Xi_{i} := \text{diag}(b_{\phi_{i}}, b_{\theta_{i}}, b_{\psi_{i}}) \in \mathbb{R}^{3\times 3}\)</span> is given by the inertia coefficients <span class="math inline">\(b_{\phi_{i}} := ({J_{yi} - J_{zi}})/{J_{xi}}\)</span>, <span class="math inline">\(b_{\theta_{i}} := ({J_{zi} - J_{xi}})/{J_{yi}}\)</span> and <span class="math inline">\(b_{\psi_{i}} := ({J_{xi} - J_{yi}})/{J_{zi}}\)</span>. The functions <span class="math inline">\(g_{\xi}(\eta_{1 i}) : \mathbb{R}^3 \rightarrow \mathbb{R}^3\)</span> and <span class="math inline">\(w_{\eta}(\eta_{2 i}) : \mathbb{R}^3 \rightarrow \mathbb{R}^3\)</span> are defined as follows: <span class="math inline">\(g_{\xi}(\eta_{1 i}) := [ \cos\phi_{i} \sin\theta_{i} \cos\psi_{i} + \sin\phi_{i} \sin\psi_{i} \,\, \cos\phi_{i} \sin\theta_{i} \sin\psi_{i} - \sin\phi_{i} \cos\psi_{i} \,\,  \cos\phi_{i} \cos\theta_{i} ]^{\top}\)</span> and <span class="math inline">\(w_{\eta}(\eta_{2 i}):=[\dot{\theta}_{i} \dot{\psi}_{i} \quad \dot{\phi}_{i}\dot{\psi}_{i} \quad \dot{\phi}_{i} \dot{\theta}_{i} ]^{\top}\)</span>. The “<span class="math inline">\(+\)</span>” configuration is considered for the quadrotors.</p>
+<p>The purpose of this paper is to solve the formation problem for a system of multiple quadrotors, and to show its feasibility with experimental results on Crazeflie nano quadrotor vehicles.</p>
+<h1 data-number="3" id="sec_preliminares"><span class="header-section-number">3</span> Preliminaries</h1>
+<p>Consider a time-varying differential equation <span class="citation" data-cites="khalil2015nonlinear"><a href="#ref-khalil2015nonlinear" role="doc-biblioref">[16]</a></span>, represented by: <span class="math display">\[\frac{{dx(t)}}{{dt}} = f(t, x(t)), \quad t \geq t_0, \quad t_0 \in \mathbb{R}, \tag{2}\]</span> where <span class="math inline">\(x(t) \in \mathbb{R}^n\)</span> is the state vector, and <span class="math inline">\(f: \mathbb{R}_{\geq 0} \times \mathbb{R}^n \rightarrow \mathbb{R}^n\)</span> is a function continuous with respect to <span class="math inline">\(x\)</span> and measurable with respect to <span class="math inline">\(t\)</span>, with <span class="math inline">\(f(t, 0) = 0\)</span>. The solution of system (2), for an initial condition <span class="math inline">\(x_0 \in \mathbb{R}^n\)</span> at time <span class="math inline">\(t_0 \in \mathbb{R}\)</span>, is assumed to be <span class="math inline">\(x(t, t_0, x_0)\)</span>, defined on some time interval <span class="math inline">\([t_0, t_0 + T)\)</span> where <span class="math inline">\(0 \leq T &lt; \infty\)</span>. Let <span class="math inline">\(\Omega\)</span> be an open subset of <span class="math inline">\(\mathbb{R}^n\)</span> such that <span class="math inline">\(0 \in \Omega\)</span>.</p>
+<p><strong>Definition.</strong> <em><span class="citation" data-cites="ren2008distributed"><a href="#ref-ren2008distributed" role="doc-biblioref">[1]</a></span> A formation graph <span class="math inline">\(\mathcal{G}={\{N,E,C\}}\)</span> consists of a set of nodes <span class="math inline">\(N = \{R_1, \ldots, R_n\}\)</span>, corresponding to each agent; a set of edges <span class="math inline">\(E = \{(R_j R_i) \in N \times N , i \neq j\}\)</span>, indicating that agent <span class="math inline">\(R_i\)</span> receives information from agent <span class="math inline">\(R_j\)</span>; and a set of labels <span class="math inline">\(C = \{c_{ji} \in \mathbb{R}^3 ,|, (R_j R_i) \in N \times N, i \neq j\}\)</span>, representing a desired relative position vector of agent <span class="math inline">\(R_i\)</span> with respect to agent <span class="math inline">\(R_j\)</span>. Also, let <span class="math inline">\(N_i \subset N\)</span> be the set of detectable positions of agent <span class="math inline">\(R_i\)</span>.</em></p>
+<p><strong>Definition.</strong> <em><span class="citation" data-cites="ren2008distributed"><a href="#ref-ren2008distributed" role="doc-biblioref">[1]</a></span> Let <span class="math inline">\(\mathcal{G} = \{N, E, C\}\)</span> be a formation graph. The adjacency matrix <span class="math inline">\(\mathcal{A} \in \mathbb{R}^{n \times n}\)</span>, <span class="math inline">\(\mathcal{A} = [a_{ij}]\)</span> of <span class="math inline">\(\mathcal{G}\)</span> is defined as <span class="math display">\[a_{ij} = \begin{cases}
+    1, &amp; \text{if } (j, i) \in E, \\
+    0, &amp; \text{otherwise}.
+\end{cases}\]</span></em></p>
+<p>Now, the following statements are introduced:</p>
+<ul>
+<li><p>Agent <span class="math inline">\(R_n\)</span> is the leader agent and the other agents are followers.</p></li>
+<li><p>If <span class="math inline">\(N_n = \emptyset\)</span>, the leader agent receives no information from any other agent.</p></li>
+<li><p>The desired formation vectors <span class="math inline">\(c_{ji}\)</span> are time-invariant, that is, <span class="math inline">\(c_{ji} = [c_{jix} \quad c_{jiy} \quad c_{jiz}]^\top\)</span>.</p></li>
+<li><p>The desired trajectory for agent <span class="math inline">\(R_n\)</span> is defined as <span class="math inline">\(\xi_d = [x_d \quad y_d \quad z_d]^T\)</span> and <span class="math inline">\(\eta_d = [\phi_{\star_n} \quad \theta_{\star_n} \quad \psi_d]^T\)</span>, where <span class="math inline">\(x_d\)</span>, <span class="math inline">\(y_d\)</span>, <span class="math inline">\(z_d\)</span> and <span class="math inline">\(\psi_d \in \mathcal{C}^\infty\)</span> are some desired trajectories to follow, while <span class="math inline">\(\phi_{\star_n}\)</span> and <span class="math inline">\(\theta_{\star_n}\)</span> are reference signals generated with virtual controls (designed later).</p></li>
+</ul>
+<p><em>The leader is the only agent that knows the desired trajectory.</em> <em>In the graph under study, the leader has a directed spanning tree, that is, there are directed paths from the leader to all other agents. <span id="sup2" label="sup2"></span></em></p>
+<p><em>Remark 2 indicates that no agent is isolated. This ensures that the agents converge to the desired formation using the minimum amount of information the agents need to know.</em></p>
+<h1 data-number="4" id="sec_control"><span class="header-section-number">4</span> Control strategy</h1>
+<p>This section presents a control strategy based on three PID controllers and three continuous sliding mode controllers <span class="citation" data-cites="rios2018continuous"><a href="#ref-rios2018continuous" role="doc-biblioref">[14]</a></span>. The proposed formation control design addresses the strategy for a group of quadrotors. The formation graph in Figure 2 is considered.</p>
+<figure id="fig:grafos">
+<img src="img/R2a.png" />
+<figcaption>Leader-centered formation graph.</figcaption>
+</figure>
+<p>Define the tracking errors of the multi-agent system as: <span class="math display">\[\begin{tabular}{c c c}
+        $\boldsymbol{e}_{\xi} = \tilde\xi_{1} - \xi_{d}, $&amp; $ \boldsymbol{\varepsilon}_{\xi} = \dot{\boldsymbol{e}}_{\xi}, $&amp; $\boldsymbol{\epsilon}_{\xi} = \int_0^t{\boldsymbol{e}}_{\xi}(\tau)d\tau,$\\
+         $\boldsymbol{e}_{\eta} =  \tilde\eta_{1} - \eta_{d},$  &amp;$\boldsymbol{\varepsilon}_{\eta} = \dot{\boldsymbol{e}}_{\eta},$ &amp; $\boldsymbol{\epsilon}_{\eta} = \int_0^t{\boldsymbol{e}}_{\eta}(\tau)d\tau,$
+    \end{tabular}\]</span> with <span class="math inline">\(\tilde\xi_{1} = [\xi_{11} \quad \xi_{12} \quad ... \quad \xi_{1n} ]^\top\)</span>, <span class="math inline">\(\xi_{d} = \mathcal{A}\tilde\xi_{1} + \bar{\xi}_{d}\)</span>, <span class="math inline">\(\bar{\xi}_{d} = [\boldsymbol{C}_{n,1} \quad \boldsymbol{C}_{n,2} \quad ... \quad \boldsymbol{C}_{n,n-1} \quad \xi_d]^\top\)</span>, <span class="math inline">\(\tilde\eta_{1} = [\eta_{11} \quad \eta_{12} \quad ...\)</span> <span class="math inline">\(\quad \eta_{1n} ]^\top\)</span>, and <span class="math inline">\(\eta_{d} = [\eta_{d1} \quad \eta_{d2} \quad ... \quad \eta_{dn} ]^\top\)</span>; where <span class="math inline">\(\boldsymbol{C}_{n,i}\in \mathbb{R}^3\)</span> is the formation vector of the <span class="math inline">\(i\)</span>-th agent with respect to the leader, <span class="math inline">\(\eta_{dk} = [\phi_{\star i} \quad \theta_{\star i} \quad \psi_{n}]^\top\)</span>, with <span class="math inline">\(i = \overline{1,n-1}\)</span>, and <span class="math inline">\(\eta_{dn} = [\phi_{\star n} \quad \theta_{\star n} \quad \psi_{d}]^\top\)</span>. <span class="math inline">\(\mathcal{A} \in \mathbb{R}^{3n \times 3n}\)</span> has the following form: <span class="math display">\[\mathcal{A} = \left[
+                \begin{array}{ccccc}
+                  0 &amp; 0 &amp; \ldots &amp; 0 &amp; 1 \\
+                  0 &amp; 0 &amp; \ldots &amp; 0 &amp; 1 \\
+                  \vdots &amp; \vdots &amp; \ddots &amp; \vdots &amp; \vdots \\
+                  0 &amp; 0 &amp; \ldots &amp; 0 &amp; 1 \\
+                  0 &amp; 0 &amp; \ldots &amp; 0 &amp; 0 \\
+                \end{array}
+              \right]\]</span></p>
+<p>It is well known that a quadrotor is an underactuated system (four inputs for six degrees of freedom). Two of the degrees of freedom are therefore “controlled” independently. Usually, these two degrees of freedom are pitch and roll, designed as reference signals that facilitate the desired task of the quadrotor (regulation or tracking). These reference signals, denoted <span class="math inline">\(\phi_{\star i}\)</span> and <span class="math inline">\(\theta_{\star i}\)</span>, and the control inputs <span class="math inline">\(u_{m_{i}}\)</span> and <span class="math inline">\(\tau_{i}\)</span>, must be designed so that each agent is at its desired position and angle at every instant. To obtain the reference signals of the <span class="math inline">\(i\)</span>-th quadrotor, a virtual controller <span class="math inline">\(\nu_{i} := [\nu_{x_{i}} \quad \nu_{y_{i}} \quad \nu_{z_{i}}]^\top\)</span> is introduced in the position error dynamics. Therefore:</p>
+<p><span class="math display">\begin{align}
+    \dot{\boldsymbol{e}}_{\xi i} &amp;= \boldsymbol{\varepsilon}_{\xi i}, \quad \boldsymbol{\dot{\varepsilon}}_{\xi i} = \nu_{i} + \omega_{\xi i}(\eta_{1 i},u_{m i},\nu_{ i})- \ddot{{\xi}}_{d i} \tag{3a}\\
+    \dot{\boldsymbol{e}}_{\eta i} &amp;= \boldsymbol{\varepsilon}_{\eta i}, \quad \boldsymbol{\dot{\varepsilon}}_{\eta i} = J_{i}\tau_{i}+\Xi_{i} w_{\eta}(\eta_{2 i}) - \ddot{{\eta}}_{d i} \tag{3b}
+\end{align}</span></p>
+<p>where <span class="math inline">\(\omega_{\xi i}(\eta_{1i},u_{mi},\nu_i) = g_{\xi}(\eta_{1 i})u_{m i} - G -\nu_{i}\)</span>, <span class="math inline">\(\ddot{\xi}_{d i} = [\ddot{\xi}_{d x i} \quad \ddot{\xi}_{d y i} \quad \ddot{\xi}_{d z i}]^{\top}\)</span>, and <span class="math inline">\(\ddot{\eta}_{d i} = [\ddot{\phi}_{\star i} \quad \ddot{\theta}_{\star i} \quad \ddot{\Psi}_{i}]^{\top}\)</span>; then <span class="math inline">\(\nu_{i}\)</span> can be chosen as:</p>
+<p><span class="math display">\begin{align}
+        \nu_{x_i} &amp;= u_{m_i} (\cos{\phi_{\star_i}}\sin{\theta_{\star_i}}\cos{\Psi_i} + \sin{\phi_{\star_i}}\sin{\Psi_i}), \tag{4a}\\
+        \nu_{y_i} &amp;= u_{m_i} (\cos{\phi_{\star_i}}\sin{\theta_{\star_i}}\sin{\Psi_i} - \sin{\phi_{\star_i}}\cos{\Psi_i}), \tag{4b}\\
+        \nu_{z_i} &amp;= u_{m_i} (\cos{\phi_{\star_i}}\cos{\theta_{\star_i}}) - g \tag{4c}
+\end{align}</span></p>
+<p>where <span class="math inline">\(i = \overline{1,n}\)</span>, and <span class="math inline">\(\Psi_{i} = \psi_{n}\)</span>, except for <span class="math inline">\(i=n\)</span>, where <span class="math inline">\(\Psi_{n} = \psi_{d}\)</span>. Solving (4), the total thrust and the reference signals of each agent are given by:</p>
+<p><span class="math display">\begin{align}
+            u_i&amp;=m_i \sqrt{\nu_{x i}^2 + \nu_{y i}^2 +(\nu_{z i}+g)^2}, \tag{5a}\\
+            \phi_{\star i} &amp;= \arcsin{(u_{m_i}^{-1}(\nu_{x i}\sin{\Psi_i}-\nu_{y i}\cos{\Psi_i}))}, \tag{5b}\\
+            \theta_{\star i} &amp;= \arctan{((\nu_{z i} + g)^{-1}(\nu_{x i}\cos{\Psi_i}+\nu_{y i}\sin{\Psi_i}))}. \tag{5c}
+\end{align}</span></p>
+<p>The signals generated from (5) help the system achieve the desired flight (regulation or tracking). The objective is now to design the virtual controllers <span class="math inline">\(\nu_{i}\)</span> and the control input <span class="math inline">\(\tau_{i}\)</span> so that the tracking error vector <span class="math inline">\(e := [\boldsymbol{e}_\xi \quad \boldsymbol{\varepsilon}_{\xi} \quad \boldsymbol{e}_\eta \quad \boldsymbol{\varepsilon}_\eta]^\top\)</span> converges to zero.</p>
+<p>To this end, the virtual controllers <span class="math inline">\(\nu_{x_i}\)</span>, <span class="math inline">\(\nu_{y_i}\)</span> and <span class="math inline">\(\nu_{z_i}\)</span> are designed as PIDs, given by:</p>
+<p><span class="math display">\begin{align}
+        \nu_{x_i} &amp;= K_{0_xi}\epsilon_{x_i} + K_{1_xi}e_{x_i} + K_{2_xi}\varepsilon_{x_i} + \ddot{\xi}_{dxi}, \tag{6a}\\
+        \nu_{y_i} &amp;= K_{0_yi}\epsilon_{y_i} + K_{1_yi}e_{y_i} + K_{2_yi}\varepsilon_{y_i} + \ddot{\xi}_{dyi}, \tag{6b}\\
+        \nu_{z_i} &amp;= K_{0_zi}\epsilon_{z_i} + K_{1_zi}e_{z_i} + K_{2_zi}\varepsilon_{z_i} + \ddot{\xi}_{dzi}, \tag{6c}
+\end{align}</span></p>
+<p>where <span class="math inline">\(K_{j_xi}\)</span>, <span class="math inline">\(K_{j_yi}\)</span>, <span class="math inline">\(K_{j_zi}\)</span>, with <span class="math inline">\(i = \overline{1,n}\)</span> and <span class="math inline">\(j = \overline{0,2}\)</span>, have the following form: <span class="math display">\[\begin{pmatrix}
+        0 &amp; 1 &amp; 0 \\
+        0 &amp; 0 &amp; 1 \\
+        K_{0pi}&amp;K_{1pi}&amp;K_{2pi}
+    \end{pmatrix}. \tag{7}\]</span></p>
+<p>with <span class="math inline">\(p = x,y,z\)</span>, and with values assigned so that they are Hurwitz. The torques <span class="math inline">\(\tau_{i} = [\tau_{\phi_i} \quad \tau_{\theta_i} \quad \tau_{\psi_i}]^\top\)</span> have the following structure</p>
+<p><span class="math display">\begin{align}
+        \tau_{\phi_i}  &amp;= J_{x i} (\bar{\tau}_{\phi_{i}} - b_{\phi_i} \dot{\theta}_{\star i}\dot{\Psi}_{i}), \tag{8a}\\
+        \tau_{\theta_i}&amp;= J_{y i} (\bar{\tau}_{\theta_{i}} - b_{\theta_i} \dot{\phi}_{\star i}\dot{\Psi}_{i}), \tag{8b}\\
+        \tau_{\psi_i}  &amp;= J_{z i} (\bar{\tau}_{\psi_{i}} - b_{\psi_i} \dot{\phi}_{\star i}\dot{\theta}_{\star i} + \ddot{\Psi}_i). \tag{8c}
+\end{align}</span></p>
+<p>where <span class="math inline">\(\bar{\tau}_{a i}\)</span>, with <span class="math inline">\(a = \phi, \theta, \psi\)</span>, is designed as a Continuous Twisting (CT) controller <span class="citation" data-cites="torres2017design"><a href="#ref-torres2017design" role="doc-biblioref">[17]</a></span>:</p>
+<p><span class="math display">\begin{align}
+        \bar{\tau}_{a i} &amp;= v_{a i} - k_{a i 0} \lceil \boldsymbol{e}_\eta \rfloor ^{\frac{1}{3}} - k_{a i 1} \lceil \boldsymbol{\varepsilon}_\eta \rfloor ^{\frac{1}{2}} \tag{9a}\\
+        \dot{v}_{a i} &amp; = -k_{a i 2} \lceil \boldsymbol{e}_\eta \rfloor ^0  -k_{a i 3} \lceil \boldsymbol{\varepsilon}_\eta \rfloor ^0 \tag{9b}
+\end{align}</span></p>
+<p>with <span class="math inline">\(k_{a i j}&gt;0\)</span>, for <span class="math inline">\(j = 1,2,3\)</span>, and</p>
+<p><span class="math display">\begin{align}
+  v_{\phi i} &amp;= (J_{x i})^{-1}(b_{\phi_i} \dot{\theta}_{\star i}\dot{\Psi}_{i}) \tag{10a}\\
+  v_{\theta i} &amp;= (J_{y i})^{-1}(b_{\theta_i} \dot{\phi}_{\star i}\dot{\Psi}_{i}) \tag{10b}\\
+  v_{\psi i} &amp;= (J_{z i})^{-1}(b_{\psi_i} \dot{\phi}_{\star i}\dot{\theta}_{\star i} + \ddot{\Psi}_i). \tag{10c}
+\end{align}</span></p>
+<p>Using (5)-(6) and (9) on system (1), system (3a) is Input-to-State Stable (ISS) with respect to <span class="math inline">\(\boldsymbol{e}_{\eta}\)</span>, and system (3b) is UFTS. The stability proofs can be obtained as presented in <span class="citation" data-cites="doi:10.1080/00207721.2019.1616128"><a href="#ref-doi:10.1080/00207721.2019.1616128" role="doc-biblioref">[13]</a></span> and <span class="citation" data-cites="rios2018continuous"><a href="#ref-rios2018continuous" role="doc-biblioref">[14]</a></span>. There it was shown that the tracking error dynamics of system (1), under the control law (9), which has the structure of the Continuous Twisting (CT) Algorithm <span class="citation" data-cites="fridman2015continuous"><a href="#ref-fridman2015continuous" role="doc-biblioref">[18]</a></span>, is UFTS.</p>
+<h1 data-number="5" id="sec_experimentos"><span class="header-section-number">5</span> Experimental validation</h1>
+<figure id="fig:Foto">
+<img src="img/1.png" />
+<figcaption>Experimental platform.</figcaption>
+</figure>
+<p>To demonstrate the effectiveness of the proposed controller, it was implemented on a system of two Crazyflie nano quadrotors. The experimental system has three main components: (1) an OptiTrack Motion Capture positioning system; (2) an external computer for the position controllers; (3) two Crazyflie nano quadrotors (see Figure 3). The attitude controller runs onboard each Crazyflie, while the position controller runs under ROS (Robot Operating System) on an external computer. This computer sends the values of <span class="math inline">\(\phi_{\star i}\)</span>, <span class="math inline">\(\theta_{\star i}\)</span>, <span class="math inline">\(\dot{\psi}_{d}\)</span> and <span class="math inline">\(u_{i}\)</span> as setpoints to each Crazyflie. The model parameters are: <span class="math inline">\(g = 9.8\)</span> [m/s<span class="math inline">\(^2\)</span>], <span class="math inline">\(m_{i} = 0.032\)</span> [kg], <span class="math inline">\(J_{x i} = 9.827e^{-05}\)</span>[kg m<span class="math inline">\(^2\)</span>], <span class="math inline">\(J_{y i} = 8.185e^{-05}\)</span>[kg m<span class="math inline">\(^2\)</span>], <span class="math inline">\(J_{z i} = 9.613e^{-05}\)</span>[kg m<span class="math inline">\(^2\)</span>]. The desired trajectory is given by: <span class="math inline">\(x_d(t)  = r (\arctan(\varphi) + \arctan(t - \varphi))  \cos(\omega  t) - 0.25\)</span>, <span class="math inline">\(y_d(t)  = r (\arctan(\varphi) + \arctan(t - \varphi))  \sin(\omega  t)\)</span>, <span class="math inline">\(z_d(t)  = (h/2) (1 + \tanh(t-2.5)) + 0.05\)</span> and <span class="math inline">\(\psi_d(t) = 0\)</span>, with <span class="math inline">\(r=0.2\)</span>[m], <span class="math inline">\(\varphi = 15\)</span> [s] and <span class="math inline">\(\omega=\pi/5\)</span>[rad/s]. The initial conditions of the agents are <span class="math inline">\(R_1 = [0.25 \quad 0 \quad 0]^\top\)</span> and <span class="math inline">\(R_2 = [-0.25 \quad 0 \quad 0]^\top\)</span>, and the formation vector is <span class="math inline">\(\boldsymbol{C}_{21}=[0.5 \quad 0 \quad 0.1]^\top\)</span>. The gains of the selected control strategies are shown in Table 1. Figures 4 and 5 show the trajectory tracking of the two agents (leader and follower, respectively), together with their desired trajectories. The tracking error of nano quadrotor <span class="math inline">\(R_2\)</span> with respect to the desired trajectory is shown in Figure 6. The formation error of nano quadrotor <span class="math inline">\(R_1\)</span> with respect to quadrotor <span class="math inline">\(R_2\)</span> is shown in Figure 7. In both cases, the nano quadrotors behave more abruptly at the start of the experiment. This is due to the initial conditions (takeoff from the ground, starting from rest) and to ground effect. Once they reach the desired height, the error signals stay around zero. Figures 8 and 9 show the control signals for the Leader (<span class="math inline">\(R2\)</span>) and the Follower (<span class="math inline">\(R1\)</span>). The behavior is more oscillatory in the transient phase at the start of the experiment. The peaks in the signals are due to losses of the position information of the nano quadrotors.</p>
+<div class="tabular">
+<p><span> c c c c c c </span><br />
+<span class="math inline">\(K_{1_x i}\)</span> &amp; <span class="math inline">\(K_{1_y i}\)</span> &amp; <span class="math inline">\(K_{1_z i}\)</span> &amp; <span class="math inline">\(k_{\phi i 0}\)</span> &amp; <span class="math inline">\(k_{\theta i 0}\)</span> &amp; <span class="math inline">\(k_{\psi i 0}\)</span><br />
+<span class="math inline">\(28.5\)</span> &amp; <span class="math inline">\(28.5\)</span> &amp; <span class="math inline">\(75\)</span> &amp; <span class="math inline">\(2\)</span> &amp; <span class="math inline">\(2\)</span> &amp; <span class="math inline">\(7\)</span><br />
+<span class="math inline">\(K_{0_x i}\)</span> &amp; <span class="math inline">\(K_{0_y i}\)</span> &amp; <span class="math inline">\(K_{0_z i}\)</span> &amp; <span class="math inline">\(k_{\phi i 1}\)</span> &amp; <span class="math inline">\(k_{\theta i 1}\)</span> &amp; <span class="math inline">\(k_{\psi i 1}\)</span><br />
+<span class="math inline">\(18.5\)</span> &amp; <span class="math inline">\(18.6\)</span> &amp; <span class="math inline">\(35\)</span> &amp; <span class="math inline">\(8\)</span> &amp; <span class="math inline">\(8\)</span> &amp; <span class="math inline">\(10\)</span><br />
+<span class="math inline">\(K_{2_x i}\)</span> &amp; <span class="math inline">\(K_{2_y i}\)</span> &amp; <span class="math inline">\(K_{2_z i}\)</span> &amp; <span class="math inline">\(k_{\phi i 2}\)</span> &amp; <span class="math inline">\(k_{\theta i 2}\)</span> &amp; <span class="math inline">\(k_{\psi i 2}\)</span><br />
+<span class="math inline">\(10\)</span> &amp; <span class="math inline">\(10\)</span> &amp; <span class="math inline">\(38\)</span> &amp; <span class="math inline">\(3\)</span> &amp; <span class="math inline">\(3\)</span> &amp; <span class="math inline">\(2\)</span><br />
+&amp; &amp; &amp; <span class="math inline">\(k_{\phi i 3}\)</span> &amp; <span class="math inline">\(k_{\theta i 3}\)</span> &amp; <span class="math inline">\(k_{\psi i 3}\)</span><br />
+&amp; &amp; &amp; <span class="math inline">\(2\)</span> &amp; <span class="math inline">\(2\)</span> &amp; <span class="math inline">\(1\)</span><br />
+</p>
+</div>
+<p><span id="tab:parametros" label="tab:parametros"></span></p>
+<figure id="fig:T3dR2">
+<img src="img/T3d_R2.png" />
+<figcaption>Tracking behavior of agent <span class="math inline">\(R_2\)</span>.</figcaption>
+</figure>
+<figure id="fig:T3dR1">
+<img src="img/T3d_R1.png" />
+<figcaption>Tracking behavior of agent <span class="math inline">\(R_1\)</span>.</figcaption>
+</figure>
+<figure id="fig:LE">
+<img src="img/Fig4.png" />
+<figcaption>Formation errors of agent <span class="math inline">\(R_2\)</span>.</figcaption>
+</figure>
+<figure id="fig:SE">
+<img src="img/Fig5.png" />
+<figcaption>Formation errors of agent <span class="math inline">\(R_1\)</span></figcaption>
+</figure>
+<figure id="fig:LSC">
+<img src="img/Fig6.png" />
+<figcaption>Leader control signals.</figcaption>
+</figure>
+<figure id="fig:SSC">
+<img src="img/Fig7.png" />
+<figcaption>Follower control signals.</figcaption>
+</figure>
+<h1 data-number="6" id="sec_conclusiones"><span class="header-section-number">6</span> Conclusion</h1>
+<p>This work presented the experimental validation of a control law based on graph theory, PIDs and Continuous Sliding Modes (Continuous Twisting) for a group of two Crazyflie nano quadrotors. A leader-follower scheme was implemented to evaluate the effectiveness of this control strategy in the formation and tracking of the quadrotors. Future work will consider disturbances and uncertainties from the modeling stage.</p>
+<h1 id="references">References</h1>
+<div id="refs" class="references csl-bib-body" role="list">
+<div id="ref-ren2008distributed" class="csl-entry" role="listitem">
+<div class="csl-left-margin">[1] </div><div class="csl-right-inline">W. Ren and R. W. Beard, <em>Distributed consensus in multi-vehicle cooperative control</em>, vol. 27. Springer, 2008.</div>
+</div>
+<div id="ref-mcguire2019minimal" class="csl-entry" role="listitem">
+<div class="csl-left-margin">[2] </div><div class="csl-right-inline">K. McGuire, C. De Wagter, K. Tuyls, H. Kappen, and G. C. de Croon, <span>“Minimal navigation solution for a swarm of tiny flying robots to explore an unknown environment,”</span> <em>Science Robotics</em>, vol. 4, no. 35, p. eaaw9710, 2019.</div>
+</div>
+<div id="ref-kingston2008decentralized" class="csl-entry" role="listitem">
+<div class="csl-left-margin">[3] </div><div class="csl-right-inline">D. Kingston, R. W. Beard, and R. S. Holt, <span>“Decentralized perimeter surveillance using a team of UAVs,”</span> <em>IEEE Transactions on Robotics</em>, vol. 24, no. 6, pp. 1394–1404, 2008.</div>
+</div>
+<div id="ref-senanayake2016search" class="csl-entry" role="listitem">
+<div class="csl-left-margin">[4] </div><div class="csl-right-inline">M. Senanayake, I. Senthooran, J. C. Barca, H. Chung, J. Kamruzzaman, and M. Murshed, <span>“Search and tracking algorithms for swarms of robots: A survey,”</span> <em>Robotics and Autonomous Systems</em>, vol. 75, pp. 422–434, 2016.</div>
+</div>
+<div id="ref-albani2017monitoring" class="csl-entry" role="listitem">
+<div class="csl-left-margin">[5] </div><div class="csl-right-inline">D. Albani, J. IJsselmuiden, R. Haken, and V. Trianni, <span>“Monitoring and mapping with robot swarms for agricultural applications,”</span> in <em>2017 14th IEEE international conference on advanced video and signal based surveillance (AVSS)</em>, IEEE, 2017, pp. 1–6.</div>
+</div>
+<div id="ref-maza2009multi" class="csl-entry" role="listitem">
+<div class="csl-left-margin">[6] </div><div class="csl-right-inline">I. Maza, K. Kondak, M. Bernard, and A. Ollero, <span>“Multi-UAV cooperation and control for load transportation and deployment,”</span> in <em>Selected papers from the 2nd international symposium on UAVs, reno, nevada, USA june 8–10, 2009</em>, Springer, 2009, pp. 417–449.</div>
+</div>
+<div id="ref-li2017cooperative" class="csl-entry" role="listitem">
+<div class="csl-left-margin">[7] </div><div class="csl-right-inline">Z. Li and Z. Duan, <em>Cooperative control of multi-agent systems: A consensus region approach</em>. CRC press, 2017.</div>
+</div>
+<div id="ref-ren2007information" class="csl-entry" role="listitem">
+<div class="csl-left-margin">[8] </div><div class="csl-right-inline">W. Ren, R. W. Beard, and E. M. Atkins, <span>“Information consensus in multivehicle cooperative control,”</span> <em>IEEE Control systems magazine</em>, vol. 27, no. 2, pp. 71–82, 2007.</div>
+</div>
+<div id="ref-turpin2012trajectory" class="csl-entry" role="listitem">
+<div class="csl-left-margin">[9] </div><div class="csl-right-inline">M. Turpin, N. Michael, and V. Kumar, <span>“Trajectory design and control for aggressive formation flight with quadrotors,”</span> <em>Autonomous Robots</em>, vol. 33, no. 1, pp. 143–156, 2012.</div>
+</div>
+<div id="ref-dong2014time" class="csl-entry" role="listitem">
+<div class="csl-left-margin">[10] </div><div class="csl-right-inline">X. Dong, B. Yu, Z. Shi, and Y. Zhong, <span>“Time-varying formation control for unmanned aerial vehicles: Theories and applications,”</span> <em>IEEE Transactions on Control Systems Technology</em>, vol. 23, no. 1, pp. 340–348, 2014.</div>
+</div>
+<div id="ref-damien2009unmanned" class="csl-entry" role="listitem">
+<div class="csl-left-margin">[11] </div><div class="csl-right-inline">G. Damien, <span>“Unmanned aerial vehicle formation flight using sliding mode disturbance observers,”</span> in <em>Aerial vehicles</em>, IntechOpen, 2009, pp. 211–234.</div>
+</div>
+<div id="ref-gonzalez2016reciprocal" class="csl-entry" role="listitem">
+<div class="csl-left-margin">[12] </div><div class="csl-right-inline">J. González-Sierra, J. Santiaguillo-Salinas, and E. Aranda-Bricaire, <span>“Reciprocal collision avoidance for a group of second order agents,”</span> in <em>2016 XVIII congreso mexicano de robotica</em>, IEEE, 2016, pp. 1–5.</div>
+</div>
+<div id="ref-doi:10.1080/00207721.2019.1616128" class="csl-entry" role="listitem">
+<div class="csl-left-margin">[13] </div><div class="csl-right-inline">J. González-Sierra, H. Ríos, and A. Dzul, <span>“Quad-rotor robust time-varying formation control: A continuous sliding-mode control approach,”</span> <em>International Journal of Control</em>, vol. 93, no. 7, pp. 1659–1676, 2020.</div>
+</div>
+<div id="ref-rios2018continuous" class="csl-entry" role="listitem">
+<div class="csl-left-margin">[14] </div><div class="csl-right-inline">H. Ríos, R. Falcón, O. A. González, and A. Dzul, <span>“Continuous sliding-mode control strategies for quadrotor robust tracking: Real-time application,”</span> <em>IEEE Transactions on Industrial Electronics</em>, vol. 66, no. 2, pp. 1264–1272, 2019, doi: <a href="https://doi.org/10.1109/TIE.2018.2831191">10.1109/TIE.2018.2831191</a>.</div>
+</div>
+<div id="ref-carrillo2013quad" class="csl-entry" role="listitem">
+<div class="csl-left-margin">[15] </div><div class="csl-right-inline">L. G. Carrillo, A. D. López, R. Lozano, and C. Pégard, <span>“Quad rotorcraft control, advances in industrial control.”</span> Springer-Verlag, London, 2013.</div>
+</div>
+<div id="ref-khalil2015nonlinear" class="csl-entry" role="listitem">
+<div class="csl-left-margin">[16] </div><div class="csl-right-inline">H. K. Khalil, <em>Nonlinear control</em>. Pearson New York, 2014.</div>
+</div>
+<div id="ref-torres2017design" class="csl-entry" role="listitem">
+<div class="csl-left-margin">[17] </div><div class="csl-right-inline">V. Torres-González, T. Sanchez, L. M. Fridman, and J. A. Moreno, <span>“Design of continuous twisting algorithm,”</span> <em>Automatica</em>, vol. 80, pp. 119–126, 2017.</div>
+</div>
+<div id="ref-fridman2015continuous" class="csl-entry" role="listitem">
+<div class="csl-left-margin">[18] </div><div class="csl-right-inline">L. Fridman, J. A. Moreno, B. Bandyopadhyay, S. Kamal, and A. Chalanga, <span>“Continuous nested algorithms: The fifth generation of sliding mode controllers,”</span> <em>Recent advances in sliding modes: From control to intelligent mechatronics</em>, pp. 5–35, 2015.</div>
+</div>
+</div>
+  </article>
+  <footer>English web version of the CNCA 2023 paper. Translated from the official document. &middot; <a href="../">Julio C. Rodríguez-Cervantes</a></footer>
+</main>
+</div>
+</body>
+</html>

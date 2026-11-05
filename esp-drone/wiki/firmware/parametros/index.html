@@ -224,16 +224,15 @@ el S2, cada bloque debe ocupar 28 B o menos; el S3 acepta hasta 56 B.</p>
 <p>No depende de la radio, así que no se pierden muestras.</p>
 <ul>
 <li>Por defecto empieza a grabar al girar los motores (<code>flog.autoRec</code>).</li>
-<li>Se descarga al aterrizar, desde <strong>Registro de vuelo</strong> en edclient o con el script:</li>
-</ul>
-<p><code>bash
-  python3 scripts/logging/flog_download.py espnow://&lt;mac&gt;?ch=11 vuelo.csv [--save]</code></p>
-<ul>
+<li>Se descarga al aterrizar, desde <strong>Registro de vuelo</strong> en edclient o con el script de abajo.</li>
 <li><code>--save</code> (o <strong>Guardar en la flash del dron</strong>) lo copia a la partición <code>flog</code> para que
   sobreviva a apagar el dron.</li>
 <li>Mientras se guarda en la flash, el dron no se puede armar.</li>
 <li>El CSV se puede repetir en el <a href="../../simulador/#repetir-un-vuelo-real">simulador</a>.</li>
 </ul>
+<pre><code class="language-bash">python3 scripts/logging/flog_download.py espnow://&lt;mac&gt;?ch=11 vuelo.csv [--save]
+</code></pre>
+<p><img alt="Registro de vuelo en edclient" src="../../img/registro.png" /></p>
               
             </div>
           </div><footer>

@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="es" >
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><link rel="canonical" href="https://juliordz.com/esp-drone/wiki/edlib/" />
+      <link rel="shortcut icon" href="../img/favicon.ico" />
+    <title>edlib - ESP-Drone</title>
+    <link rel="stylesheet" href="../css/theme.css" />
+    <link rel="stylesheet" href="../css/theme_extra.css" />
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" />
+    
+      <script>
+        // Current page data
+        var mkdocs_page_name = "edlib";
+        var mkdocs_page_input_path = "edlib.md";
+        var mkdocs_page_url = "/esp-drone/wiki/edlib/";
+      </script>
+    
+    <!--[if lt IE 9]>
+      <script src="../js/html5shiv.min.js"></script>
+    <![endif]-->
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
+      <script>hljs.highlightAll();</script>
+  <!-- Unlisted: reachable by link only, not indexed -->
+  <meta name="robots" content="noindex, nofollow">
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+    <div class="wy-side-scroll">
+      <div class="wy-side-nav-search">
+          <a href=".." class="icon icon-home"> ESP-Drone
+        </a><div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="../search.html" method="get">
+      <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" title="Type search term here" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="..">Inicio</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../primeros-pasos/">Primeros pasos</a>
+                </li>
+              </ul>
+              <p class="caption"><span class="caption-text">Firmware</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="../firmware/instalacion/">Compilar y flashear</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../firmware/primer-encendido/">Primer encendido</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../firmware/arquitectura/">Arquitectura</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../firmware/estimadores-control/">Estimadores y controladores</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../firmware/parametros/">Parámetros y telemetría</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../firmware/seguridad/">Seguridad</a>
+                  </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../edclient/">edclient</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../simulador/">Simulador</a>
+                </li>
+              </ul>
+              <ul class="current">
+                <li class="toctree-l1 current"><a class="reference internal current" href="#">edlib</a>
+    <ul class="current">
+    <li class="toctree-l2"><a class="reference internal" href="#instalacion">Instalación</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#uri">URI</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#ejemplos">Ejemplos</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#buscar-drones">Buscar drones</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#parametros">Parámetros</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#telemetria">Telemetría</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#vuelo-con-el-commander-de-alto-nivel">Vuelo con el commander de alto nivel</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#pose-externa-captura-de-movimiento">Pose externa (captura de movimiento)</a>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#modulos">Módulos</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#scripts-del-firmware">Scripts del firmware</a>
+    </li>
+    </ul>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../gateway/">Gateway ESP-NOW</a>
+                </li>
+              </ul>
+      </div>
+    </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+      <nav class="wy-nav-top" role="navigation" aria-label="Mobile navigation menu">
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="..">ESP-Drone</a>
+        
+      </nav>
+      <div class="wy-nav-content">
+        <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href=".." class="icon icon-home" aria-label="Docs"></a></li>
+      <li class="breadcrumb-item active">edlib</li>
+    <li class="wy-breadcrumbs-aside">
+          <a href="https://github.com/juliordzcer/esp-drone/edit/hw/s3-v1.3/docs/wiki/edlib.md" class="icon icon-github"> Edit on GitHub</a>
+    </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+            <div class="section" itemprop="articleBody">
+              
+                <h1 id="edlib">edlib<a class="headerlink" href="#edlib" title="Permanent link">&para;</a></h1>
+<p>Librería Python para controlar los drones desde scripts: es la base de edclient y de los
+scripts del repositorio de firmware. Compatible con el S2 (protocolo V1) y el S3 (protocolo V2);
+la versión se negocia sola al conectar.</p>
+<h2 id="instalacion">Instalación<a class="headerlink" href="#instalacion" title="Permanent link">&para;</a></h2>
+<pre><code class="language-bash">git clone -b espnow-only https://github.com/juliordzcer/espdrone-lib-python.git
+pip install -e espdrone-lib-python
+</code></pre>
+<h2 id="uri">URI<a class="headerlink" href="#uri" title="Permanent link">&para;</a></h2>
+<pre><code>espnow://&lt;mac del dron&gt;?ch=&lt;canal Wi-Fi&gt;[&amp;port=/dev/ttyACM0]
+</code></pre>
+<table>
+<thead>
+<tr>
+<th>Variable de entorno</th>
+<th>Uso</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>EDLIB_ESPNOW_PORT</code></td>
+<td>Puerto serie del gateway</td>
+</tr>
+<tr>
+<td><code>EDLIB_ESPNOW_CH</code></td>
+<td>Canal por defecto si la URI no lo trae</td>
+</tr>
+</tbody>
+</table>
+<p>Varios drones comparten un mismo gateway: abre un <code>EspDrone</code> por URI.</p>
+<h2 id="ejemplos">Ejemplos<a class="headerlink" href="#ejemplos" title="Permanent link">&para;</a></h2>
+<h3 id="buscar-drones">Buscar drones<a class="headerlink" href="#buscar-drones" title="Permanent link">&para;</a></h3>
+<pre><code class="language-python">import edlib.edtp
+
+edlib.edtp.init_drivers()
+print(edlib.edtp.scan_interfaces())   # [['espnow://ecda3be30da2?ch=11', 'ESP-Drone'], ...]
+</code></pre>
+<h3 id="parametros">Parámetros<a class="headerlink" href="#parametros" title="Permanent link">&para;</a></h3>
+<pre><code class="language-python">from edlib.espdrone import EspDrone
+from edlib.espdrone.syncEspDrone import SyncEspDrone
+
+URI = 'espnow://ecda3be30da2?ch=11'
+with SyncEspDrone(URI, cf=EspDrone(rw_cache='./cache')) as scf:
+    scf.cf.param.set_value('stabilizer.estimator', '5')
+</code></pre>
+<h3 id="telemetria">Telemetría<a class="headerlink" href="#telemetria" title="Permanent link">&para;</a></h3>
+<pre><code class="language-python">from edlib.espdrone.log import LogConfig
+from edlib.espdrone.syncLogger import SyncLogger
+
+conf = LogConfig(name='Pose', period_in_ms=50)
+for var in ('stateEstimate.x', 'stateEstimate.y', 'stateEstimate.z'):
+    conf.add_variable(var, 'float')
+
+with SyncEspDrone(URI, cf=EspDrone(rw_cache='./cache')) as scf:
+    with SyncLogger(scf, conf) as logger:
+        for timestamp, data, _ in logger:
+            print(timestamp, data)
+</code></pre>
+<h3 id="vuelo-con-el-commander-de-alto-nivel">Vuelo con el commander de alto nivel<a class="headerlink" href="#vuelo-con-el-commander-de-alto-nivel" title="Permanent link">&para;</a></h3>
+<pre><code class="language-python">import time
+
+with SyncEspDrone(URI, cf=EspDrone(rw_cache='./cache')) as scf:
+    scf.cf.platform.send_arming_request(True)
+    hl = scf.cf.high_level_commander
+    hl.takeoff(0.5, 2.0)
+    time.sleep(3)
+    hl.go_to(0.5, 0.0, 0.5, 0.0, 2.0)
+    time.sleep(3)
+    hl.land(0.0, 2.0)
+    time.sleep(3)
+</code></pre>
+<h3 id="pose-externa-captura-de-movimiento">Pose externa (captura de movimiento)<a class="headerlink" href="#pose-externa-captura-de-movimiento" title="Permanent link">&para;</a></h3>
+<pre><code class="language-python">scf.cf.extpos.send_xy_yaw(x, y, yaw_rad)           # x, y [m] y yaw [rad]; z la mide el ToF
+scf.cf.localization.send_emergency_stop()          # paro
+</code></pre>
+<h2 id="modulos">Módulos<a class="headerlink" href="#modulos" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>Módulo</th>
+<th>Para qué</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>espdrone.commander</code></td>
+<td>Consignas: actitud, velocidad (mundo o cuerpo), altura, posición, paro</td>
+</tr>
+<tr>
+<td><code>espdrone.high_level_commander</code></td>
+<td>Despegue, aterrizaje, <code>go_to</code>, trayectorias</td>
+</tr>
+<tr>
+<td><code>espdrone.param</code> / <code>espdrone.log</code></td>
+<td>Parámetros y telemetría</td>
+</tr>
+<tr>
+<td><code>espdrone.syncEspDrone</code> / <code>syncLogger</code></td>
+<td>Uso síncrono en scripts</td>
+</tr>
+<tr>
+<td><code>espdrone.platformservice</code></td>
+<td>Armado y recuperación tras choque</td>
+</tr>
+<tr>
+<td><code>espdrone.localization</code> / <code>extpos</code></td>
+<td>Pose externa y paro de emergencia</td>
+</tr>
+<tr>
+<td><code>espdrone.mem</code></td>
+<td>Subir trayectorias</td>
+</tr>
+<tr>
+<td><code>espdrone.flog</code></td>
+<td>Registro de vuelo del S3</td>
+</tr>
+<tr>
+<td><code>espdrone.ota</code></td>
+<td>Actualizar firmware por ESP-NOW</td>
+</tr>
+<tr>
+<td><code>utils.param_io</code></td>
+<td>Exportar e importar parámetros</td>
+</tr>
+</tbody>
+</table>
+<h2 id="scripts-del-firmware">Scripts del firmware<a class="headerlink" href="#scripts-del-firmware" title="Permanent link">&para;</a></h2>
+<p>El repositorio de firmware trae scripts listos en <code>scripts/</code>: diagnóstico (<code>edlib/diag_gyro.py</code>),
+motores, parámetros, registro de vuelo, identificación de sistemas (<code>sysid/</code>), vuelo, enjambre y
+posicionamiento.</p>
+              
+            </div>
+          </div><footer>
+    <div class="rst-footer-buttons" role="navigation" aria-label="Footer Navigation">
+        <a href="../simulador/" class="btn btn-neutral float-left" title="Simulador"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+        <a href="../gateway/" class="btn btn-neutral float-right" title="Gateway ESP-NOW">Next <span class="icon icon-circle-arrow-right"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <!-- Copyright etc -->
+  </div>
+
+  Built with <a href="https://www.mkdocs.org/">MkDocs</a> using a <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+</footer>
+          
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+
+  <div class="rst-versions" role="note" aria-label="Versions">
+  <span class="rst-current-version" data-toggle="rst-current-version">
+    
+        <span>
+          <a href="https://github.com/juliordzcer/esp-drone" class="fa fa-github" style="color: #fcfcfc"> GitHub</a>
+        </span>
+    
+    
+      <span><a href="../simulador/" style="color: #fcfcfc">&laquo; Previous</a></span>
+    
+    
+      <span><a href="../gateway/" style="color: #fcfcfc">Next &raquo;</a></span>
+    
+  </span>
+</div>
+    <script src="../js/jquery-3.6.0.min.js"></script>
+    <script>var base_url = "..";</script>
+    <script src="../js/theme_extra.js"></script>
+    <script src="../js/theme.js"></script>
+      <script src="../search/main.js"></script>
+    <script>
+        jQuery(function () {
+            SphinxRtdTheme.Navigation.enable(true);
+        });
+    </script>
+
+</body>
+</html>

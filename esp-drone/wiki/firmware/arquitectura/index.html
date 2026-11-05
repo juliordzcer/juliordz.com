@@ -1,0 +1,330 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="es" >
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><link rel="canonical" href="https://juliordz.com/esp-drone/wiki/firmware/arquitectura/" />
+      <link rel="shortcut icon" href="../../img/favicon.ico" />
+    <title>Arquitectura - ESP-Drone</title>
+    <link rel="stylesheet" href="../../css/theme.css" />
+    <link rel="stylesheet" href="../../css/theme_extra.css" />
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" />
+    
+      <script>
+        // Current page data
+        var mkdocs_page_name = "Arquitectura";
+        var mkdocs_page_input_path = "firmware/arquitectura.md";
+        var mkdocs_page_url = "/esp-drone/wiki/firmware/arquitectura/";
+      </script>
+    
+    <!--[if lt IE 9]>
+      <script src="../../js/html5shiv.min.js"></script>
+    <![endif]-->
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
+      <script>hljs.highlightAll();</script>
+  <!-- Unlisted: reachable by link only, not indexed -->
+  <meta name="robots" content="noindex, nofollow">
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+    <div class="wy-side-scroll">
+      <div class="wy-side-nav-search">
+          <a href="../.." class="icon icon-home"> ESP-Drone
+        </a><div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+      <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" title="Type search term here" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../..">Inicio</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../../primeros-pasos/">Primeros pasos</a>
+                </li>
+              </ul>
+              <p class="caption"><span class="caption-text">Firmware</span></p>
+              <ul class="current">
+                  <li class="toctree-l1"><a class="reference internal" href="../instalacion/">Compilar y flashear</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../primer-encendido/">Primer encendido</a>
+                  </li>
+                  <li class="toctree-l1 current"><a class="reference internal current" href="#">Arquitectura</a>
+    <ul class="current">
+    <li class="toctree-l2"><a class="reference internal" href="#componentes">Componentes</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#nucleos-y-tareas">Núcleos y tareas</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#tasas">Tasas</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#puertos-edtp">Puertos EDTP</a>
+    </li>
+    </ul>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../estimadores-control/">Estimadores y controladores</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../parametros/">Parámetros y telemetría</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../seguridad/">Seguridad</a>
+                  </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../../edclient/">edclient</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../../simulador/">Simulador</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../../edlib/">edlib</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../../gateway/">Gateway ESP-NOW</a>
+                </li>
+              </ul>
+      </div>
+    </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+      <nav class="wy-nav-top" role="navigation" aria-label="Mobile navigation menu">
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../..">ESP-Drone</a>
+        
+      </nav>
+      <div class="wy-nav-content">
+        <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="../.." class="icon icon-home" aria-label="Docs"></a></li>
+          <li class="breadcrumb-item">Firmware</li>
+      <li class="breadcrumb-item active">Arquitectura</li>
+    <li class="wy-breadcrumbs-aside">
+          <a href="https://github.com/juliordzcer/esp-drone/edit/hw/s3-v1.3/docs/wiki/firmware/arquitectura.md" class="icon icon-github"> Edit on GitHub</a>
+    </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+            <div class="section" itemprop="articleBody">
+              
+                <h1 id="arquitectura-del-firmware">Arquitectura del firmware<a class="headerlink" href="#arquitectura-del-firmware" title="Permanent link">&para;</a></h1>
+<p>ESP32-S3 de dos núcleos a 240 MHz con FPU. Es un port del firmware de Crazyflie, con
+comunicación exclusivamente por ESP-NOW.</p>
+<h2 id="componentes">Componentes<a class="headerlink" href="#componentes" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>Componente</th>
+<th>Contenido</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>drivers</code></td>
+<td>BMI088 (SPI2), BMP388 (I2C), PMW3901 (SPI3), VL53L1X, motores (LEDC), LEDs, buzzer, ADC de batería, pines en <code>board.h</code></td>
+</tr>
+<tr>
+<td><code>sensors</code></td>
+<td>IMU (calibración, filtros, rotación de ejes), tareas de ToF y flujo</td>
+</tr>
+<tr>
+<td><code>comm</code></td>
+<td>EDTP, enlace ESP-NOW, parámetros y logs (protocolo V2), consola, OTA</td>
+</tr>
+<tr>
+<td><code>system</code></td>
+<td>Arranque y self-test, carga por núcleo, batería y protección, LEDs, registro de vuelo</td>
+</tr>
+<tr>
+<td><code>flight</code></td>
+<td>Estabilizador, commander, supervisor, mezclador, estimadores, controladores, planificación (alto nivel y trayectorias) y enjambre (ley bearing, evasión de colisiones)</td>
+</tr>
+<tr>
+<td><code>utils</code></td>
+<td>Utilidades numéricas, filtros, CRC, tipos comunes</td>
+</tr>
+</tbody>
+</table>
+<h2 id="nucleos-y-tareas">Núcleos y tareas<a class="headerlink" href="#nucleos-y-tareas" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>Núcleo</th>
+<th>Tareas</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td><strong>Estabilizador a 1 kHz</strong> (IMU, estimador, commander, supervisor, control, mezclador, registro) y <strong>Kalman 9</strong></td>
+</tr>
+<tr>
+<td>0</td>
+<td>Radio ESP-NOW, parámetros y logs, sensores lentos (ToF 40 Hz, flujo 100 Hz, baro 50 Hz), alto nivel, batería, OTA, buzzer, monitor</td>
+</tr>
+</tbody>
+</table>
+<p>Todo lo que llega por radio y usa el estabilizador pasa por una cola o un spinlock.</p>
+<h2 id="tasas">Tasas<a class="headerlink" href="#tasas" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>Lazo</th>
+<th>Frecuencia</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Principal: IMU, control de actitud, mezclador</td>
+<td>1 kHz</td>
+</tr>
+<tr>
+<td>Control de posición</td>
+<td>100 Hz</td>
+</tr>
+<tr>
+<td>Mahony (complementario e híbrido)</td>
+<td>250 Hz</td>
+</tr>
+<tr>
+<td>Kalman 9: predicción</td>
+<td>100 Hz</td>
+</tr>
+<tr>
+<td>Ley bearing y evasión de colisiones</td>
+<td>100 Hz</td>
+</tr>
+<tr>
+<td>Supervisor</td>
+<td>25 Hz</td>
+</tr>
+</tbody>
+</table>
+<h2 id="puertos-edtp">Puertos EDTP<a class="headerlink" href="#puertos-edtp" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>Puerto</th>
+<th>Uso</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>0x00</td>
+<td>Consola</td>
+</tr>
+<tr>
+<td>0x02</td>
+<td>Parámetros</td>
+</tr>
+<tr>
+<td>0x03</td>
+<td>Commander (consignas)</td>
+</tr>
+<tr>
+<td>0x04</td>
+<td>Memoria de trayectorias</td>
+</tr>
+<tr>
+<td>0x05</td>
+<td>Logs</td>
+</tr>
+<tr>
+<td>0x06</td>
+<td>Localización: pose externa y paro de emergencia</td>
+</tr>
+<tr>
+<td>0x07</td>
+<td>Setpoint genérico</td>
+</tr>
+<tr>
+<td>0x08</td>
+<td>Commander de alto nivel</td>
+</tr>
+<tr>
+<td>0x0A</td>
+<td>Bearing (enjambre)</td>
+</tr>
+<tr>
+<td>0x0B</td>
+<td>Estado propio</td>
+</tr>
+<tr>
+<td>0x0C</td>
+<td>OTA</td>
+</tr>
+<tr>
+<td>0x0D</td>
+<td>Plataforma: versión y armado</td>
+</tr>
+<tr>
+<td>0x0E</td>
+<td>Registro de vuelo</td>
+</tr>
+<tr>
+<td>0x0F</td>
+<td>Enlace</td>
+</tr>
+</tbody>
+</table>
+              
+            </div>
+          </div><footer>
+    <div class="rst-footer-buttons" role="navigation" aria-label="Footer Navigation">
+        <a href="../primer-encendido/" class="btn btn-neutral float-left" title="Primer encendido"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+        <a href="../estimadores-control/" class="btn btn-neutral float-right" title="Estimadores y controladores">Next <span class="icon icon-circle-arrow-right"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <!-- Copyright etc -->
+  </div>
+
+  Built with <a href="https://www.mkdocs.org/">MkDocs</a> using a <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+</footer>
+          
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+
+  <div class="rst-versions" role="note" aria-label="Versions">
+  <span class="rst-current-version" data-toggle="rst-current-version">
+    
+        <span>
+          <a href="https://github.com/juliordzcer/esp-drone" class="fa fa-github" style="color: #fcfcfc"> GitHub</a>
+        </span>
+    
+    
+      <span><a href="../primer-encendido/" style="color: #fcfcfc">&laquo; Previous</a></span>
+    
+    
+      <span><a href="../estimadores-control/" style="color: #fcfcfc">Next &raquo;</a></span>
+    
+  </span>
+</div>
+    <script src="../../js/jquery-3.6.0.min.js"></script>
+    <script>var base_url = "../..";</script>
+    <script src="../../js/theme_extra.js"></script>
+    <script src="../../js/theme.js"></script>
+      <script src="../../search/main.js"></script>
+    <script>
+        jQuery(function () {
+            SphinxRtdTheme.Navigation.enable(true);
+        });
+    </script>
+
+</body>
+</html>

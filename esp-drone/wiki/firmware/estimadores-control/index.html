@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="es" >
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><link rel="canonical" href="https://juliordz.com/esp-drone/wiki/firmware/estimadores-control/" />
+      <link rel="shortcut icon" href="../../img/favicon.ico" />
+    <title>Estimadores y controladores - ESP-Drone</title>
+    <link rel="stylesheet" href="../../css/theme.css" />
+    <link rel="stylesheet" href="../../css/theme_extra.css" />
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" />
+    
+      <script>
+        // Current page data
+        var mkdocs_page_name = "Estimadores y controladores";
+        var mkdocs_page_input_path = "firmware/estimadores-control.md";
+        var mkdocs_page_url = "/esp-drone/wiki/firmware/estimadores-control/";
+      </script>
+    
+    <!--[if lt IE 9]>
+      <script src="../../js/html5shiv.min.js"></script>
+    <![endif]-->
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
+      <script>hljs.highlightAll();</script>
+  <!-- Unlisted: reachable by link only, not indexed -->
+  <meta name="robots" content="noindex, nofollow">
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+    <div class="wy-side-scroll">
+      <div class="wy-side-nav-search">
+          <a href="../.." class="icon icon-home"> ESP-Drone
+        </a><div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+      <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" title="Type search term here" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../..">Inicio</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../../primeros-pasos/">Primeros pasos</a>
+                </li>
+              </ul>
+              <p class="caption"><span class="caption-text">Firmware</span></p>
+              <ul class="current">
+                  <li class="toctree-l1"><a class="reference internal" href="../instalacion/">Compilar y flashear</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../primer-encendido/">Primer encendido</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../arquitectura/">Arquitectura</a>
+                  </li>
+                  <li class="toctree-l1 current"><a class="reference internal current" href="#">Estimadores y controladores</a>
+    <ul class="current">
+    <li class="toctree-l2"><a class="reference internal" href="#estimadores-stabilizerestimator">Estimadores (stabilizer.estimator)</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#controladores-stabilizercontroller">Controladores (stabilizer.controller)</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#ganancias">Ganancias</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#modos-de-vuelo-desde-el-mando">Modos de vuelo desde el mando</a>
+    </li>
+    </ul>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../parametros/">Parámetros y telemetría</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../seguridad/">Seguridad</a>
+                  </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../../edclient/">edclient</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../../simulador/">Simulador</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../../edlib/">edlib</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../../gateway/">Gateway ESP-NOW</a>
+                </li>
+              </ul>
+      </div>
+    </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+      <nav class="wy-nav-top" role="navigation" aria-label="Mobile navigation menu">
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../..">ESP-Drone</a>
+        
+      </nav>
+      <div class="wy-nav-content">
+        <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="../.." class="icon icon-home" aria-label="Docs"></a></li>
+          <li class="breadcrumb-item">Firmware</li>
+      <li class="breadcrumb-item active">Estimadores y controladores</li>
+    <li class="wy-breadcrumbs-aside">
+          <a href="https://github.com/juliordzcer/esp-drone/edit/hw/s3-v1.3/docs/wiki/firmware/estimadores-control.md" class="icon icon-github"> Edit on GitHub</a>
+    </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+            <div class="section" itemprop="articleBody">
+              
+                <h1 id="estimadores-y-controladores">Estimadores y controladores<a class="headerlink" href="#estimadores-y-controladores" title="Permanent link">&para;</a></h1>
+<p>Los dos se eligen con parámetros, en vuelo o en tierra, desde edclient (<strong>Vuelo</strong> o
+<strong>Parámetros</strong>) o desde edlib. Para que el cambio sobreviva a un reinicio, guarda el parámetro
+como persistente.</p>
+<h2 id="estimadores-stabilizerestimator">Estimadores (<code>stabilizer.estimator</code>)<a class="headerlink" href="#estimadores-stabilizerestimator" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>Valor</th>
+<th>Estimador</th>
+<th>Sensores</th>
+<th>Cuándo usarlo</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>Complementario</td>
+<td>IMU, barómetro, pose externa</td>
+<td>Respaldo sin ToF ni flujo, o vuelo con captura de movimiento</td>
+</tr>
+<tr>
+<td>3</td>
+<td>Híbrido (por defecto)</td>
+<td>Mahony para la actitud + Kalman de 6 estados para x, y, z</td>
+<td>Vuelo en interiores con ToF y flujo</td>
+</tr>
+<tr>
+<td>5</td>
+<td>Kalman 9</td>
+<td>EKF de Crazyflie: ToF, flujo, pose externa, barómetro opcional</td>
+<td>El más completo; corre en su propia tarea</td>
+</tr>
+</tbody>
+</table>
+<p>Si al arrancar no se detectan ni el ToF ni el flujo, se usa el complementario aunque se pida
+otro. Un valor desconocido cae al híbrido.</p>
+<h2 id="controladores-stabilizercontroller">Controladores (<code>stabilizer.controller</code>)<a class="headerlink" href="#controladores-stabilizercontroller" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>Valor</th>
+<th>Controlador</th>
+<th>Notas</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>PID (por defecto)</td>
+<td>Cascada de Crazyflie: posición → velocidad → actitud → velocidad angular</td>
+</tr>
+<tr>
+<td>2</td>
+<td>PIDN</td>
+<td>PID con derivada del giroscopio</td>
+</tr>
+<tr>
+<td>3</td>
+<td>Backstepping</td>
+<td>Controladores de la tesis de maestría</td>
+</tr>
+<tr>
+<td>4</td>
+<td>SMC</td>
+<td>Modos deslizantes estándar</td>
+</tr>
+<tr>
+<td>5</td>
+<td>Twisting</td>
+<td></td>
+</tr>
+<tr>
+<td>6</td>
+<td>STSMC</td>
+<td>Super-twisting por modos deslizantes</td>
+</tr>
+<tr>
+<td>7</td>
+<td>NTSMC</td>
+<td>Terminal no singular</td>
+</tr>
+<tr>
+<td>8</td>
+<td>STA</td>
+<td>Algoritmo super-twisting</td>
+</tr>
+<tr>
+<td>9</td>
+<td>Mellinger</td>
+<td>Geométrico de Crazyflie</td>
+</tr>
+<tr>
+<td>10</td>
+<td>Lee</td>
+<td>Geométrico con salida en fuerza y par; requiere calibrar <code>motorModel</code></td>
+</tr>
+</tbody>
+</table>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>Cambia de controlador <strong>en tierra</strong>. Los controladores 2-10 tienen ganancias pensadas para
+el S2 o provisionales: valídalos primero en el simulador o en Gazebo.</p>
+</div>
+<h2 id="ganancias">Ganancias<a class="headerlink" href="#ganancias" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>Grupo</th>
+<th>Contenido</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>pid_rate</code></td>
+<td>Velocidad angular: <code>roll_kp</code>, <code>roll_ki</code>, <code>roll_kd</code>… (salida en unidades de PWM)</td>
+</tr>
+<tr>
+<td><code>pid_attitude</code></td>
+<td>Actitud</td>
+</tr>
+<tr>
+<td><code>velCtlPid</code></td>
+<td>Velocidad: <code>vxKp</code>…, <code>thrustBase</code> (empuje de hover), <code>rpLimit</code>, <code>xyVelMax</code>, <code>zVelMax</code></td>
+</tr>
+<tr>
+<td><code>posCtlPid</code></td>
+<td>Posición: <code>xKp</code>, <code>zKp</code>…</td>
+</tr>
+<tr>
+<td><code>ctrlMel</code>, <code>ctrlLee</code></td>
+<td>Ganancias y masa de los geométricos</td>
+</tr>
+<tr>
+<td><code>motorModel</code></td>
+<td>Modelo de empuje del motor (Lee)</td>
+</tr>
+</tbody>
+</table>
+<p>La pestaña <strong>Ajuste</strong> de edclient permite cambiarlas en vivo. Con <strong>Simulador → Ganancias PID
+del dron conectado</strong> puedes probar un ajuste en el simulador antes de volar.</p>
+<h2 id="modos-de-vuelo-desde-el-mando">Modos de vuelo desde el mando<a class="headerlink" href="#modos-de-vuelo-desde-el-mando" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>Modo en edclient</th>
+<th>Qué ordena el stick</th>
+<th>Lo resuelve</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Manual</td>
+<td>Ángulos de roll y pitch, velocidad de yaw y empuje</td>
+<td>Controlador de actitud</td>
+</tr>
+<tr>
+<td>Mantener altura</td>
+<td>Ángulos y velocidad vertical</td>
+<td>Control de altura con ToF o barómetro</td>
+</tr>
+<tr>
+<td>Mantener posición</td>
+<td>Velocidades en x, y, z, en ejes del mundo</td>
+<td>Control de posición con flujo o pose externa</td>
+</tr>
+</tbody>
+</table>
+              
+            </div>
+          </div><footer>
+    <div class="rst-footer-buttons" role="navigation" aria-label="Footer Navigation">
+        <a href="../arquitectura/" class="btn btn-neutral float-left" title="Arquitectura"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+        <a href="../parametros/" class="btn btn-neutral float-right" title="Parámetros y telemetría">Next <span class="icon icon-circle-arrow-right"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <!-- Copyright etc -->
+  </div>
+
+  Built with <a href="https://www.mkdocs.org/">MkDocs</a> using a <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+</footer>
+          
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+
+  <div class="rst-versions" role="note" aria-label="Versions">
+  <span class="rst-current-version" data-toggle="rst-current-version">
+    
+        <span>
+          <a href="https://github.com/juliordzcer/esp-drone" class="fa fa-github" style="color: #fcfcfc"> GitHub</a>
+        </span>
+    
+    
+      <span><a href="../arquitectura/" style="color: #fcfcfc">&laquo; Previous</a></span>
+    
+    
+      <span><a href="../parametros/" style="color: #fcfcfc">Next &raquo;</a></span>
+    
+  </span>
+</div>
+    <script src="../../js/jquery-3.6.0.min.js"></script>
+    <script>var base_url = "../..";</script>
+    <script src="../../js/theme_extra.js"></script>
+    <script src="../../js/theme.js"></script>
+      <script src="../../search/main.js"></script>
+    <script>
+        jQuery(function () {
+            SphinxRtdTheme.Navigation.enable(true);
+        });
+    </script>
+
+</body>
+</html>

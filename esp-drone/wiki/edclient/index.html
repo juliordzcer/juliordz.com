@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="es" >
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><link rel="canonical" href="https://juliordz.com/esp-drone/wiki/edclient/" />
+      <link rel="shortcut icon" href="../img/favicon.ico" />
+    <title>edclient - ESP-Drone</title>
+    <link rel="stylesheet" href="../css/theme.css" />
+    <link rel="stylesheet" href="../css/theme_extra.css" />
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" />
+    
+      <script>
+        // Current page data
+        var mkdocs_page_name = "edclient";
+        var mkdocs_page_input_path = "edclient.md";
+        var mkdocs_page_url = "/esp-drone/wiki/edclient/";
+      </script>
+    
+    <!--[if lt IE 9]>
+      <script src="../js/html5shiv.min.js"></script>
+    <![endif]-->
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
+      <script>hljs.highlightAll();</script>
+  <!-- Unlisted: reachable by link only, not indexed -->
+  <meta name="robots" content="noindex, nofollow">
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+    <div class="wy-side-scroll">
+      <div class="wy-side-nav-search">
+          <a href=".." class="icon icon-home"> ESP-Drone
+        </a><div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="../search.html" method="get">
+      <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" title="Type search term here" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="..">Inicio</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../primeros-pasos/">Primeros pasos</a>
+                </li>
+              </ul>
+              <p class="caption"><span class="caption-text">Firmware</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="../firmware/instalacion/">Compilar y flashear</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../firmware/primer-encendido/">Primer encendido</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../firmware/arquitectura/">Arquitectura</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../firmware/estimadores-control/">Estimadores y controladores</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../firmware/parametros/">Parámetros y telemetría</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../firmware/seguridad/">Seguridad</a>
+                  </li>
+              </ul>
+              <ul class="current">
+                <li class="toctree-l1 current"><a class="reference internal current" href="#">edclient</a>
+    <ul class="current">
+    <li class="toctree-l2"><a class="reference internal" href="#instalacion">Instalación</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#la-ventana">La ventana</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#pestanas">Pestañas</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#mando">Mando</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#preferencias">Preferencias</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#actualizar-el-firmware">Actualizar el firmware</a>
+    </li>
+    </ul>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../simulador/">Simulador</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../edlib/">edlib</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../gateway/">Gateway ESP-NOW</a>
+                </li>
+              </ul>
+      </div>
+    </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+      <nav class="wy-nav-top" role="navigation" aria-label="Mobile navigation menu">
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="..">ESP-Drone</a>
+        
+      </nav>
+      <div class="wy-nav-content">
+        <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href=".." class="icon icon-home" aria-label="Docs"></a></li>
+      <li class="breadcrumb-item active">edclient</li>
+    <li class="wy-breadcrumbs-aside">
+          <a href="https://github.com/juliordzcer/esp-drone/edit/hw/s3-v1.3/docs/wiki/edclient.md" class="icon icon-github"> Edit on GitHub</a>
+    </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+            <div class="section" itemprop="articleBody">
+              
+                <h1 id="edclient">edclient<a class="headerlink" href="#edclient" title="Permanent link">&para;</a></h1>
+<p>Aplicación de escritorio para conectar, volar, ver telemetría, ajustar y actualizar los
+drones. Funciona con el firmware S2 y el S3; con el S2, lo que no existe se muestra como "—".</p>
+<h2 id="instalacion">Instalación<a class="headerlink" href="#instalacion" title="Permanent link">&para;</a></h2>
+<pre><code class="language-bash">git clone -b espnow-only https://github.com/juliordzcer/espdrone-lib-python.git
+git clone -b espnow-only https://github.com/juliordzcer/espdrone-clients-python.git
+pip install -e espdrone-lib-python
+pip install -e espdrone-clients-python
+edclient
+</code></pre>
+<h2 id="la-ventana">La ventana<a class="headerlink" href="#la-ventana" title="Permanent link">&para;</a></h2>
+<ul>
+<li><strong>Barra superior:</strong> selector de dron, <strong>Buscar</strong>, <strong>Conectar</strong> y pastillas de estado:</li>
+<li>enlace (RSSI), batería, estimador, controlador;</li>
+<li>carga de CPU de cada núcleo y tiempo del lazo.</li>
+</ul>
+<p>A la derecha, <strong>STOP</strong>.
+- <strong>Pestañas:</strong> se muestran u ocultan en <strong>Ver → Pestañas</strong>.
+- <strong>Tema:</strong> <strong>Ver → Tema</strong>, claro u oscuro.</p>
+<h2 id="pestanas">Pestañas<a class="headerlink" href="#pestanas" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>Pestaña</th>
+<th>Para qué</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Panel</td>
+<td>Vista general: horizonte artificial, posición y velocidad, altura en el tiempo, estado, motores, batería y <strong>Armar</strong></td>
+</tr>
+<tr>
+<td>Vuelo</td>
+<td>Vuelo con mando: modo asistido, trims, estimador, consignas, estimados, motores y empuje</td>
+</tr>
+<tr>
+<td>Simulador</td>
+<td>Entrenador de vuelo (<a href="../simulador/">ver página</a>)</td>
+</tr>
+<tr>
+<td>Vista 3D</td>
+<td>Pose en 3D de uno o varios drones</td>
+</tr>
+<tr>
+<td>Sistema</td>
+<td>Carga por núcleo, lazo, memoria, enlace ESP-NOW, sensores; identificar, recalibrar o borrar la configuración</td>
+</tr>
+<tr>
+<td>Parámetros</td>
+<td>Todos los parámetros: editar, guardar en la NVS, exportar y cargar</td>
+</tr>
+<tr>
+<td>Ajuste</td>
+<td>Ganancias de los controladores con sliders</td>
+</tr>
+<tr>
+<td>Gráficas</td>
+<td>Gráficas en tiempo real de cualquier bloque de log</td>
+</tr>
+<tr>
+<td>Bloques de log / Variables de log</td>
+<td>Definir bloques y ver todas las variables disponibles</td>
+</tr>
+<tr>
+<td>Registro de vuelo</td>
+<td>Estado, descarga a CSV, guardar en la flash y opciones de grabación (solo S3)</td>
+</tr>
+<tr>
+<td>Consola</td>
+<td>Mensajes del firmware y pruebas de hélices y batería</td>
+</tr>
+<tr>
+<td>Log del cliente</td>
+<td>Mensajes internos de edclient para depurar</td>
+</tr>
+</tbody>
+</table>
+<h2 id="mando">Mando<a class="headerlink" href="#mando" title="Permanent link">&para;</a></h2>
+<ol>
+<li>Conecta el mando y elígelo en el menú <strong>Control</strong>.</li>
+<li><strong>Control → Configurar mando…</strong> para asignar ejes y botones.</li>
+<li>En <strong>Vuelo</strong>, elige el modo asistido: <em>Mantener altura</em> o <em>Mantener posición</em>.</li>
+</ol>
+<h2 id="preferencias">Preferencias<a class="headerlink" href="#preferencias" title="Permanent link">&para;</a></h2>
+<p><strong>Archivo → Preferencias</strong> (Ctrl+,):</p>
+<table>
+<thead>
+<tr>
+<th>Opción</th>
+<th>Efecto</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Pestaña al iniciar</td>
+<td>Pestaña que se abre al arrancar</td>
+</tr>
+<tr>
+<td>Conectar al último dron</td>
+<td>Se conecta solo si aparece en la búsqueda</td>
+</tr>
+<tr>
+<td>Pedir confirmación antes de armar</td>
+<td>Diálogo de confirmación en Panel y Vuelo</td>
+</tr>
+<tr>
+<td>Refresco de datos</td>
+<td>5, 10 o 20 Hz para los logs de la pestaña Vuelo</td>
+</tr>
+<tr>
+<td>Puerto serie / Canal Wi-Fi</td>
+<td>Fijar el gateway o el canal en lugar de detectarlos</td>
+</tr>
+</tbody>
+</table>
+<h2 id="actualizar-el-firmware">Actualizar el firmware<a class="headerlink" href="#actualizar-el-firmware" title="Permanent link">&para;</a></h2>
+<p><strong>Conexión → Actualizar firmware</strong>:</p>
+<ul>
+<li><strong>Por USB</strong> (esptool): para la primera vez o si cambian las particiones.</li>
+<li><strong>Sin cable</strong> (OTA por ESP-NOW): al dron conectado.</li>
+</ul>
+              
+            </div>
+          </div><footer>
+    <div class="rst-footer-buttons" role="navigation" aria-label="Footer Navigation">
+        <a href="../firmware/seguridad/" class="btn btn-neutral float-left" title="Seguridad"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+        <a href="../simulador/" class="btn btn-neutral float-right" title="Simulador">Next <span class="icon icon-circle-arrow-right"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <!-- Copyright etc -->
+  </div>
+
+  Built with <a href="https://www.mkdocs.org/">MkDocs</a> using a <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+</footer>
+          
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+
+  <div class="rst-versions" role="note" aria-label="Versions">
+  <span class="rst-current-version" data-toggle="rst-current-version">
+    
+        <span>
+          <a href="https://github.com/juliordzcer/esp-drone" class="fa fa-github" style="color: #fcfcfc"> GitHub</a>
+        </span>
+    
+    
+      <span><a href="../firmware/seguridad/" style="color: #fcfcfc">&laquo; Previous</a></span>
+    
+    
+      <span><a href="../simulador/" style="color: #fcfcfc">Next &raquo;</a></span>
+    
+  </span>
+</div>
+    <script src="../js/jquery-3.6.0.min.js"></script>
+    <script>var base_url = "..";</script>
+    <script src="../js/theme_extra.js"></script>
+    <script src="../js/theme.js"></script>
+      <script src="../search/main.js"></script>
+    <script>
+        jQuery(function () {
+            SphinxRtdTheme.Navigation.enable(true);
+        });
+    </script>
+
+</body>
+</html>

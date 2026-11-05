@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="es" >
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><link rel="canonical" href="https://juliordz.com/esp-drone/wiki/gateway/" />
+      <link rel="shortcut icon" href="../img/favicon.ico" />
+    <title>Gateway ESP-NOW - ESP-Drone</title>
+    <link rel="stylesheet" href="../css/theme.css" />
+    <link rel="stylesheet" href="../css/theme_extra.css" />
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" />
+    
+      <script>
+        // Current page data
+        var mkdocs_page_name = "Gateway ESP-NOW";
+        var mkdocs_page_input_path = "gateway.md";
+        var mkdocs_page_url = "/esp-drone/wiki/gateway/";
+      </script>
+    
+    <!--[if lt IE 9]>
+      <script src="../js/html5shiv.min.js"></script>
+    <![endif]-->
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
+      <script>hljs.highlightAll();</script>
+  <!-- Unlisted: reachable by link only, not indexed -->
+  <meta name="robots" content="noindex, nofollow">
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+    <div class="wy-side-scroll">
+      <div class="wy-side-nav-search">
+          <a href=".." class="icon icon-home"> ESP-Drone
+        </a><div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="../search.html" method="get">
+      <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" title="Type search term here" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="..">Inicio</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../primeros-pasos/">Primeros pasos</a>
+                </li>
+              </ul>
+              <p class="caption"><span class="caption-text">Firmware</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="../firmware/instalacion/">Compilar y flashear</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../firmware/primer-encendido/">Primer encendido</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../firmware/arquitectura/">Arquitectura</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../firmware/estimadores-control/">Estimadores y controladores</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../firmware/parametros/">Parámetros y telemetría</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../firmware/seguridad/">Seguridad</a>
+                  </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../edclient/">edclient</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../simulador/">Simulador</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../edlib/">edlib</a>
+                </li>
+              </ul>
+              <ul class="current">
+                <li class="toctree-l1 current"><a class="reference internal current" href="#">Gateway ESP-NOW</a>
+    <ul class="current">
+    <li class="toctree-l2"><a class="reference internal" href="#placas-soportadas">Placas soportadas</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#compilar-y-flashear">Compilar y flashear</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#como-funciona">Cómo funciona</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#trama-serie">Trama serie</a>
+    </li>
+        </ul>
+    </li>
+    </ul>
+                </li>
+              </ul>
+      </div>
+    </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+      <nav class="wy-nav-top" role="navigation" aria-label="Mobile navigation menu">
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="..">ESP-Drone</a>
+        
+      </nav>
+      <div class="wy-nav-content">
+        <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href=".." class="icon icon-home" aria-label="Docs"></a></li>
+      <li class="breadcrumb-item active">Gateway ESP-NOW</li>
+    <li class="wy-breadcrumbs-aside">
+          <a href="https://github.com/juliordzcer/esp-drone/edit/hw/s3-v1.3/docs/wiki/gateway.md" class="icon icon-github"> Edit on GitHub</a>
+    </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+            <div class="section" itemprop="articleBody">
+              
+                <h1 id="gateway-esp-now">Gateway ESP-NOW<a class="headerlink" href="#gateway-esp-now" title="Permanent link">&para;</a></h1>
+<p>El gateway es un ESP32 conectado al PC por USB. Traduce entre el puerto serie y ESP-NOW, y
+permite hablar con varios drones a la vez sin router ni WiFi.</p>
+<p>Repositorio: <a href="https://github.com/juliordzcer/espnow-gateway">espnow-gateway</a>.</p>
+<h2 id="placas-soportadas">Placas soportadas<a class="headerlink" href="#placas-soportadas" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>Placa</th>
+<th>Conexión</th>
+<th>Notas</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>ESP32-S3 Super Mini (recomendada)</td>
+<td>USB nativo</td>
+<td>TX a 20 dBm, antena integrada</td>
+</tr>
+<tr>
+<td>Devkit ESP32</td>
+<td>UART0 por el CH340</td>
+<td>A 921600 baudios</td>
+</tr>
+</tbody>
+</table>
+<p>En planes: XIAO ESP32-S3 con antena externa, botón físico de STOP, LEDs, buzzer y una PCB
+propia.</p>
+<h2 id="compilar-y-flashear">Compilar y flashear<a class="headerlink" href="#compilar-y-flashear" title="Permanent link">&para;</a></h2>
+<p>Con ESP-IDF cargado:</p>
+<pre><code class="language-bash">git clone https://github.com/juliordzcer/espnow-gateway.git
+cd espnow-gateway
+# ESP32-S3 Super Mini
+idf.py -B build-s3 -D SDKCONFIG=sdkconfig.esp32s3 set-target esp32s3 build   # aplica sdkconfig.defaults.esp32s3 solo
+idf.py -B build-s3 -p /dev/ttyACM0 flash
+# Devkit ESP32
+idf.py build &amp;&amp; idf.py -p /dev/ttyUSB0 flash
+</code></pre>
+<h2 id="como-funciona">Cómo funciona<a class="headerlink" href="#como-funciona" title="Permanent link">&para;</a></h2>
+<ul>
+<li><strong>Búsqueda:</strong> el gateway manda un <em>discover</em> en los canales 1 a 13. Los drones responden con
+  su nombre y su canal, y edlib arma las URI <code>espnow://&lt;mac&gt;?ch=&lt;canal&gt;</code>.</li>
+<li><strong>En vuelo:</strong> el gateway se queda en el canal de los drones y reenvía cada paquete EDTP al dron
+  por su MAC. Los peers se crean solos y se reemplazan por antigüedad.</li>
+<li><strong>Estado:</strong> el comando <code>INFO</code> devuelve la MAC, el canal, la versión y los contadores de envío,
+  recepción y pérdidas. (La pestaña <strong>Sistema</strong> de edclient muestra la señal y las pérdidas
+  vistas desde el dron.)</li>
+</ul>
+<h3 id="trama-serie">Trama serie<a class="headerlink" href="#trama-serie" title="Permanent link">&para;</a></h3>
+<pre><code>A5 5A len type body[len-1] crc8        (crc8 polinomio 0x07 sobre type + body)
+</code></pre>
+<table>
+<thead>
+<tr>
+<th>Tipo</th>
+<th>Dirección</th>
+<th>Contenido</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>0x01 TX</td>
+<td>PC → gateway</td>
+<td>mac[6] + payload</td>
+</tr>
+<tr>
+<td>0x02 SET_CH</td>
+<td>PC → gateway</td>
+<td>canal</td>
+</tr>
+<tr>
+<td>0x03 INFO</td>
+<td>PC → gateway</td>
+<td>sin cuerpo</td>
+</tr>
+<tr>
+<td>0x04 SCAN</td>
+<td>PC → gateway</td>
+<td>tiempo por canal / 10 ms</td>
+</tr>
+<tr>
+<td>0x81 RX</td>
+<td>gateway → PC</td>
+<td>mac[6] rssi canal payload</td>
+</tr>
+<tr>
+<td>0x83 INFO</td>
+<td>gateway → PC</td>
+<td>mac, canal, versión y contadores (u32 LE)</td>
+</tr>
+<tr>
+<td>0x84 SCAN_DONE</td>
+<td>gateway → PC</td>
+<td>canal</td>
+</tr>
+</tbody>
+</table>
+              
+            </div>
+          </div><footer>
+    <div class="rst-footer-buttons" role="navigation" aria-label="Footer Navigation">
+        <a href="../edlib/" class="btn btn-neutral float-left" title="edlib"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <!-- Copyright etc -->
+  </div>
+
+  Built with <a href="https://www.mkdocs.org/">MkDocs</a> using a <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+</footer>
+          
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+
+  <div class="rst-versions" role="note" aria-label="Versions">
+  <span class="rst-current-version" data-toggle="rst-current-version">
+    
+        <span>
+          <a href="https://github.com/juliordzcer/esp-drone" class="fa fa-github" style="color: #fcfcfc"> GitHub</a>
+        </span>
+    
+    
+      <span><a href="../edlib/" style="color: #fcfcfc">&laquo; Previous</a></span>
+    
+    
+  </span>
+</div>
+    <script src="../js/jquery-3.6.0.min.js"></script>
+    <script>var base_url = "..";</script>
+    <script src="../js/theme_extra.js"></script>
+    <script src="../js/theme.js"></script>
+      <script src="../search/main.js"></script>
+    <script>
+        jQuery(function () {
+            SphinxRtdTheme.Navigation.enable(true);
+        });
+    </script>
+
+</body>
+</html>

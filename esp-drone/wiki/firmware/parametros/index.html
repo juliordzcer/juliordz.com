@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="es" >
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><link rel="canonical" href="https://juliordz.com/esp-drone/wiki/firmware/parametros/" />
+      <link rel="shortcut icon" href="../../img/favicon.ico" />
+    <title>Parámetros y telemetría - ESP-Drone</title>
+    <link rel="stylesheet" href="../../css/theme.css" />
+    <link rel="stylesheet" href="../../css/theme_extra.css" />
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" />
+    
+      <script>
+        // Current page data
+        var mkdocs_page_name = "Par\u00e1metros y telemetr\u00eda";
+        var mkdocs_page_input_path = "firmware/parametros.md";
+        var mkdocs_page_url = "/esp-drone/wiki/firmware/parametros/";
+      </script>
+    
+    <!--[if lt IE 9]>
+      <script src="../../js/html5shiv.min.js"></script>
+    <![endif]-->
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
+      <script>hljs.highlightAll();</script>
+  <!-- Unlisted: reachable by link only, not indexed -->
+  <meta name="robots" content="noindex, nofollow">
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+    <div class="wy-side-scroll">
+      <div class="wy-side-nav-search">
+          <a href="../.." class="icon icon-home"> ESP-Drone
+        </a><div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+      <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" title="Type search term here" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../..">Inicio</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../../primeros-pasos/">Primeros pasos</a>
+                </li>
+              </ul>
+              <p class="caption"><span class="caption-text">Firmware</span></p>
+              <ul class="current">
+                  <li class="toctree-l1"><a class="reference internal" href="../instalacion/">Compilar y flashear</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../primer-encendido/">Primer encendido</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../arquitectura/">Arquitectura</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../estimadores-control/">Estimadores y controladores</a>
+                  </li>
+                  <li class="toctree-l1 current"><a class="reference internal current" href="#">Parámetros y telemetría</a>
+    <ul class="current">
+    <li class="toctree-l2"><a class="reference internal" href="#parametros">Parámetros</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#telemetria-logs">Telemetría (logs)</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#registro-de-vuelo">Registro de vuelo</a>
+    </li>
+    </ul>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../seguridad/">Seguridad</a>
+                  </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../../edclient/">edclient</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../../simulador/">Simulador</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../../edlib/">edlib</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../../gateway/">Gateway ESP-NOW</a>
+                </li>
+              </ul>
+      </div>
+    </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+      <nav class="wy-nav-top" role="navigation" aria-label="Mobile navigation menu">
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../..">ESP-Drone</a>
+        
+      </nav>
+      <div class="wy-nav-content">
+        <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="../.." class="icon icon-home" aria-label="Docs"></a></li>
+          <li class="breadcrumb-item">Firmware</li>
+      <li class="breadcrumb-item active">Parámetros y telemetría</li>
+    <li class="wy-breadcrumbs-aside">
+          <a href="https://github.com/juliordzcer/esp-drone/edit/hw/s3-v1.3/docs/wiki/firmware/parametros.md" class="icon icon-github"> Edit on GitHub</a>
+    </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+            <div class="section" itemprop="articleBody">
+              
+                <h1 id="parametros-y-telemetria">Parámetros y telemetría<a class="headerlink" href="#parametros-y-telemetria" title="Permanent link">&para;</a></h1>
+<h2 id="parametros">Parámetros<a class="headerlink" href="#parametros" title="Permanent link">&para;</a></h2>
+<p>Los parámetros se leen y escriben por radio, con el dron encendido. Los marcados como
+<em>persistentes</em> pueden guardarse en la NVS y sobreviven a un reinicio. En edclient:
+<strong>Parámetros</strong> (árbol completo, exportar y cargar) y <strong>Ajuste</strong> (ganancias). En edlib:
+<code>cf.param.set_value('grupo.nombre', 'valor')</code>.</p>
+<p>Los más usados:</p>
+<table>
+<thead>
+<tr>
+<th>Parámetro</th>
+<th>Uso</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>stabilizer.estimator</code> / <code>stabilizer.controller</code></td>
+<td>Ver <a href="../estimadores-control/">Estimadores y controladores</a></td>
+</tr>
+<tr>
+<td><code>stabilizer.imuSync</code></td>
+<td>1: el lazo se sincroniza con el giroscopio (se aplica al reiniciar; en prueba)</td>
+</tr>
+<tr>
+<td><code>velCtlPid.thrustBase</code></td>
+<td>Empuje de hover para los modos asistidos</td>
+</tr>
+<tr>
+<td><code>imu.resetBias</code></td>
+<td>1: vuelve a medir el bias del acelerómetro (dron nivelado y quieto)</td>
+</tr>
+<tr>
+<td><code>system.nvsReset</code></td>
+<td>1: borra toda la configuración guardada y reinicia</td>
+</tr>
+<tr>
+<td><code>led.identify</code></td>
+<td>1: parpadea y pita para identificar el dron</td>
+</tr>
+<tr>
+<td><code>espnow.txPower</code> / <code>espnow.phyRate</code></td>
+<td>Potencia de transmisión y velocidad de la radio</td>
+</tr>
+<tr>
+<td><code>flog.autoRec</code>, <code>flog.div</code>, <code>flog.rec</code>, <code>flog.save</code></td>
+<td>Registro de vuelo</td>
+</tr>
+<tr>
+<td><code>batg.*</code></td>
+<td>Protección de batería (ver <a href="../seguridad/">Seguridad</a>)</td>
+</tr>
+</tbody>
+</table>
+<h2 id="telemetria-logs">Telemetría (logs)<a class="headerlink" href="#telemetria-logs" title="Permanent link">&para;</a></h2>
+<p>Los logs son variables que el dron envía periódicamente en bloques. Para que funcione también con
+el S2, cada bloque debe ocupar 28 B o menos; el S3 acepta hasta 56 B.</p>
+<table>
+<thead>
+<tr>
+<th>Grupo</th>
+<th>Contenido</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>stateEstimate</code>, <code>stabilizer</code></td>
+<td>Posición, velocidad y actitud estimadas; tiempo del lazo (<code>loopUs</code>, <code>loopMaxUs</code>)</td>
+</tr>
+<tr>
+<td><code>controller</code>, <code>ctrltarget</code>, <code>posCtl</code></td>
+<td>Consignas y salidas del control</td>
+</tr>
+<tr>
+<td><code>motor</code></td>
+<td>PWM de cada motor (<code>m1</code>..<code>m4</code>)</td>
+</tr>
+<tr>
+<td><code>pm</code>, <code>batg</code></td>
+<td>Batería: voltaje, nivel, umbrales</td>
+</tr>
+<tr>
+<td><code>gyro</code>, <code>acc</code>, <code>baro</code>, <code>range</code>, <code>flow</code></td>
+<td>Sensores</td>
+</tr>
+<tr>
+<td><code>supervisor</code>, <code>health</code></td>
+<td>Estado: armado, volando, volcado, bloqueado</td>
+</tr>
+<tr>
+<td><code>sys</code>, <code>espnow</code></td>
+<td>Carga por núcleo, memoria, RSSI y paquetes perdidos</td>
+</tr>
+<tr>
+<td><code>kalman9</code>, <code>hybrid</code>, <code>compEst</code></td>
+<td>Internos de cada estimador</td>
+</tr>
+</tbody>
+</table>
+<p>Para ver los nombres exactos: pestaña <strong>Variables de log</strong> de edclient.</p>
+<h2 id="registro-de-vuelo">Registro de vuelo<a class="headerlink" href="#registro-de-vuelo" title="Permanent link">&para;</a></h2>
+<p>El S3 graba <strong>a bordo</strong>, en la PSRAM, a una frecuencia de hasta 1 kHz:</p>
+<ul>
+<li>giroscopio, acelerómetro y actitud;</li>
+<li>posición y velocidad, con sus consignas;</li>
+<li>empuje, salidas del control y PWM de los motores;</li>
+<li>voltaje de la batería y tiempo del lazo.</li>
+</ul>
+<p>No depende de la radio, así que no se pierden muestras.</p>
+<ul>
+<li>Por defecto empieza a grabar al girar los motores (<code>flog.autoRec</code>).</li>
+<li>Se descarga al aterrizar, desde <strong>Registro de vuelo</strong> en edclient o con el script:</li>
+</ul>
+<p><code>bash
+  python3 scripts/logging/flog_download.py espnow://&lt;mac&gt;?ch=11 vuelo.csv [--save]</code></p>
+<ul>
+<li><code>--save</code> (o <strong>Guardar en la flash del dron</strong>) lo copia a la partición <code>flog</code> para que
+  sobreviva a apagar el dron.</li>
+<li>Mientras se guarda en la flash, el dron no se puede armar.</li>
+<li>El CSV se puede repetir en el <a href="../../simulador/#repetir-un-vuelo-real">simulador</a>.</li>
+</ul>
+              
+            </div>
+          </div><footer>
+    <div class="rst-footer-buttons" role="navigation" aria-label="Footer Navigation">
+        <a href="../estimadores-control/" class="btn btn-neutral float-left" title="Estimadores y controladores"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+        <a href="../seguridad/" class="btn btn-neutral float-right" title="Seguridad">Next <span class="icon icon-circle-arrow-right"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <!-- Copyright etc -->
+  </div>
+
+  Built with <a href="https://www.mkdocs.org/">MkDocs</a> using a <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+</footer>
+          
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+
+  <div class="rst-versions" role="note" aria-label="Versions">
+  <span class="rst-current-version" data-toggle="rst-current-version">
+    
+        <span>
+          <a href="https://github.com/juliordzcer/esp-drone" class="fa fa-github" style="color: #fcfcfc"> GitHub</a>
+        </span>
+    
+    
+      <span><a href="../estimadores-control/" style="color: #fcfcfc">&laquo; Previous</a></span>
+    
+    
+      <span><a href="../seguridad/" style="color: #fcfcfc">Next &raquo;</a></span>
+    
+  </span>
+</div>
+    <script src="../../js/jquery-3.6.0.min.js"></script>
+    <script>var base_url = "../..";</script>
+    <script src="../../js/theme_extra.js"></script>
+    <script src="../../js/theme.js"></script>
+      <script src="../../search/main.js"></script>
+    <script>
+        jQuery(function () {
+            SphinxRtdTheme.Navigation.enable(true);
+        });
+    </script>
+
+</body>
+</html>

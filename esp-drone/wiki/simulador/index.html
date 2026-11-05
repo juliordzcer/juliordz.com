@@ -1,0 +1,384 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="es" >
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><link rel="canonical" href="https://juliordz.com/esp-drone/wiki/simulador/" />
+      <link rel="shortcut icon" href="../img/favicon.ico" />
+    <title>Simulador - ESP-Drone</title>
+    <link rel="stylesheet" href="../css/theme.css" />
+    <link rel="stylesheet" href="../css/theme_extra.css" />
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" />
+    
+      <script>
+        // Current page data
+        var mkdocs_page_name = "Simulador";
+        var mkdocs_page_input_path = "simulador.md";
+        var mkdocs_page_url = "/esp-drone/wiki/simulador/";
+      </script>
+    
+    <!--[if lt IE 9]>
+      <script src="../js/html5shiv.min.js"></script>
+    <![endif]-->
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
+      <script>hljs.highlightAll();</script>
+  <!-- Unlisted: reachable by link only, not indexed -->
+  <meta name="robots" content="noindex, nofollow">
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+    <div class="wy-side-scroll">
+      <div class="wy-side-nav-search">
+          <a href=".." class="icon icon-home"> ESP-Drone
+        </a><div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="../search.html" method="get">
+      <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" title="Type search term here" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="..">Inicio</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../primeros-pasos/">Primeros pasos</a>
+                </li>
+              </ul>
+              <p class="caption"><span class="caption-text">Firmware</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="../firmware/instalacion/">Compilar y flashear</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../firmware/primer-encendido/">Primer encendido</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../firmware/arquitectura/">Arquitectura</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../firmware/estimadores-control/">Estimadores y controladores</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../firmware/parametros/">Parámetros y telemetría</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../firmware/seguridad/">Seguridad</a>
+                  </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../edclient/">edclient</a>
+                </li>
+              </ul>
+              <ul class="current">
+                <li class="toctree-l1 current"><a class="reference internal current" href="#">Simulador</a>
+    <ul class="current">
+    <li class="toctree-l2"><a class="reference internal" href="#controles">Controles</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#modos">Modos</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#camaras">Cámaras</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#ejercicios">Ejercicios</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#entorno">Entorno</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#repetir-un-vuelo-real">Repetir un vuelo real</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#el-modelo">El modelo</a>
+    </li>
+    </ul>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../edlib/">edlib</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../gateway/">Gateway ESP-NOW</a>
+                </li>
+              </ul>
+      </div>
+    </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+      <nav class="wy-nav-top" role="navigation" aria-label="Mobile navigation menu">
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="..">ESP-Drone</a>
+        
+      </nav>
+      <div class="wy-nav-content">
+        <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href=".." class="icon icon-home" aria-label="Docs"></a></li>
+      <li class="breadcrumb-item active">Simulador</li>
+    <li class="wy-breadcrumbs-aside">
+          <a href="https://github.com/juliordzcer/esp-drone/edit/hw/s3-v1.3/docs/wiki/simulador.md" class="icon icon-github"> Edit on GitHub</a>
+    </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+            <div class="section" itemprop="articleBody">
+              
+                <h1 id="simulador">Simulador<a class="headerlink" href="#simulador" title="Permanent link">&para;</a></h1>
+<p>La pestaña <strong>Simulador</strong> de edclient es un entrenador de vuelo: aprendes a volar con tu mando,
+o con el teclado, sin arriesgar el dron.</p>
+<ul>
+<li><strong>Dinámica:</strong> la del gemelo digital de Gazebo (masa, inercias, motores), con el empuje
+  calibrado al hover medido en el dron real.</li>
+<li><strong>Control:</strong> una copia de la cascada PID y del mezclador del firmware, con sus ganancias.</li>
+</ul>
+<p>Si la pestaña no aparece, ábrela en <strong>Ver → Pestañas → Simulador</strong>.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>El simulador solo toma el mando si <strong>no hay un dron conectado</strong>. Con un dron conectado, el
+mando sigue controlando el dron real y el simulador responde solo al teclado.</p>
+</div>
+<h2 id="controles">Controles<a class="headerlink" href="#controles" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>Tecla</th>
+<th>Acción</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Espacio</td>
+<td>Armar / desarmar (con mando: botón alt1)</td>
+</tr>
+<tr>
+<td>W / S</td>
+<td>Manual: subir o bajar el empuje. Asistidos: subir o bajar la altura objetivo</td>
+</tr>
+<tr>
+<td>Flechas</td>
+<td>Inclinar (manual y altura) o velocidad (posición)</td>
+</tr>
+<tr>
+<td>A / D</td>
+<td>Girar (yaw)</td>
+</tr>
+<tr>
+<td>1 / 2 / 3</td>
+<td>Modo manual / altura asistida / posición</td>
+</tr>
+<tr>
+<td>C</td>
+<td>Siguiente cámara</td>
+</tr>
+<tr>
+<td>R</td>
+<td>Reiniciar tras un choque</td>
+</tr>
+</tbody>
+</table>
+<p>Haz clic en la vista 3D para que reciba el teclado. Abajo a la izquierda se ven los sticks
+(modo 2) y arriba a la derecha un minimapa con el rumbo del dron.</p>
+<h2 id="modos">Modos<a class="headerlink" href="#modos" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>Modo</th>
+<th>Qué controlas</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Manual (ángulo)</td>
+<td>Inclinación y empuje: lo más parecido a volar sin ayudas</td>
+</tr>
+<tr>
+<td>Altura asistida</td>
+<td>Inclinación; el dron mantiene la altura</td>
+</tr>
+<tr>
+<td>Posición</td>
+<td>Velocidad; el dron se frena solo al soltar</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Sensibilidad</strong> (Principiante, Normal o Experto) escala la inclinación, el giro y la velocidad
+que pide el stick.</p>
+<h2 id="camaras">Cámaras<a class="headerlink" href="#camaras" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>Cámara</th>
+<th>Vista</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Persecución</td>
+<td>Detrás del dron, con un pequeño retardo para notar los giros</td>
+</tr>
+<tr>
+<td>FPV</td>
+<td>Cámara a bordo, inclinada 20° hacia arriba</td>
+</tr>
+<tr>
+<td>Piloto</td>
+<td>Desde un piloto de pie en tierra: así se vuela de verdad, en línea de vista</td>
+</tr>
+<tr>
+<td>Cenital</td>
+<td>Desde arriba, con el norte arriba (igual que el minimapa)</td>
+</tr>
+<tr>
+<td>Órbita</td>
+<td>Gira alrededor del dron</td>
+</tr>
+<tr>
+<td>Libre</td>
+<td>Con el ratón</td>
+</tr>
+</tbody>
+</table>
+<p>El frente del dron se distingue por la flecha y las hélices rojas.</p>
+<h2 id="ejercicios">Ejercicios<a class="headerlink" href="#ejercicios" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>Ejercicio</th>
+<th>Objetivo</th>
+<th>Récord</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Primeros pasos (guiado)</td>
+<td>Armar, despegar, girar 90°, avanzar 1 m, aterrizar</td>
+<td>Tiempo</td>
+</tr>
+<tr>
+<td>Despegue y estacionario</td>
+<td>Mantenerse a 1 m ± 15 cm durante 10 s y aterrizar en la plataforma</td>
+<td>Tiempo</td>
+</tr>
+<tr>
+<td>Anillos</td>
+<td>Cruzar 4 anillos en orden</td>
+<td>Tiempo</td>
+</tr>
+<tr>
+<td>Aterrizaje de precisión</td>
+<td>Aterrizar en la plataforma morada, al centro y suave</td>
+<td>Puntos (100 máx.)</td>
+</tr>
+<tr>
+<td>Slalom</td>
+<td>Rodear 4 postes alternando izquierda y derecha</td>
+<td>Tiempo</td>
+</tr>
+</tbody>
+</table>
+<p>Los récords se guardan en la configuración de edclient.</p>
+<h2 id="entorno">Entorno<a class="headerlink" href="#entorno" title="Permanent link">&para;</a></h2>
+<ul>
+<li><strong>Viento:</strong> brisa, moderado o racheado (ráfagas filtradas, más débiles junto al suelo).</li>
+<li><strong>Escenario:</strong> campo abierto o interior de 10 × 12 × 3 m, con paredes y techo que cuentan como
+  choque.</li>
+<li><strong>Batería que se descarga:</strong> 1S de unos 4 min; el empuje cae con el voltaje, como en el dron real.</li>
+<li><strong>Sensores reales:</strong> el control ve el estado con ruido y deriva, como lo estima el dron.</li>
+<li><strong>Ganancias PID del dron conectado:</strong> vuela el simulador con las ganancias del dron para probar
+  un ajuste antes de volar.</li>
+</ul>
+<h2 id="repetir-un-vuelo-real">Repetir un vuelo real<a class="headerlink" href="#repetir-un-vuelo-real" title="Permanent link">&para;</a></h2>
+<ol>
+<li>Descarga un vuelo en <strong>Registro de vuelo</strong> (CSV).</li>
+<li>En <strong>Repetir un vuelo real</strong> pulsa <strong>Abrir registro (CSV)…</strong>.</li>
+<li>El dron sigue la trayectoria registrada: en morado la real y en ámbar la consigna. Se puede
+   pausar, cambiar la velocidad y moverse en la barra de tiempo.</li>
+</ol>
+<h2 id="el-modelo">El modelo<a class="headerlink" href="#el-modelo" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>Magnitud</th>
+<th>Valor</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Masa</td>
+<td>0.063 kg (cuerpo + rotores, como en Gazebo)</td>
+</tr>
+<tr>
+<td>Inercias</td>
+<td>Ixx 1.594e-5, Iyy 1.4535e-5, Izz 2.8468e-5 kg·m²</td>
+</tr>
+<tr>
+<td>Brazo</td>
+<td>41.75 mm</td>
+</tr>
+<tr>
+<td>Motores</td>
+<td>Retardo de 12.5 ms; empuje kT·ω²; par kQ·empuje</td>
+</tr>
+<tr>
+<td>Hover</td>
+<td>44800 PWM (68 %), medido en el dron real</td>
+</tr>
+<tr>
+<td>Otros</td>
+<td>Arrastre del cuerpo y de las hélices, efecto suelo, contacto con el suelo</td>
+</tr>
+</tbody>
+</table>
+<p>Pruebas automáticas del modelo, desde <code>espdrone-clients-python/src</code>:</p>
+<pre><code class="language-bash">python3 -m pytest ../test
+</code></pre>
+              
+            </div>
+          </div><footer>
+    <div class="rst-footer-buttons" role="navigation" aria-label="Footer Navigation">
+        <a href="../edclient/" class="btn btn-neutral float-left" title="edclient"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+        <a href="../edlib/" class="btn btn-neutral float-right" title="edlib">Next <span class="icon icon-circle-arrow-right"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <!-- Copyright etc -->
+  </div>
+
+  Built with <a href="https://www.mkdocs.org/">MkDocs</a> using a <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+</footer>
+          
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+
+  <div class="rst-versions" role="note" aria-label="Versions">
+  <span class="rst-current-version" data-toggle="rst-current-version">
+    
+        <span>
+          <a href="https://github.com/juliordzcer/esp-drone" class="fa fa-github" style="color: #fcfcfc"> GitHub</a>
+        </span>
+    
+    
+      <span><a href="../edclient/" style="color: #fcfcfc">&laquo; Previous</a></span>
+    
+    
+      <span><a href="../edlib/" style="color: #fcfcfc">Next &raquo;</a></span>
+    
+  </span>
+</div>
+    <script src="../js/jquery-3.6.0.min.js"></script>
+    <script>var base_url = "..";</script>
+    <script src="../js/theme_extra.js"></script>
+    <script src="../js/theme.js"></script>
+      <script src="../search/main.js"></script>
+    <script>
+        jQuery(function () {
+            SphinxRtdTheme.Navigation.enable(true);
+        });
+    </script>
+
+</body>
+</html>

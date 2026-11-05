@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="es" >
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><link rel="canonical" href="https://juliordz.com/esp-drone/wiki/firmware/primer-encendido/" />
+      <link rel="shortcut icon" href="../../img/favicon.ico" />
+    <title>Primer encendido - ESP-Drone</title>
+    <link rel="stylesheet" href="../../css/theme.css" />
+    <link rel="stylesheet" href="../../css/theme_extra.css" />
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" />
+    
+      <script>
+        // Current page data
+        var mkdocs_page_name = "Primer encendido";
+        var mkdocs_page_input_path = "firmware/primer-encendido.md";
+        var mkdocs_page_url = "/esp-drone/wiki/firmware/primer-encendido/";
+      </script>
+    
+    <!--[if lt IE 9]>
+      <script src="../../js/html5shiv.min.js"></script>
+    <![endif]-->
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
+      <script>hljs.highlightAll();</script>
+  <!-- Unlisted: reachable by link only, not indexed -->
+  <meta name="robots" content="noindex, nofollow">
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+    <div class="wy-side-scroll">
+      <div class="wy-side-nav-search">
+          <a href="../.." class="icon icon-home"> ESP-Drone
+        </a><div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+      <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" title="Type search term here" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../..">Inicio</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../../primeros-pasos/">Primeros pasos</a>
+                </li>
+              </ul>
+              <p class="caption"><span class="caption-text">Firmware</span></p>
+              <ul class="current">
+                  <li class="toctree-l1"><a class="reference internal" href="../instalacion/">Compilar y flashear</a>
+                  </li>
+                  <li class="toctree-l1 current"><a class="reference internal current" href="#">Primer encendido</a>
+    <ul class="current">
+    <li class="toctree-l2"><a class="reference internal" href="#alimentacion-y-comunicacion">Alimentación y comunicación</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#sensores">Sensores</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#motores">Motores</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#ejes-de-los-sensores">Ejes de los sensores</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#primer-vuelo">Primer vuelo</a>
+    </li>
+    </ul>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../arquitectura/">Arquitectura</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../estimadores-control/">Estimadores y controladores</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../parametros/">Parámetros y telemetría</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../seguridad/">Seguridad</a>
+                  </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../../edclient/">edclient</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../../simulador/">Simulador</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../../edlib/">edlib</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../../gateway/">Gateway ESP-NOW</a>
+                </li>
+              </ul>
+      </div>
+    </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+      <nav class="wy-nav-top" role="navigation" aria-label="Mobile navigation menu">
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../..">ESP-Drone</a>
+        
+      </nav>
+      <div class="wy-nav-content">
+        <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="../.." class="icon icon-home" aria-label="Docs"></a></li>
+          <li class="breadcrumb-item">Firmware</li>
+      <li class="breadcrumb-item active">Primer encendido</li>
+    <li class="wy-breadcrumbs-aside">
+          <a href="https://github.com/juliordzcer/esp-drone/edit/hw/s3-v1.3/docs/wiki/firmware/primer-encendido.md" class="icon icon-github"> Edit on GitHub</a>
+    </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+            <div class="section" itemprop="articleBody">
+              
+                <h1 id="primer-encendido-de-una-placa-nueva">Primer encendido de una placa nueva<a class="headerlink" href="#primer-encendido-de-una-placa-nueva" title="Permanent link">&para;</a></h1>
+<p>Sigue estos pasos <strong>sin hélices</strong> con cada placa nueva. La lista completa y actualizada está en
+<a href="https://github.com/juliordzcer/esp-drone/blob/hw/s3-v1.3/docs/HW_S3_V1.3.md"><code>docs/HW_S3_V1.3.md</code></a>.</p>
+<h2 id="alimentacion-y-comunicacion">Alimentación y comunicación<a class="headerlink" href="#alimentacion-y-comunicacion" title="Permanent link">&para;</a></h2>
+<ol>
+<li>Interruptor SW3 en ON: hay 3.3 V y el PC ve <code>/dev/ttyACM*</code>.</li>
+<li>Flashea por USB y abre el monitor (<code>idf.py -p /dev/ttyACM0 flash monitor</code>).</li>
+<li>El LED verde (GPIO 4) y el rojo (GPIO 42) parpadean al arrancar.</li>
+</ol>
+<h2 id="sensores">Sensores<a class="headerlink" href="#sensores" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>Prueba</th>
+<th>Resultado esperado</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Bus I2C (SDA 16, SCL 17)</td>
+<td>Responden 0x29 (VL53L1X) y 0x76 (BMP388)</td>
+</tr>
+<tr>
+<td>BMI088</td>
+<td>Chip ID 0x1E en el acelerómetro (CS 10) y 0x0F en el giroscopio (CS 9)</td>
+</tr>
+<tr>
+<td>PMW3901</td>
+<td>Product ID 0x49 tras el reset</td>
+</tr>
+<tr>
+<td>Batería</td>
+<td>El ADC coincide con el multímetro en ±0.05 V</td>
+</tr>
+<tr>
+<td>Buzzer</td>
+<td>Suena a 4 kHz y el pin queda en bajo</td>
+</tr>
+</tbody>
+</table>
+<h2 id="motores">Motores<a class="headerlink" href="#motores" title="Permanent link">&para;</a></h2>
+<ol>
+<li>Prueba cada motor por separado (Consola de edclient o <code>scripts/motors/</code>).</li>
+<li>Comprueba posición y sentido de giro: M1 adelante-derecha (antihorario), M2 atrás-derecha
+   (horario), M3 atrás-izquierda (antihorario), M4 adelante-izquierda (horario).</li>
+</ol>
+<h2 id="ejes-de-los-sensores">Ejes de los sensores<a class="headerlink" href="#ejes-de-los-sensores" title="Permanent link">&para;</a></h2>
+<p>Con el dron conectado, inclínalo y revisa en <strong>Panel</strong> o <strong>Gráficas</strong>:</p>
+<ul>
+<li>Nariz abajo → pitch negativo; costado derecho abajo → roll positivo; giro a la derecha →
+  yaw disminuye.</li>
+<li>Al moverlo hacia adelante sobre una superficie con textura, la velocidad estimada en x debe ser positiva.</li>
+</ul>
+<h2 id="primer-vuelo">Primer vuelo<a class="headerlink" href="#primer-vuelo" title="Permanent link">&para;</a></h2>
+<ol>
+<li>Vuelo manual estabilizado a baja altura, con el estimador complementario.</li>
+<li>Luego con ToF y flujo (estimador híbrido o Kalman 9) en <em>Mantener altura</em> y
+   <em>Mantener posición</em>.</li>
+<li>Mide el <strong>empuje de hover</strong> con el <a href="../parametros/#registro-de-vuelo">registro de vuelo</a> y
+   ajusta <code>velCtlPid.thrustBase</code>. Pesa el dron y actualiza la masa de los controladores
+   geométricos.</li>
+</ol>
+              
+            </div>
+          </div><footer>
+    <div class="rst-footer-buttons" role="navigation" aria-label="Footer Navigation">
+        <a href="../instalacion/" class="btn btn-neutral float-left" title="Compilar y flashear"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+        <a href="../arquitectura/" class="btn btn-neutral float-right" title="Arquitectura">Next <span class="icon icon-circle-arrow-right"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <!-- Copyright etc -->
+  </div>
+
+  Built with <a href="https://www.mkdocs.org/">MkDocs</a> using a <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+</footer>
+          
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+
+  <div class="rst-versions" role="note" aria-label="Versions">
+  <span class="rst-current-version" data-toggle="rst-current-version">
+    
+        <span>
+          <a href="https://github.com/juliordzcer/esp-drone" class="fa fa-github" style="color: #fcfcfc"> GitHub</a>
+        </span>
+    
+    
+      <span><a href="../instalacion/" style="color: #fcfcfc">&laquo; Previous</a></span>
+    
+    
+      <span><a href="../arquitectura/" style="color: #fcfcfc">Next &raquo;</a></span>
+    
+  </span>
+</div>
+    <script src="../../js/jquery-3.6.0.min.js"></script>
+    <script>var base_url = "../..";</script>
+    <script src="../../js/theme_extra.js"></script>
+    <script src="../../js/theme.js"></script>
+      <script src="../../search/main.js"></script>
+    <script>
+        jQuery(function () {
+            SphinxRtdTheme.Navigation.enable(true);
+        });
+    </script>
+
+</body>
+</html>

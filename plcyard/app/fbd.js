@@ -69,7 +69,7 @@ const Fbd = (() => {
     const h = Math.max(el.clientHeight - 8, ...fbd.blocks.map((b) => b.y + height(b) + 80));
     if (!fbd.blocks.length) s += `<text class="empty" x="${w / 2}" y="80" text-anchor="middle">Empty diagram. Click a block above, or drag it here.</text>`;
     s += `<line id="fbd-rubber" class="rubber" x1="0" y1="0" x2="0" y2="0" visibility="hidden"/>`;
-    el.innerHTML = `<svg width="${w}" height="${h}" role="img" aria-label="Function block diagram">${s}</svg>`;
+    el.innerHTML = `<svg width="${w}" height="${h}" role="img" aria-label="${I18N.t("Function block diagram")}">${s}</svg>`;
   }
 
   // Where a new block goes when it is clicked in the bar: below the others.

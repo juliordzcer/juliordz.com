@@ -29,13 +29,15 @@ const js = (proxy) => { const v = proxy.toJs({ dict_converter: Object.fromEntrie
 
 // -- start ---------------------------------------------------------------------------------------
 async function start() {
+  await I18N.load(VERSION);
   try {
     py = await loadPyodide();
-    $("loadmsg").textContent = "Unpacking PLCYard…";
+    $("loadmsg").textContent = t("Unpacking PLCYard…");
     const zip = await (await fetch(`plcyard.zip?v=${VERSION}`)).arrayBuffer();
     py.unpackArchive(zip, "zip", { extractDir: "/home/pyodide/app" });
     py.runPython("import sys; sys.path.insert(0, '/home/pyodide/app')");
     S = py.runPython("from plcyard.webapp import Session\nSession()");
+    S.set_language(I18N.lang);
     EXAMPLES = js(S.examples());
     buildHighlighter(js(S.st_syntax()));
     EXERCISES = js(S.exercises());
@@ -56,7 +58,7 @@ async function start() {
     offline();
     if (!store.get("plcyard.welcomed")) { store.set("plcyard.welcomed", "1"); $("d-welcome").showModal(); }
   } catch (e) {
-    $("loadmsg").textContent = "Could not start the simulator: " + e;
+    $("loadmsg").textContent = t("Could not start the simulator: {e}", { e });
   }
 }
 
@@ -89,25 +91,25 @@ function render(force) {
   $("led-fault").className = "led" + (state.fault ? " fault" : "");
   $("b-pgm").classList.toggle("on", state.mode !== "RUN");
   $("b-run").classList.toggle("on", state.mode === "RUN");
-  $("scans").textContent = state.mode === "RUN" ? `${state.scans} scans` : "";
+  $("scans").textContent = state.mode === "RUN" ? t("{n} scans", { n: state.scans }) : "";
   $("b-undo").disabled = !state.can_undo;
   $("b-redo").disabled = !state.can_redo;
   $("b-download").hidden = !(state.mode === "RUN" && state.dirty);
-  if (state.fault) say("Fault: " + state.fault, true);
+  if (state.fault) say(t("Fault: {f}", { f: state.fault }), true);
   else if (state.problems.length) say(state.problems.join(" · "), true);
   else if (state.message) say(state.message);
   for (const sel of document.querySelectorAll(".simsel")) {
-    if (!sel.options.length) for (const [k, t] of state.sims) sel.add(new Option(t, k));
+    if (!sel.options.length) for (const [k, name] of state.sims) sel.add(new Option(t(name), k));
     if (document.activeElement !== sel) sel.value = state.machine.kind;
   }
   $("led-run2").className = "led" + (state.mode === "RUN" ? " run" : "") + (state.fault ? " fault" : "");
-  $("b-runm").textContent = state.mode !== "RUN" ? "RUN" : state.dirty ? "Send" : "Stop";
-  $("tab-lab").textContent = state.lab ? "Exercise" : "Exercises";
+  $("b-runm").textContent = state.mode !== "RUN" ? "RUN" : state.dirty ? t("Send") : t("Stop");
+  $("tab-lab").textContent = t(state.lab ? "Exercise" : "Exercises");
   $("io").hidden = !state.io;
   $("machine").hidden = !!state.io;
   $("simhint").textContent = state.io
-    ? "Click a switch to flip it (pushbuttons spring back). Select an instruction, then drag or tap an address to use it."
-    : "Hold a button to press it. Select an instruction, then drag or tap an address to use it.";
+    ? t("Click a switch to flip it (pushbuttons spring back). Select an instruction, then drag or tap an address to use it.")
+    : t("Hold a button to press it. Select an instruction, then drag or tap an address to use it.");
   if (state.io) renderIo(state.io);
   else {
     if (machineKind !== state.machine.kind) { machineKind = state.machine.kind; Sims.reset(); Machines.reset(); }
@@ -163,7 +165,7 @@ function renderSt(st) {
   if (key === stKey) return;
   stKey = key;
   paintCode(ta.value, st.lines);
-  $("stprob").textContent = st.problems.slice(0, 6).join("\n") + (st.problems.length > 6 ? `\n…and ${st.problems.length - 6} more` : "");
+  $("stprob").textContent = st.problems.slice(0, 6).join("\n") + (st.problems.length > 6 ? "\n" + t("…and {n} more", { n: st.problems.length - 6 }) : "");
   $("stwatch").innerHTML = st.watch.map(([n, v]) => `<tr><td>${esc(n)}</td><td>${esc(v)}</td></tr>`).join("");
 }
 
@@ -177,9 +179,9 @@ function renderRoutines(st) {
   routinesKey = key;
   $("routines").innerHTML = st.routines.map((r) => {
     const on = r.number === st.routine, main = r.number === 2;
-    return `<span class="rt${on ? " on" : ""}" role="tab" aria-selected="${on}" data-routine="${r.number}" title="${esc(r.title)}: ${esc(KIND[r.kind] ? r.kind + " " : "")}in ${esc(LANG[r.language])}">
+    return `<span class="rt${on ? " on" : ""}" role="tab" aria-selected="${on}" data-routine="${r.number}" title="${esc(r.title)}: ${esc(KIND[r.kind] ? r.kind + " " : "")}${esc(t("in"))} ${esc(LANG[r.language])}">
       ${esc(r.title)} <span class="k">${esc([KIND[r.kind], LANG[r.language]].filter(Boolean).join(" · "))}</span>
-      ${on && !main ? `<button data-rename title="Rename">✎</button><button data-delroutine title="Delete">✕</button>` : ""}</span>`;
+      ${on && !main ? `<button data-rename title="${esc(t("Rename"))}">✎</button><button data-delroutine title="${esc(t("Delete"))}">✕</button>` : ""}</span>`;
   }).join("");
 }
 
@@ -190,13 +192,13 @@ function renderInterface(st) {
   const key = JSON.stringify(f);
   if (key === ifaceKey || box.contains(document.activeElement)) return;
   ifaceKey = key;
-  box.querySelector("summary").textContent = `Parameters (${f.rows.length})`;
+  box.querySelector("summary").textContent = t("Parameters ({n})", { n: f.rows.length });
   const types = js(S.tag_types());
   const row = (p) => `<div class="prow" data-section="${esc(p.section)}" data-old="${esc(p.name)}">
-    ${p.name ? `<span class="sec">${esc(p.section)}</span>` : `<select name="section" aria-label="Section">${f.sections.map((x) => `<option>${esc(x)}</option>`).join("")}</select>`}
-    <input name="name" value="${esc(p.name)}" placeholder="Name" aria-label="Name" spellcheck="false">
-    <input name="type" list="tagtypes" value="${esc(p.type)}" aria-label="Data type" spellcheck="false">
-    ${p.name ? `<button class="ghost" data-delparam title="Delete">✕</button>` : `<button class="primary" data-addparam title="Add">+</button>`}</div>`;
+    ${p.name ? `<span class="sec">${esc(p.section)}</span>` : `<select name="section" aria-label="${esc(t("Section"))}">${f.sections.map((x) => `<option>${esc(x)}</option>`).join("")}</select>`}
+    <input name="name" value="${esc(p.name)}" placeholder="${esc(t("Name"))}" aria-label="${esc(t("Name"))}" spellcheck="false">
+    <input name="type" list="tagtypes" value="${esc(p.type)}" aria-label="${esc(t("Data type"))}" spellcheck="false">
+    ${p.name ? `<button class="ghost" data-delparam title="${esc(t("Delete"))}">✕</button>` : `<button class="primary" data-addparam title="${esc(t("Add"))}">+</button>`}</div>`;
   $("ifacelist").innerHTML = f.rows.map(row).join("") + row({ section: f.sections[0], name: "", type: "BOOL" });
   $("tagtypes").innerHTML = types.map((x) => `<option value="${esc(x)}">`).join("");
   const which = JSON.stringify(st.routines.find((r) => r.number === st.routine));
@@ -249,15 +251,15 @@ function renderBlockForm(st) {
   if (key === opsKey) return;
   opsKey = key;
   form.hidden = !b && !wireSel;
-  if (wireSel) { form.innerHTML = `<span class="what">Wire</span><button type="button" id="b-del">Delete wire</button>`; return; }
+  if (wireSel) { form.innerHTML = `<span class="what">${esc(t("Wire"))}</span><button type="button" id="b-del">${esc(t("Delete wire"))}</button>`; return; }
   if (!b) return;
   const field = (name, label, value, attrs = "") => `<label>${esc(label)}<input name="${esc(name)}" list="opsugg" value="${esc(value)}" autocomplete="off" spellcheck="false" ${attrs}></label>`;
   form.innerHTML = `<span class="what" title="${esc(b.title)}">${esc(b.type)}</span>` +
-    (b.kind ? field("@instance", `${b.kind} tag`, b.instance) : "") +
-    b.pins.map((p) => p.wired ? field(p.name, p.name, "wired", "disabled") : field(p.name, p.name + (p.out ? " →" : ""), p.op, `placeholder="${p.out ? "none" : "tag, address or value"}"`)).join("") +
-    `<button class="primary" type="submit">Apply</button>` +
-    (b.variable ? `<button type="button" id="b-addin">Input +</button>${b.inputs > 2 ? `<button type="button" id="b-remin">Input −</button>` : ""}` : "") +
-    `<button type="button" id="b-del">Delete</button>` +
+    (b.kind ? field("@instance", t("{kind} tag", { kind: b.kind }), b.instance) : "") +
+    b.pins.map((p) => p.wired ? field(p.name, p.name, t("wired"), "disabled") : field(p.name, p.name + (p.out ? " →" : ""), p.op, `placeholder="${esc(t(p.out ? "none" : "tag, address or value"))}"`)).join("") +
+    `<button class="primary" type="submit">${esc(t("Apply"))}</button>` +
+    (b.variable ? `<button type="button" id="b-addin">${esc(t("Input +"))}</button>${b.inputs > 2 ? `<button type="button" id="b-remin">${esc(t("Input −"))}</button>` : ""}` : "") +
+    `<button type="button" id="b-del">${esc(t("Delete"))}</button>` +
     (b.problems.length ? `<span class="probs">${esc(b.problems.join(" · "))}</span>` : "");
 }
 
@@ -268,11 +270,11 @@ function renderTags(tags) {
   if (key === tagsKey || pane.contains(document.activeElement)) return;
   tagsKey = key;
   const types = js(S.tag_types());
-  const row = (t) => `<div class="tagrow" data-old="${esc(t.name)}">
-      <input name="name" value="${esc(t.name)}" placeholder="Name" aria-label="Name" spellcheck="false">
-      <input name="type" list="tagtypes" value="${esc(t.type)}" aria-label="Type" title="A type, or an array like DINT[10]" spellcheck="false">
-      ${t.name ? `<button class="ghost" data-del title="Delete">✕</button>` : `<button class="primary" data-add title="Add">+</button>`}
-      <input class="tc" name="comment" value="${esc(t.comment)}" placeholder="Description" aria-label="Description"></div>`;
+  const row = (g) => `<div class="tagrow" data-old="${esc(g.name)}">
+      <input name="name" value="${esc(g.name)}" placeholder="${esc(t("Name"))}" aria-label="${esc(t("Name"))}" spellcheck="false">
+      <input name="type" list="tagtypes" value="${esc(g.type)}" aria-label="${esc(t("Type"))}" title="${esc(t("A type, or an array like DINT[10]"))}" spellcheck="false">
+      ${g.name ? `<button class="ghost" data-del title="${esc(t("Delete"))}">✕</button>` : `<button class="primary" data-add title="${esc(t("Add"))}">+</button>`}
+      <input class="tc" name="comment" value="${esc(g.comment)}" placeholder="${esc(t("Description"))}" aria-label="${esc(t("Description"))}"></div>`;
   $("taglist").innerHTML = tags.map(row).join("") + row({ name: "", type: "BOOL", comment: "" });
   $("tagtypes").innerHTML = types.map((x) => `<option value="${esc(x)}">`).join("");
 }
@@ -282,18 +284,18 @@ function renderIo(io) {
   const some = all.some((p) => p.used || p.symbol);
   const full = showAllIo || !some;
   const shown = (p) => full || p.used || p.symbol;
-  const card = (c, input) => !c.points.some(shown) ? "" : `<div class="card-io"><h3>${esc(c.name)}</h3>${c.points.filter(shown).map((p) => `
+  const card = (c, input) => !c.points.some(shown) ? "" : `<div class="card-io"><h3>${esc(t(c.name))}</h3>${c.points.filter(shown).map((p) => `
     <div class="pt">${input
       ? `<button class="sw${p.momentary ? " pb" : ""}${p.pressed !== p.nc ? " closed" : ""}" data-slot="${c.slot}" data-bit="${p.bit}"
-           data-pb="${p.momentary ? 1 : 0}" aria-pressed="${p.pressed}" title="${p.nc ? "Normally closed" : "Normally open"}${p.momentary ? " pushbutton" : " switch"}"></button>`
-      : `<span class="lamp${p.on ? " on" : ""}" role="img" aria-label="${p.on ? "on" : "off"}"></span>`}
-      <span class="txt"><span class="addr" draggable="true" data-addr="${esc(p.addr)}" title="Drag onto an instruction · double-click to describe">${esc(p.addr)}</span>
+           data-pb="${p.momentary ? 1 : 0}" aria-pressed="${p.pressed}" title="${esc(t((p.nc ? "Normally closed" : "Normally open") + (p.momentary ? " pushbutton" : " switch")))}"></button>`
+      : `<span class="lamp${p.on ? " on" : ""}" role="img" aria-label="${esc(t(p.on ? "on" : "off"))}"></span>`}
+      <span class="txt"><span class="addr" draggable="true" data-addr="${esc(p.addr)}" title="${esc(t("Drag onto an instruction · double-click to describe"))}">${esc(p.addr)}</span>
       ${p.symbol ? `<span class="sym">${esc(p.symbol)}</span>` : ""}</span></div>`).join("")}</div>`;
   const bcd = !full && !io.bcd_used ? "" : `<div class="bcd"><span class="mono">${esc(io.thumb_name)} (BCD)</span><span class="digits">${io.thumbwheels.map((d, i) =>
-      `<input type="number" min="0" max="9" value="${d}" data-digit="${i}" aria-label="Thumbwheel digit ${i + 1}">`).join("")}</span>
+      `<input type="number" min="0" max="9" value="${d}" data-digit="${i}" aria-label="${esc(t("Thumbwheel digit {n}", { n: i + 1 }))}">`).join("")}</span>
     <span class="mono">${esc(io.display_name)} (BCD)</span><span class="digits">${io.display.map((d) => `<span class="seg">${d > 9 ? "-" : d}</span>`).join("")}</span></div>`;
   const html = `<div class="cards">${card(io.inputs[0], true)}${card(io.outputs[0], false)}${card(io.inputs[1], true)}${card(io.outputs[1], false)}</div>
-    ${some ? `<button class="linkbtn" id="b-allio">${showAllIo ? "Show only the points in use" : `Show all ${all.length} points`}</button>` : ""}${bcd}`;
+    ${some ? `<button class="linkbtn" id="b-allio">${esc(showAllIo ? t("Show only the points in use") : t("Show all {n} points", { n: all.length }))}</button>` : ""}${bcd}`;
   const el = $("io");
   if (el.dataset.html === html) return;
   el.dataset.html = html;
@@ -389,31 +391,31 @@ function renderLadder(st) {
   });
   s += `<line class="rail" x1="${left}" y1="${y}" x2="${left}" y2="${y + 40}"/><line class="rail" x1="${left + rails}" y1="${y}" x2="${left + rails}" y2="${y + 40}"/>`;
   s += `<line class="w" x1="${left}" y1="${y + 20}" x2="${left + rails}" y2="${y + 20}"/><text class="lab endtag" x="${left + rails / 2}" y="${y + 24}" text-anchor="middle">END</text>`;
-  if (!st.rungs.length) s += `<text class="empty" x="${left + rails / 2}" y="${y + 64}" text-anchor="middle">Empty program. Click “Rung +”, then an instruction.</text>`;
+  if (!st.rungs.length) s += `<text class="empty" x="${left + rails / 2}" y="${y + 64}" text-anchor="middle">${esc(t("Empty program. Click “Rung +”, then an instruction."))}</text>`;
   y += st.rungs.length ? 0 : 40;
   y += 50;
-  el.innerHTML = `<svg width="${left + rails + MARGIN + 4}" height="${y}" role="img" aria-label="Ladder program">${s}</svg>`;
+  el.innerHTML = `<svg width="${left + rails + MARGIN + 4}" height="${y}" role="img" aria-label="${esc(t("Ladder program"))}">${s}</svg>`;
 }
 
 function renderOperands(st) {
   const form = $("operands");
   const o = st.operands;
-  const key = o ? JSON.stringify([st.sel, o.mnemonic, o.labels, o.values, o.problems]) : "";
+  const key = JSON.stringify(o ? [st.sel, o.mnemonic, o.labels, o.values, o.problems] : [st.sel]);
   if (key === opsKey) return;
   opsKey = key;
   if (!o) {
     const rungSel = st.sel && st.sel[0] === "rung" && st.sel[1] < st.rungs.length;
     form.hidden = !rungSel;
-    if (rungSel) form.innerHTML = `<span class="what">Rung ${String(st.sel[1]).padStart(3, "0")}</span>
-      <button type="button" id="b-comment">Comment…</button><button type="button" id="b-del">Delete rung</button>`;
+    if (rungSel) form.innerHTML = `<span class="what">${esc(t("Rung"))} ${String(st.sel[1]).padStart(3, "0")}</span>
+      <button type="button" id="b-comment">${esc(t("Comment…"))}</button><button type="button" id="b-del">${esc(t("Delete rung"))}</button>`;
     return;
   }
   const n = Math.max(o.values.length, 1);
   form.hidden = false;
   form.innerHTML = `<span class="what" title="${esc(o.title)}">${esc(o.mnemonic)}</span>` +
-    Array.from({ length: n }, (_, i) => `<label>${esc(o.labels[i] || "Operand")}<input name="op" list="opsugg" value="${esc(o.values[i] || "")}" placeholder="address or tag" autocomplete="off" spellcheck="false"></label>`).join("") +
-    `<button class="primary" type="submit">Apply</button><button type="button" id="b-branch">Branch</button>
-     <button type="button" id="b-leg">Add leg</button><button type="button" id="b-del">Delete</button>` +
+    Array.from({ length: n }, (_, i) => `<label>${esc(t(o.labels[i] || "Operand"))}<input name="op" list="opsugg" value="${esc(o.values[i] || "")}" placeholder="${esc(t("address or tag"))}" autocomplete="off" spellcheck="false"></label>`).join("") +
+    `<button class="primary" type="submit">${esc(t("Apply"))}</button><button type="button" id="b-branch">${esc(t("Branch"))}</button>
+     <button type="button" id="b-leg">${esc(t("Add leg"))}</button><button type="button" id="b-del">${esc(t("Delete"))}</button>` +
     (o.problems.length ? `<span class="probs">${esc(o.problems.join(" · "))}</span>` : "");
 }
 
@@ -428,12 +430,12 @@ function buildPalette() {
   const fb = paletteLang === "FBD";
   palette = js(fb ? S.fbd_palette() : S.palette());
   family = family || palette[0].family;
-  $("families").innerHTML = palette.map((f) => `<button role="tab" class="${f.family === family ? "on" : ""}" data-family="${esc(f.family)}">${esc(f.family)}</button>`).join("");
+  $("families").innerHTML = palette.map((f) => `<button role="tab" class="${f.family === family ? "on" : ""}" data-family="${esc(f.family)}">${esc(t(f.family))}</button>`).join("");
   const fam = palette.find((f) => f.family === family) || palette[0];
   $("palette").innerHTML = fb
-    ? fam.items.map((i) => `<button data-b="${esc(i.m)}" draggable="true" title="${esc(i.title)} · click to add, or drag onto the diagram">${esc(i.name)}</button>`).join("")
-    : `<button data-m="RUNG" title="New rung">Rung +</button><button data-m="BRANCH" title="Put the selected instruction in a branch">Branch</button>` +
-      fam.items.map((i) => `<button data-m="${esc(i.m)}" title="${esc(i.title)}">${ICON[i.shape] || ""}${esc(i.name)}</button>`).join("");
+    ? fam.items.map((i) => `<button data-b="${esc(i.m)}" draggable="true" title="${esc(t(i.title))} · ${esc(t("click to add, or drag onto the diagram"))}">${esc(i.name)}</button>`).join("")
+    : `<button data-m="RUNG" title="${esc(t("New rung"))}">${esc(t("Rung +"))}</button><button data-m="BRANCH" title="${esc(t("Put the selected instruction in a branch"))}">${esc(t("Branch"))}</button>` +
+      fam.items.map((i) => `<button data-m="${esc(i.m)}" title="${esc(t(i.title))}">${ICON[i.shape] || ""}${esc(i.name)}</button>`).join("");
 }
 
 function act(fn) {
@@ -478,7 +480,7 @@ function wire() {
     const a = e.target.closest(".addr");
     if (!a) return;
     const cur = state.io.inputs.concat(state.io.outputs).flatMap((c) => c.points).find((p) => p.addr === a.dataset.addr);
-    const text = prompt(`Description of ${a.dataset.addr} (add "NC" for a normally closed switch, "PB" for a pushbutton):`, cur?.symbol || "");
+    const text = prompt(t('Description of {addr} (add "NC" for a normally closed switch, "PB" for a pushbutton):', { addr: a.dataset.addr }), cur?.symbol || "");
     if (text !== null) { S.set_symbol(a.dataset.addr, text); changed(); }
   });
   Sims.wire($("machine"), (name, value) => { S.sim_action(name, value); render(true); });
@@ -507,7 +509,7 @@ function wire() {
     const a = e.target.closest(".addr");
     if (!a || !state) return;
     const box = lastOpInput && document.contains(lastOpInput) && !lastOpInput.disabled ? lastOpInput : $("operands").querySelector("input:not([disabled])");
-    if (!box || $("operands").hidden) { say("Select an instruction first, then tap an address to use it."); return; }
+    if (!box || $("operands").hidden) { say(t("Select an instruction first, then tap an address to use it.")); return; }
     box.value = a.dataset.addr;
     $("operands").requestSubmit();
     if (window.innerWidth <= 760) setTab("program");
@@ -550,10 +552,10 @@ function wire() {
     if (!t) return;
     const n = +t.dataset.routine, r = state.routines.find((x) => x.number === n);
     if (e.target.closest("[data-rename]")) {
-      const name = prompt("New name (calls to it are renamed too):", r.title);
+      const name = prompt(t("New name (calls to it are renamed too):"), r.title);
       if (name !== null) act(() => S.rename_routine(n, name));
     } else if (e.target.closest("[data-delroutine]")) {
-      if (confirm(`Delete ${r.title}? Calls to it stop the download until they are removed.`)) act(() => S.delete_routine(n));
+      if (confirm(t("Delete {name}? Calls to it stop the download until they are removed.", { name: r.title }))) act(() => S.delete_routine(n));
     } else if (n !== state.routine) { S.open_routine(n); opsKey = ""; render(true); }
   });
   $("b-addroutine").onclick = () => { $("newroutine").hidden = false; $("newroutine").elements.name.focus(); };
@@ -627,7 +629,7 @@ function wire() {
     else if (id === "b-remin") act(() => S.set_inputs(state.block.id, state.block.inputs - 1));
     else if (id === "b-comment") {
       const n = state.sel[1];
-      const text = prompt("Rung comment:", state.rungs[n].comment);
+      const text = prompt(t("Rung comment:"), state.rungs[n].comment);
       if (text !== null) act(() => S.set_comment(n, text));
     }
   });
@@ -648,7 +650,7 @@ function wire() {
   $("b-pgm").onclick = () => { S.set_mode("PGM"); render(true); };
   document.querySelectorAll("[data-new]").forEach((b) => b.onclick = () => {
     closeMenus();
-    S.new(b.dataset.new); closeLab(); changed("New program. Pick an instruction above to start.");
+    S.new(b.dataset.new); closeLab(); changed(t("New program. Pick an instruction above to start."));
   });
   const ta = $("stsrc");
   ta.setAttribute("wrap", "off");
@@ -677,7 +679,7 @@ function wire() {
     if (e.key === "Enter" && r && !r.dataset.old) tagChange(r, true);
   });
   document.querySelectorAll("[data-lablang]").forEach((b) => b.onclick = () => {
-    if (!state.lab || !confirm("Start this exercise again with an empty program in " + b.textContent + "?")) return;
+    if (!state.lab || !confirm(t("Start this exercise again with an empty program in {lang}?", { lang: b.textContent }))) return;
     showLab(js(S.open_exercise(state.lab.id, b.dataset.lablang)));
     changed();
   });
@@ -716,7 +718,7 @@ function wire() {
     if (!f) return;
     const err = S.open_text(await f.text());
     e.target.value = "";
-    if (err) say(err, true); else { closeLab(); changed("Opened " + f.name); }
+    if (err) say(err, true); else { closeLab(); changed(t("Opened {name}", { name: f.name })); }
   };
   $("b-save").onclick = () => {
     closeMenus();
@@ -727,6 +729,10 @@ function wire() {
     URL.revokeObjectURL(a.href);
   };
   $("b-check").onclick = check;
+  for (const [k, name] of Object.entries(I18N.LANGS)) $("b-lang").add(new Option(name, k));
+  $("b-lang").value = I18N.lang;
+  $("b-lang").onchange = (e) => I18N.set(e.target.value);
+  $("lang-note").hidden = I18N.lang === "en";
   $("b-labclose").onclick = closeLab;
   window.addEventListener("resize", () => render(true));
 }
@@ -752,7 +758,7 @@ function thumbnails(previews) {
     io += `<circle class="lt ${k === 0 ? "green on" : "amber"}" cx="160" cy="${30 + k * 34}" r="11"/>`;
     io += `<line class="steel" x1="78" y1="${30 + k * 34}" x2="140" y2="${30 + k * 34}" stroke-dasharray="4 4"/>`;
   }
-  out.io = `<svg viewBox="0 0 200 160" class="draw thumb" role="img" aria-label="I/O panel">${io}</svg>`;
+  out.io = `<svg viewBox="0 0 200 160" class="draw thumb" role="img" aria-label="${esc(t("I/O panel"))}">${io}</svg>`;
   return out;
 }
 
@@ -764,19 +770,19 @@ function groups(items) {
 
 function openExercises() {
   const ok = done();
-  $("d-ex-progress").textContent = `${EXERCISES.filter((x) => ok.has(x.id)).length} of ${EXERCISES.length} done`;
-  $("d-ex-list").innerHTML = [...groups(EXERCISES)].map(([machine, list]) => `<section class="mgroup"><div class="mhead">${THUMBS[list[0].sim] || ""}<h3>${esc(machine)}</h3></div><div class="cardgrid">` +
+  $("d-ex-progress").textContent = t("{n} of {m} done", { n: EXERCISES.filter((x) => ok.has(x.id)).length, m: EXERCISES.length });
+  $("d-ex-list").innerHTML = [...groups(EXERCISES)].map(([machine, list]) => `<section class="mgroup"><div class="mhead">${THUMBS[list[0].sim] || ""}<h3>${esc(t(machine))}</h3></div><div class="cardgrid">` +
     list.map((x) => `<button class="pick${ok.has(x.id) ? " done" : ""}" data-lab="${esc(x.id)}">
       <span class="num">${esc(x.id)}</span><span class="ptitle">${esc(x.title)}</span>
-      <span class="lvl" title="Level ${x.level} of 5">${"●".repeat(x.level)}${"○".repeat(5 - x.level)}</span>
-      ${ok.has(x.id) ? `<span class="tick" title="Passed">✔</span>` : ""}</button>`).join("") + `</div></section>`).join("");
+      <span class="lvl" title="${esc(t("Level {n} of 5", { n: x.level }))}">${"●".repeat(x.level)}${"○".repeat(5 - x.level)}</span>
+      ${ok.has(x.id) ? `<span class="tick" title="${esc(t("Passed"))}">✔</span>` : ""}</button>`).join("") + `</div></section>`).join("");
   $("d-exercises").showModal();
 }
 
 function openExamples() {
-  const LANG = { LD: "Ladder", ST: "Structured text", FBD: "Function blocks" };
-  $("d-exa-list").innerHTML = [...groups(EXAMPLES)].map(([machine, list]) => `<section class="mgroup"><div class="mhead">${THUMBS[list[0].sim] || ""}<h3>${esc(machine)}</h3></div><div class="cardgrid">` +
-    list.map((x) => `<button class="pick ex" data-example="${esc(x.key)}"><span class="ptitle">${esc(x.title)}</span>
+  const LANG = { LD: t("Ladder"), ST: t("Structured text"), FBD: t("Function blocks") };
+  $("d-exa-list").innerHTML = [...groups(EXAMPLES)].map(([machine, list]) => `<section class="mgroup"><div class="mhead">${THUMBS[list[0].sim] || ""}<h3>${esc(t(machine))}</h3></div><div class="cardgrid">` +
+    list.map((x) => `<button class="pick ex" data-example="${esc(x.key)}"><span class="ptitle">${esc(t(x.title))}</span>
       <span class="lang">${esc(x.languages.map((l) => LANG[l]).join(" + "))}</span></button>`).join("") + `</div></section>`).join("");
   $("d-examples").showModal();
 }
@@ -801,12 +807,12 @@ function closeLab() {
 }
 
 function check() {
-  $("report").innerHTML = "<p class='muted'>Checking… the machine runs several minutes of simulated time, this can take a few seconds.</p>";
+  $("report").innerHTML = `<p class="muted">${esc(t("Checking… the machine runs several minutes of simulated time, this can take a few seconds."))}</p>`;
   setTimeout(() => {
     const r = js(S.check());
     if (r.error) { $("report").innerHTML = `<p class="bad">${esc(r.error)}</p>`; return; }
     if (r.passed) { const ok = done(); ok.add(state.lab.id); store.set("plcyard.done", JSON.stringify([...ok])); }
-    $("report").innerHTML = `<p class="${r.passed ? "passed" : ""}"><strong>${r.passed ? "✔ All requirements met" : "Score"}: ${esc(r.score)}</strong></p><ul>` +
+    $("report").innerHTML = `<p class="${r.passed ? "passed" : ""}"><strong>${esc(t(r.passed ? "✔ All requirements met" : "Score"))}: ${esc(r.score)}</strong></p><ul>` +
       r.checks.map((c) => `<li><span class="${c.passed ? "ok" : "bad"}">${c.passed ? "✔" : "✘"}</span> ${esc(c.text)}${!c.passed && c.detail ? `<span class="detail">${esc(c.detail)}</span>` : ""}</li>`).join("") + "</ul>";
   }, 20);
 }

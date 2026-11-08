@@ -6,7 +6,7 @@ const Machines = (() => {
   const e = (s) => String(s).replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
   const f0 = (v) => Number(v).toFixed(0), f1 = (v) => Number(v).toFixed(1);
   const cls = (base, on) => base + (on ? " on" : "");
-  const svg = (w, h, label, body) => `<svg viewBox="0 0 ${w} ${h}" class="draw" role="img" aria-label="${e(label)}">${body}</svg>`;
+  const svg = (w, h, label, body) => `<svg viewBox="0 0 ${w} ${h}" class="draw" role="img" aria-label="${e(I18N.t(label))}">${body}</svg>`;
   const cap = (x, y, t, anchor) => `<text class="cap" x="${x}" y="${y}"${anchor ? ` text-anchor="${anchor}"` : ""}>${e(t)}</text>`;
   const lamp = (x, y, on, tone, label) => `<circle class="lt ${tone}${on ? " on" : ""}" cx="${x}" cy="${y}" r="8"/>${label ? cap(x + 13, y + 4, label) : ""}`;
   const tank = (x, y, w, h, level, cls2 = "product") => {
@@ -25,7 +25,7 @@ const Machines = (() => {
     for (const v of [0, 50, 100]) s += `<line class="grid" x1="30" y1="${py(v)}" x2="${W - 10}" y2="${py(v)}"/>${cap(24, py(v) + 4, v, "end")}`;
     for (const [k, c] of series) s += `<polyline class="${c}" points="${pts.filter((p) => p[0] >= t0).map((p) => `${px(p[0]).toFixed(1)},${py(p[k]).toFixed(1)}`).join(" ")}"/>`;
     s += `<text class="cap" x="30" y="${H - 4}">${series.map(([, c, n]) => `<tspan class="${c.replace("t-", "k-")}">— ${e(n)}</tspan>`).join("  ")}  (last 2 min)</text>`;
-    return `<svg viewBox="0 0 ${W} ${H}" class="draw trend" role="img" aria-label="${e(label)}">${s}</svg>`;
+    return `<svg viewBox="0 0 ${W} ${H}" class="draw trend" role="img" aria-label="${e(I18N.t(label))}">${s}</svg>`;
   }
 
   // -- drawings -----------------------------------------------------------------------------------
@@ -211,21 +211,21 @@ const Machines = (() => {
   // -- controls and devices -------------------------------------------------------------------------
   function controls(m) {
     const c = m.controls.map((x) => {
-      if (x.t === "hold") return `<button class="pbtn" data-act="${e(x.act)}" data-hold title="${x.nc ? "Hold to press (normally closed)" : "Hold to press"}">${e(x.label)}</button>`;
-      if (x.t === "button") return `<button data-act="${e(x.act)}">${e(x.label)}</button>`;
-      if (x.t === "check") return `<label><input type="checkbox" data-act="${e(x.act)}"> ${e(x.label)}</label>`;
+      if (x.t === "hold") return `<button class="pbtn" data-act="${e(x.act)}" data-hold title="${e(I18N.t(x.nc ? "Hold to press (normally closed)" : "Hold to press"))}">${e(I18N.t(x.label))}</button>`;
+      if (x.t === "button") return `<button data-act="${e(x.act)}">${e(I18N.t(x.label))}</button>`;
+      if (x.t === "check") return `<label><input type="checkbox" data-act="${e(x.act)}"> ${e(I18N.t(x.label))}</label>`;
       return "";
     }).join("");
     const sliders = m.controls.filter((x) => x.t === "slider").map((x) =>
-      `<label>${e(x.label)} <span data-val="${e(x.act)}"></span><input type="range" min="${x.min}" max="${x.max}" step="1" data-act="${e(x.act)}"></label>`).join("");
-    const dev = ([name, addr], k) => `<li><span class="dot" data-dev="${k}"></span><span class="dname">${e(name)}</span>
-      <span class="addr" draggable="true" data-addr="${e(addr)}" title="Drag onto an instruction">${e(addr)}</span></li>`;
+      `<label>${e(I18N.t(x.label))} <span data-val="${e(x.act)}"></span><input type="range" min="${x.min}" max="${x.max}" step="1" data-act="${e(x.act)}"></label>`).join("");
+    const dev = ([name, addr], k) => `<li><span class="dot" data-dev="${k}"></span><span class="dname">${e(I18N.t(name))}</span>
+      <span class="addr" draggable="true" data-addr="${e(addr)}" title="${e(I18N.t("Drag onto an instruction"))}">${e(addr)}</span></li>`;
     const ins = m.devices.inputs, outs = m.devices.outputs;
-    return `<div class="ctl">${c}<button data-act="reset" title="Start the machine again">Reset</button></div>` +
+    return `<div class="ctl">${c}<button data-act="reset" title="${e(I18N.t("Start the machine again"))}">${e(I18N.t("Reset"))}</button></div>` +
       (sliders ? `<div class="knobs">${sliders}</div>` : "") +
       `<div class="drawing"></div><ul class="events"></ul>` +
-      `<div class="devs"><div><h4>Inputs</h4><ul>${ins.map((d, k) => dev(d, "i" + k)).join("")}</ul></div>
-       <div><h4>Outputs</h4><ul>${outs.map((d, k) => dev(d, "o" + k)).join("")}</ul></div></div>`;
+      `<div class="devs"><div><h4>${e(I18N.t("Inputs"))}</h4><ul>${ins.map((d, k) => dev(d, "i" + k)).join("")}</ul></div>
+       <div><h4>${e(I18N.t("Outputs"))}</h4><ul>${outs.map((d, k) => dev(d, "o" + k)).join("")}</ul></div></div>`;
   }
 
   let key = "";

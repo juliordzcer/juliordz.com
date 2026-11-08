@@ -4,18 +4,18 @@
 
 const Sims = (() => {
   const e = (s) => String(s).replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
-  const hold = (act, label, title) => `<button class="pbtn" data-act="${act}" data-hold title="${e(title || "Hold to press")}">${e(label)}</button>`;
-  const dev = (name, addr, key) => `<li><span class="dot" data-dev="${key}"></span><span class="dname">${e(name)}</span>
-    <span class="addr" draggable="true" data-addr="${e(addr)}" title="Drag onto an instruction">${e(addr)}</span></li>`;
-  const devices = (inputs, outputs) => `<!--devs--><div class="devs"><div><h4>Inputs</h4><ul>${inputs.map((d) => dev(...d)).join("")}</ul></div>
-    <div><h4>Outputs</h4><ul>${outputs.map((d) => dev(...d)).join("")}</ul></div></div>`;
+  const hold = (act, label, title) => `<button class="pbtn" data-act="${act}" data-hold title="${e(I18N.t(title || "Hold to press"))}">${e(I18N.t(label))}</button>`;
+  const dev = (name, addr, key) => `<li><span class="dot" data-dev="${key}"></span><span class="dname">${e(I18N.t(name))}</span>
+    <span class="addr" draggable="true" data-addr="${e(addr)}" title="${e(I18N.t("Drag onto an instruction"))}">${e(addr)}</span></li>`;
+  const devices = (inputs, outputs) => `<!--devs--><div class="devs"><div><h4>${e(I18N.t("Inputs"))}</h4><ul>${inputs.map((d) => dev(...d)).join("")}</ul></div>
+    <div><h4>${e(I18N.t("Outputs"))}</h4><ul>${outputs.map((d) => dev(...d)).join("")}</ul></div></div>`;
 
   // -- controls and device lists ------------------------------------------------------------------
   function controls(m) {
-    const a = m.addr, reset = `<button data-act="reset" title="Start the machine again">Reset</button>`;
+    const a = m.addr, reset = `<button data-act="reset" title="${e(I18N.t("Start the machine again"))}">${e(I18N.t("Reset"))}</button>`;
     if (m.kind === "silo") {
       return `<div class="ctl">${hold("start", "Start")}${hold("stop", "Stop", "Hold to press (normally closed)")}
-        <span class="group" role="group" aria-label="Selector">${["A", "B", "C"].map((v) => `<button data-act="selector" data-value="${v}">${v}</button>`).join("")}</span>${reset}</div>` +
+        <span class="group" role="group" aria-label="${e(I18N.t("Selector"))}">${["A", "B", "C"].map((v) => `<button data-act="selector" data-value="${v}">${v}</button>`).join("")}</span>${reset}</div>` +
         devices([["Start (NO)", a.start, "start"], ["Stop (NC)", a.stop, "stop"], ["Prox: box under the hopper", a.prox, "prox"],
           ["Level: box full", a.level, "level"], ["Selector A/B/C", a.selector, "selector"]],
         [["Conveyor motor", a.motor, "motor"], ["Fill solenoid", a.solenoid, "solenoid"], ["Run lamp", a.run, "run"],
@@ -23,7 +23,7 @@ const Sims = (() => {
     }
     if (m.kind === "traffic") {
       return `<div class="ctl">${hold("button_A", "Walk button A")}${hold("button_B", "Walk button B")}
-        <label><input type="checkbox" data-act="park_A"> Park car A</label><label><input type="checkbox" data-act="park_B"> Park car B</label>${reset}</div>` +
+        <label><input type="checkbox" data-act="park_A"> ${e(I18N.t("Park car A"))}</label><label><input type="checkbox" data-act="park_B"> ${e(I18N.t("Park car B"))}</label>${reset}</div>` +
         devices([["Walk button A", a.button_A, "button_A"], ["Walk button B", a.button_B, "button_B"],
           ["Car waiting at A", a.car_A, "car_A"], ["Car waiting at B", a.car_B, "car_B"]],
         [["Red A", a.A[0], "A_red"], ["Amber A", a.A[1], "A_amber"], ["Green A", a.A[2], "A_green"], ["Walk A", a.A[3], "A_walk"],
@@ -31,8 +31,8 @@ const Sims = (() => {
     }
     if (m.kind === "tank") {
       return `<div class="ctl">${hold("start", "Start")}${hold("stop", "Stop", "Hold to press (normally closed)")}${reset}</div>
-        <div class="knobs"><label>Setpoint knob <span data-val="setpoint"></span><input type="range" min="0" max="100" step="1" data-act="setpoint"></label>
-        <label>Outlet opening (disturbance) <span data-val="outlet"></span><input type="range" min="0" max="100" step="1" data-act="outlet"></label></div>` +
+        <div class="knobs"><label>${e(I18N.t("Setpoint knob"))} <span data-val="setpoint"></span><input type="range" min="0" max="100" step="1" data-act="setpoint"></label>
+        <label>${e(I18N.t("Outlet opening (disturbance)"))} <span data-val="outlet"></span><input type="range" min="0" max="100" step="1" data-act="outlet"></label></div>` +
         devices([["Start (NO)", a.start, "start"], ["Stop (NC)", a.stop, "stop"], ["High level switch (≥ 90 %)", a.high, "high"],
           ["Low level switch (≤ 10 %)", a.low, "low"], ["Level 0-10 V = 0-100 %", a.level, "level"], ["Setpoint knob 0-10 V", a.setpoint, "setpoint"]],
         [["Pump", a.pump, "pump"], ["Run lamp", a.run, "run"], ["High alarm lamp", a.alarm, "alarm"], ["Inlet valve 0-10 V", a.valve, "valve"]]);
@@ -61,7 +61,7 @@ const Sims = (() => {
   // -- drawings -----------------------------------------------------------------------------------
   function silo(m) {
     const X = 20, sx = X + m.sensor_x, beltY = 250, boxH = 60;
-    let s = `<svg viewBox="0 0 700 300" class="draw" role="img" aria-label="Silo filling line">`;
+    let s = `<svg viewBox="0 0 700 300" class="draw" role="img" aria-label="${e(I18N.t("Silo filling line"))}">`;
     s += `<path class="steel" d="M ${sx - 70} 14 H ${sx + 70} V 64 L ${sx + 14} 100 H ${sx - 14} L ${sx - 70} 64 Z"/>`;
     s += `<path class="product" d="M ${sx - 64} 34 H ${sx + 64} V 61 L ${sx + 12} 94 H ${sx - 12} L ${sx - 64} 61 Z"/>`;
     s += `<rect class="${m.solenoid ? "valve on" : "valve"}" x="${sx - 12}" y="100" width="24" height="12" rx="2"/>`;
@@ -84,7 +84,7 @@ const Sims = (() => {
 
   function traffic(m) {
     const [j1, j2] = m.junction, L = m.road, line = m.stop_line;
-    let s = `<svg viewBox="0 0 ${L} ${L}" class="draw" role="img" aria-label="Road crossing">`;
+    let s = `<svg viewBox="0 0 ${L} ${L}" class="draw" role="img" aria-label="${e(I18N.t("Road crossing"))}">`;
     s += `<rect class="grass" x="0" y="0" width="${L}" height="${L}"/>`;
     s += `<rect class="road" x="0" y="${j1}" width="${L}" height="${j2 - j1}"/><rect class="road" x="${j1}" y="0" width="${j2 - j1}" height="${L}"/>`;
     s += `<line class="lane" x1="0" y1="${(j1 + j2) / 2}" x2="${L}" y2="${(j1 + j2) / 2}"/><line class="lane" x1="${(j1 + j2) / 2}" y1="0" x2="${(j1 + j2) / 2}" y2="${L}"/>`;
@@ -111,7 +111,7 @@ const Sims = (() => {
 
   function tank(m) {
     const tx = 150, ty = 70, tw = 130, th = 190, lvl = th * m.level / 100, sp = ty + th - th * m.setpoint / 100;
-    let s = `<svg viewBox="0 0 400 300" class="draw" role="img" aria-label="Tank level">`;
+    let s = `<svg viewBox="0 0 400 300" class="draw" role="img" aria-label="${e(I18N.t("Tank level"))}">`;
     s += `<path class="pipe${m.pump || m.valve > 0.5 ? " flow" : ""}" d="M 10 40 H ${tx + 40} V ${ty + 6}"/>`;
     s += `<circle class="${m.pump ? "motor on" : "motor"}" cx="50" cy="40" r="14"/><text class="cap" x="50" y="70" text-anchor="middle">pump</text>`;
     s += `<path class="valve2" d="M 92 30 L 92 50 L 120 30 L 120 50 Z"/><text class="cap" x="106" y="70" text-anchor="middle">valve ${m.valve.toFixed(0)} %</text>`;
@@ -133,7 +133,7 @@ const Sims = (() => {
     const W = 400, H = 120, now = pts.length ? pts[pts.length - 1][0] : 0, t0 = Math.max(0, now - 120);
     const px = (t) => 30 + (W - 40) * (t - t0) / 120, py = (v) => 10 + (H - 30) * (1 - Math.min(Math.max(v, 0), 100) / 100);
     const poly = (k, cls) => `<polyline class="${cls}" points="${pts.filter((p) => p[0] >= t0).map((p) => `${px(p[0]).toFixed(1)},${py(p[k]).toFixed(1)}`).join(" ")}"/>`;
-    let s = `<svg viewBox="0 0 ${W} ${H}" class="draw trend" role="img" aria-label="Trend of setpoint, level and valve">`;
+    let s = `<svg viewBox="0 0 ${W} ${H}" class="draw trend" role="img" aria-label="${e(I18N.t("Trend of setpoint, level and valve"))}">`;
     for (const v of [0, 50, 100]) s += `<line class="grid" x1="30" y1="${py(v)}" x2="${W - 10}" y2="${py(v)}"/><text class="cap" x="24" y="${py(v) + 4}" text-anchor="end">${v}</text>`;
     s += poly(3, "t-cv") + poly(1, "t-sp") + poly(2, "t-pv");
     s += `<text class="cap" x="30" y="${H - 4}"><tspan class="k-sp">— setpoint</tspan>  <tspan class="k-pv">— level</tspan>  <tspan class="k-cv">— valve</tspan>  (last 2 min)</text>`;

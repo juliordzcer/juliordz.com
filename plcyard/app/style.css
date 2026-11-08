@@ -202,6 +202,10 @@ button.ghost { border: none; background: none; }
 .draw .seg7 { font: 700 26px "JetBrains Mono", monospace; fill: var(--lamp-amber); }
 .draw .fullsign { font: 700 12px "Inter", sans-serif; fill: #3a3f47; } .draw .fullsign.on { fill: var(--lamp-red); }
 .draw .motor.fault { fill: var(--danger); }
+.draw .box.on { fill: var(--energized); }
+.draw .box.trip { fill: var(--danger); }
+.draw .heat { fill: var(--lamp-amber); }
+.draw .heat.hot { fill: var(--danger); }
 .draw .heater { fill: var(--lamp-red); } .draw .cooler { fill: var(--accent); }
 .draw .winopen { fill: var(--accent-soft); stroke: var(--accent); stroke-width: 2; stroke-dasharray: 4 3; }
 .draw .doorring { fill: none; stroke: var(--rail); stroke-width: 6; } .draw .doorring.open { stroke: var(--warning); stroke-dasharray: 10 8; }
@@ -346,7 +350,10 @@ dialog h3 { margin: 14px 0 6px; font-size: 12px; color: var(--text-muted); text-
 .pick .lvl ~ .tick, .pick .tick { top: 6px; }
 .cardgrid { grid-template-columns: repeat(auto-fill, minmax(210px, 1fr)); }
 @media (max-width: 640px) { .mgroup { grid-template-columns: 1fr; } .mhead { display: flex; align-items: center; gap: 10px; } .draw.thumb { width: 96px; height: 64px; } }
-.pick.ex { grid-template-columns: 1fr; }
+.pick.ex { grid-template-columns: 1fr; border: 1px solid var(--border); background: var(--surface); }
+.pick.ex:hover { border-color: var(--border); background: var(--surface); }
+.pick .langs { display: flex; flex-wrap: wrap; gap: 4px; margin-top: 4px; }
+.pick .langs button { font-size: 12px; padding: 2px 8px; }
 
 /* -- phones: one view at a time, chosen in the bar at the bottom ---------------------------------------- */
 .phone-only { display: none !important; }

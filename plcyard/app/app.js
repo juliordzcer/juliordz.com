@@ -691,7 +691,7 @@ function wire() {
   });
   $("d-exa-list").addEventListener("click", (e) => {
     const c = e.target.closest("[data-example]");
-    if (c) { $("d-examples").close(); S.open_example(c.dataset.example); closeLab(); changed(); }
+    if (c) { $("d-examples").close(); S.open_example(c.dataset.example, c.dataset.lang || ""); closeLab(); changed(); }
   });
   document.querySelectorAll("dialog [data-close]").forEach((b) => b.onclick = () => b.closest("dialog").close());
   document.querySelectorAll("dialog").forEach((d) => d.addEventListener("click", (e) => { if (e.target === d) d.close(); }));
@@ -782,8 +782,9 @@ function openExercises() {
 function openExamples() {
   const LANG = { LD: t("Ladder"), ST: t("Structured text"), FBD: t("Function blocks") };
   $("d-exa-list").innerHTML = [...groups(EXAMPLES)].map(([machine, list]) => `<section class="mgroup"><div class="mhead">${THUMBS[list[0].sim] || ""}<h3>${esc(t(machine))}</h3></div><div class="cardgrid">` +
-    list.map((x) => `<button class="pick ex" data-example="${esc(x.key)}"><span class="ptitle">${esc(t(x.title))}</span>
-      <span class="lang">${esc(x.languages.map((l) => LANG[l]).join(" + "))}</span></button>`).join("") + `</div></section>`).join("");
+    list.map((x) => `<div class="pick ex"><span class="ptitle">${esc(t(x.title))}</span><span class="langs">` +
+      x.languages.map((l) => `<button data-example="${esc(x.key)}" data-lang="${l}" title="${esc(LANG[l])}">${esc(LANG[l])}</button>`).join("") +
+      `</span></div>`).join("") + `</div></section>`).join("");
   $("d-examples").showModal();
 }
 

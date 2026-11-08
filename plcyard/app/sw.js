@@ -1,8 +1,8 @@
 // PLCYard web works offline once it has loaded: this worker keeps the page, the Python package and
-// Pyodide in the browser's cache. A new release (a new 926c50609008) installs a fresh cache.
+// Pyodide in the browser's cache. A new release (a new 4cd697f2d43b) installs a fresh cache.
 "use strict";
 
-const VERSION = "926c50609008";
+const VERSION = "4cd697f2d43b";
 const CACHE = `plcyard-${VERSION}`;
 const CDN = "plcyard-cdn";                       // Pyodide and the markdown library: pinned versions
 const PYODIDE = "https://cdn.jsdelivr.net/pyodide/v0.26.4/full/";

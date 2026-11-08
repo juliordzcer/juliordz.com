@@ -127,6 +127,8 @@
     </li>
     <li class="toctree-l2"><a class="reference internal" href="#washing-machine">Washing machine</a>
     </li>
+    <li class="toctree-l2"><a class="reference internal" href="#three-phase-motor">Three-phase motor</a>
+    </li>
     </ul>
                   </li>
               </ul>
@@ -328,6 +330,21 @@ Heating or cooling without the fan overheats the coil; heating and cooling toget
   %Q0.5 Drain pump   %Q0.6 Done lamp
 A good wash: the clothes turn in water at least 10 s each way, the water is drained before the
 spin, the spin lasts at least 5 s, and the door unlocks only once the drum has stopped.</p>
+<h2 id="three-phase-motor">Three-phase motor<a class="headerlink" href="#three-phase-motor" title="Permanent link">&para;</a></h2>
+<p>Menu key <code>motor</code>.</p>
+<p>Three-phase motor: a 4-pole induction motor (50 Hz, 1500 rpm synchronous, 10 A rated) with a
+star-delta starter that can run it forward or in reverse, a thermal overload relay and a
+zero-speed sensor.</p>
+<p>Digital (slot words):
+  %I0.0 Forward (NO)   %I0.1 Reverse (NO)   %I0.2 Stop (NC)
+  %I0.3 Overload relay OK (NC contact 95-96: FALSE when tripped)   %I0.4 Motor stopped (&lt; 30 rpm)
+  %Q0.0 KM1 line contactor, forward   %Q0.1 KM2 line contactor, reverse   %Q0.2 KM3 star
+  %Q0.3 KM4 delta   %Q0.4 Run lamp   %Q0.5 Fault lamp
+Analog: AI0 motor current 0-10 V = 0-50 A, AI1 speed 0-10 V = 0-1500 rpm.
+The motor turns with one line contactor and one of star or delta. In star it takes a third of the
+current and torque, so start in star and switch to delta near full speed. Forward and reverse
+together, or star and delta together, is a short circuit. A tripped overload relay opens the
+contactor coils by its own wiring; it can be reset once it has cooled to 60 %.</p>
               
             </div>
           </div><footer>

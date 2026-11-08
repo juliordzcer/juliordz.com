@@ -1,4 +1,4 @@
-// The eleven newer machines of the web version: controls and device lists built from webmachines.py's
+// The twelve newer machines of the web version: controls and device lists built from webmachines.py's
 // description, and a small SVG drawing per machine redrawn every frame. Input goes through Sims.wire.
 "use strict";
 
@@ -205,6 +205,23 @@ const Machines = (() => {
       s += lamp(310, 150, o[6], "green", "done");
       s += cap(10, 292, `Washed left ${d.left} s · right ${d.right} s · spun ${d.spun} s · cycles ${d.cycles}`);
       return svg(400, 300, "Washing machine", s);
+    },
+    motor(d) {
+      const o = d.outs, on = (b) => o[b] && !d.tripped;
+      let s = [["KM1 fwd", 0], ["KM2 rev", 1], ["KM3 Y", 2], ["KM4 Δ", 3]].map(([n, b], k) =>
+        `<rect class="${cls("box", on(b))}" x="${10 + k * 72}" y="14" width="62" height="28" rx="3"/>${cap(41 + k * 72, 32, n, "middle")}`).join("");
+      s += `<rect class="${d.tripped ? "box trip" : "box"}" x="304" y="14" width="86" height="28" rx="3"/>${cap(347, 32, d.tripped ? "OL tripped" : "OL ok", "middle")}`;
+      s += `<rect class="belt" x="304" y="48" width="86" height="6"/><rect class="${d.heat > 80 ? "heat hot" : "heat"}" x="304" y="48" width="${86 * d.heat / 100}" height="6"/>`;
+      const cx = 150, cy = 150, a = d.angle * Math.PI / 180;
+      s += `<rect class="${cls("motor", d.powered)}" x="${cx - 80}" y="${cy - 55}" width="160" height="110" rx="14"/>`;
+      s += `<circle class="tank" cx="${cx}" cy="${cy}" r="40"/>`;
+      for (let k = 0; k < 4; k++) { const b = a + k * Math.PI / 2; s += `<line class="steel" x1="${cx}" y1="${cy}" x2="${cx + 36 * Math.cos(b)}" y2="${cy + 36 * Math.sin(b)}"/>`; }
+      s += `<line class="steel" x1="${cx + 80}" y1="${cy}" x2="${cx + 120}" y2="${cy}"/>${d.jammed ? cap(cx + 84, cy - 10, "jammed") : ""}`;
+      s += `<text class="big" x="290" y="120">${f0(Math.abs(d.rpm))} rpm</text>` + cap(290, 96, d.rpm > 1 ? "forward" : d.rpm < -1 ? "reverse" : "");
+      s += `<text class="big" x="290" y="150">${f1(d.current)} A</text>` + cap(290, 174, d.winding === "star" ? "Y star" : d.winding === "delta" ? "Δ delta" : "");
+      s += lamp(300, 200, o[4], "green", "run") + lamp(300, 226, o[5], "red", "fault");
+      s += cap(10, 262, `Load ${f0(d.load)} % · starts ${d.starts} · peak ${f0(d.peak)} A · trips ${d.trips}`);
+      return svg(400, 270, "Three-phase motor", s);
     },
   };
 

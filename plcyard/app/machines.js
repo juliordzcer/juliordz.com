@@ -209,7 +209,7 @@ const Machines = (() => {
     motor(d) {
       const o = d.outs, on = (b) => o[b] && !d.tripped;
       let s = [["KM1 fwd", 0], ["KM2 rev", 1], ["KM3 Y", 2], ["KM4 Δ", 3]].map(([n, b], k) =>
-        `<rect class="${cls("box", on(b))}" x="${10 + k * 72}" y="14" width="62" height="28" rx="3"/>${cap(41 + k * 72, 32, n, "middle")}`).join("");
+        `<rect class="${cls("box km", on(b))}" x="${10 + k * 72}" y="14" width="62" height="28" rx="3"/>${cap(41 + k * 72, 32, n, "middle")}`).join("");
       s += `<rect class="${d.tripped ? "box trip" : "box"}" x="304" y="14" width="86" height="28" rx="3"/>${cap(347, 32, d.tripped ? "OL tripped" : "OL ok", "middle")}`;
       s += `<rect class="belt" x="304" y="48" width="86" height="6"/><rect class="${d.heat > 80 ? "heat hot" : "heat"}" x="304" y="48" width="${86 * d.heat / 100}" height="6"/>`;
       const cx = 150, cy = 150, a = d.angle * Math.PI / 180;

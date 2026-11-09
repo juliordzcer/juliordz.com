@@ -203,6 +203,7 @@ button.ghost { border: none; background: none; }
 .draw .fullsign { font: 700 12px "Inter", sans-serif; fill: #3a3f47; } .draw .fullsign.on { fill: var(--lamp-red); }
 .draw .motor.fault { fill: var(--danger); }
 .draw .box.on { fill: var(--energized); }
+.draw .box.km.on { fill: var(--energized-fill); stroke: var(--energized); stroke-width: 2.5; }
 .draw .box.trip { fill: var(--danger); }
 .draw .heat { fill: var(--lamp-amber); }
 .draw .heat.hot { fill: var(--danger); }

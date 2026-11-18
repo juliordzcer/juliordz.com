@@ -291,7 +291,7 @@
   .pub-links { margin-top: 0.45rem; }
   .sim-grid {
     display: grid;
-    grid-template-columns: repeat(3, 1fr);
+    grid-template-columns: repeat(2, 1fr);
     gap: 1rem;
     margin-top: 1rem;
   }
@@ -433,6 +433,7 @@
   <section id="news">
     <h2>News</h2>
     <ul class="news">
+      <li><time datetime="2026-11">Nov 2026</time><span>Released an open-source <a href="https://github.com/juliordzcer/welding-robot-positioner" target="_blank" rel="noopener">ROS&nbsp;2 and Gazebo simulation</a> of the welding robot and positioner of the COMRob 2021 paper.</span></li>
       <li><time datetime="2026-11">Nov 2026</time><span>Invited talk &ldquo;Simulation Environments for the Design and Validation of Robotic Systems&rdquo; for Computer Systems Engineering students, ITS San Pedro de las Colonias (TecNM).</span></li>
       <li><time datetime="2026-11">Nov 2026</time><span>Started a free <a href="https://www.youtube.com/playlist?list=PLRXiltU_ivhw" target="_blank" rel="noopener">PLC programming course on YouTube</a> for beginners, taught with <a href="plcyard/">PLCYard</a> (no hardware needed).</span></li>
       <li><time datetime="2026-10">Oct 2026</time><span>Released the open-source Gazebo simulations of four papers.</span></li>
@@ -531,6 +532,7 @@
         <div class="pub-links">
           <a class="pill" href="papers/comrob2021.pdf" target="_blank" rel="noopener">PDF</a>
           <a class="pill" href="https://ieeexplore.ieee.org/document/9628721" target="_blank" rel="noopener">IEEE Xplore</a>
+          <a class="pill" href="https://github.com/juliordzcer/welding-robot-positioner" target="_blank" rel="noopener">Simulation</a>
         </div>
       </div>
     </div>
@@ -566,6 +568,14 @@
         <div class="pub-links">
           <a class="pill" href="videos/cnca2023.mp4" target="_blank" rel="noopener">Full video</a>
           <!-- <a class="pill" href="https://github.com/juliordzcer/sliding-mode-formation" target="_blank" rel="noopener">Code</a> -->
+        </div>
+      </div>
+      <div class="sim-card">
+        <video src="videos/clips/comrob2021.mp4" poster="images/simulations/comrob2021.jpg" autoplay muted loop playsinline preload="metadata" aria-label="Simulated Fanuc welding robot applying a helical seam on a pipe turned by a 2-DOF positioner"></video>
+        <h3>Welding robot with a positioner</h3>
+        <p>Fanuc ARC Mate 100iC and a 2-DOF positioner applying a helical seam, in ROS&nbsp;2 and Gazebo.</p>
+        <div class="pub-links">
+          <a class="pill" href="https://github.com/juliordzcer/welding-robot-positioner" target="_blank" rel="noopener">Code</a>
         </div>
       </div>
     </div>
